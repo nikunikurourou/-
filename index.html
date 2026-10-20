@@ -807,7 +807,7 @@
             <div class="game-recipe-content">
                 <div style="font-size:16px; font-weight:bold; color:#ffcb05; margin-bottom: 12px; border-bottom: 2px dashed #3a4e8c; padding-bottom: 8px; text-shadow: 1px 1px 0px #000;">配方材料</div>
                 <div id="modal-recipe-ingredients-flex" style="display: flex; gap: 16px; margin-bottom: 15px; flex-wrap: wrap;"></div>
-                <button class="close-btn" onclick="closeModal('recipe-modal')">關閉視窗</button>
+                <button class="close-btn" onclick="closeRecipeDetailModal()">關閉視窗</button>
             </div>
         </div>
     </div>
@@ -951,12 +951,12 @@
             <div id="new-recipe-ingredients-list" class="ing-grid-4"></div>
 
             <button class="save-btn" onclick="saveRecipe()">💾 儲存食譜變更</button>
-            <button class="close-btn" onclick="closeModal('add-recipe-modal')">取消</button>
+            <button class="close-btn" onclick="cancelEditRecipeModal()">取消</button>
         </div>
     </div>
 
     <script>
-        const DATA_VERSION = 'v2026_perfect_restore_v6';
+        const DATA_VERSION = 'v2026_perfect_restore_v7';
         const defaultRecipeIconImg = "食譜預設.png";
         const defaultIngIconImg = "食材預設.png";
 
@@ -987,105 +987,19 @@
         let currentModalAttrFilter = 'ALL';
         let addIngReturnTarget = 'inventory';
         let currentKey = 'rabbit';
+        let openedFromAllRecipes = false; // 紀錄是否從「食譜總覽」點入
 
-        const userProvidedIngredientsMap = {
-            "水":{"rank":"一般","icon":""},"胡椒":{"rank":"一般","icon":""},"糖":{"rank":"一般","icon":""},"鹽":{"rank":"一般","icon":""},
-            "蘑菇":{"rank":"一般","icon":""},"青禾":{"rank":"一般","icon":""},"芥菜":{"rank":"一般","icon":""},"琥珀凝膠":{"rank":"一般","icon":""},
-            "生肉":{"rank":"一般","icon":""},"嫩肉":{"rank":"稀有","icon":""},"精肉":{"rank":"史詩","icon":""},"絕品肉":{"rank":"傳說","icon":""},
-            "麵粉":{"rank":"一般","icon":""},"蜂蜜":{"rank":"一般","icon":""},"百花蜜":{"rank":"稀有","icon":""},"蜂王漿":{"rank":"傳說","icon":""},
-            "馬鈴薯":{"rank":"一般","icon":""},"甜馬鈴薯":{"rank":"一般","icon":""},"嘟嘟莓":{"rank":"一般","icon":""},"多汁嘟嘟莓":{"rank":"稀有","icon":""},
-            "藍鳥蛋":{"rank":"一般","icon":""},"鈷藍鳥蛋":{"rank":"稀有","icon":""},"潔白松露":{"rank":"傳說","icon":""},"奶油":{"rank":"一般","icon":""},
-            "咸奶油":{"rank":"稀有","icon":""},"脫脂奶油":{"rank":"史詩","icon":""},"咖哩":{"rank":"一般","icon":""},"濃香咖哩":{"rank":"稀有","icon":""},
-            "刺刺果":{"rank":"一般","icon":""},"尖刺刺果":{"rank":"稀有","icon":""},"甲殼栗":{"rank":"一般","icon":""},"鐵甲殼栗":{"rank":"稀有","icon":""},
-            "綠洲之星":{"rank":"史詩","icon":""},"綠洲新星":{"rank":"傳說","icon":""},"寶藏駝奶":{"rank":"史詩","icon":""},"味噌":{"rank":"一般","icon":""},
-            "辛味噌":{"rank":"稀有","icon":""},"水舞葉":{"rank":"一般","icon":""},"天舞青葉":{"rank":"稀有","icon":""},"花瓣魚":{"rank":"一般","icon":""},
-            "鮮花瓣魚":{"rank":"稀有","icon":""},"章魚":{"rank":"一般","icon":""},"潮汐八爪魚":{"rank":"史詩","icon":""},"紺青龍蝦":{"rank":"傳說","icon":""},
-            "辣椒":{"rank":"一般","icon":""},"妖魔辣椒":{"rank":"史詩","icon":""},"豆子":{"rank":"一般","icon":""},"乾脆豆子":{"rank":"一般","icon":""},
-            "竹筍":{"rank":"一般","icon":""},"山珍竹筍":{"rank":"稀有","icon":""},"大螯蟹":{"rank":"稀有","icon":""},"大螯蟹王":{"rank":"史詩","icon":""},
-            "金盞靈芝":{"rank":"傳說","icon":""},"雷電香油":{"rank":"史詩","icon":""},"純淨雷電香油":{"rank":"傳說","icon":""},"蘭香茸":{"rank":"稀有","icon":""},
-            "星夜蘭香茸":{"rank":"史詩","icon":""},"雲海螺肉":{"rank":"史詩","icon":""},"風飄雲海螺肉":{"rank":"傳說","icon":""},"陽光果":{"rank":"史詩","icon":""},
-            "黃金陽光果":{"rank":"傳說","icon":""},"女神之淚":{"rank":"傳說","icon":""}
-        };
+        const userProvidedIngredientsMap = {"水":{"rank":"一般","icon":""},"胡椒":{"rank":"一般","icon":""},"糖":{"rank":"一般","icon":""},"鹽":{"rank":"一般","icon":""},"蘑菇":{"rank":"一般","icon":""},"青禾":{"rank":"一般","icon":""},"芥菜":{"rank":"一般","icon":""},"琥珀凝膠":{"rank":"一般","icon":""},"生肉":{"rank":"一般","icon":""},"嫩肉":{"rank":"稀有","icon":""},"精肉":{"rank":"史詩","icon":""},"絕品肉":{"rank":"傳說","icon":""},"麵粉":{"rank":"一般","icon":""},"蜂蜜":{"rank":"一般","icon":""},"百花蜜":{"rank":"稀有","icon":""},"蜂王漿":{"rank":"傳說","icon":""},"馬鈴薯":{"rank":"一般","icon":""},"甜馬鈴薯":{"rank":"一般","icon":""},"嘟嘟莓":{"rank":"一般","icon":""},"多汁嘟嘟莓":{"rank":"稀有","icon":""},"藍鳥蛋":{"rank":"一般","icon":""},"鈷藍鳥蛋":{"rank":"一般","icon":""},"潔白松露":{"rank":"傳說","icon":""},"奶油":{"rank":"一般","icon":""},"咸奶油":{"rank":"稀有","icon":""},"脫脂奶油":{"rank":"史詩","icon":""},"咖哩":{"rank":"一般","icon":""},"濃香咖哩":{"rank":"稀有","icon":""},"刺刺果":{"rank":"一般","icon":""},"尖刺刺果":{"rank":"稀有","icon":""},"甲殼栗":{"rank":"一般","icon":""},"鐵甲殼栗":{"rank":"稀有","icon":""},"綠洲之星":{"rank":"史詩","icon":""},"綠洲新星":{"rank":"傳說","icon":""},"寶藏駝奶":{"rank":"史詩","icon":""},"味噌":{"rank":"一般","icon":""},"辛味噌":{"rank":"稀有","icon":""},"水舞葉":{"rank":"一般","icon":""},"天舞青葉":{"rank":"稀有","icon":""},"花瓣魚":{"rank":"一般","icon":""},"鮮花瓣魚":{"rank":"稀有","icon":""},"章魚":{"rank":"一般","icon":""},"潮汐八爪魚":{"rank":"史詩","icon":""},"紺青龍蝦":{"rank":"傳說","icon":""},"辣椒":{"rank":"一般","icon":""},"妖魔辣椒":{"rank":"史詩","icon":""},"豆子":{"rank":"一般","icon":""},"乾脆豆子":{"rank":"一般","icon":""},"竹筍":{"rank":"一般","icon":""},"山珍竹筍":{"rank":"稀有","icon":""},"大螯蟹":{"rank":"稀有","icon":""},"大螯蟹王":{"rank":"史詩","icon":""},"金盞靈芝":{"rank":"傳說","icon":""},"雷電香油":{"rank":"史詩","icon":""},"純淨雷電香油":{"rank":"傳說","icon":""},"蘭香茸":{"rank":"稀有","icon":""},"星夜蘭香茸":{"rank":"史詩","icon":""},"雲海螺肉":{"rank":"史詩","icon":""},"風飄雲海螺肉":{"rank":"傳說","icon":""},"陽光果":{"rank":"史詩","icon":""},"黃金陽光果":{"rank":"傳說","icon":""},"女神之淚":{"rank":"傳說","icon":""}};
 
         const defaultIngredientsMap = userProvidedIngredientsMap;
 
-        const userProvidedRabbitRecipes = [
-            {"name":"蜜汁烤肉","rank":"史詩","learned":true,"portions":40,"attr":"攻擊","icon":"","ingredients":{"嫩肉":1,"蜂蜜":5}},
-            {"name":"酸甜嘟嘟肉","rank":"史詩","learned":true,"portions":0,"attr":"速度","icon":"","ingredients":{"嫩肉":1,"嘟嘟莓":1}},
-            {"name":"嘟嘟果釀","rank":"史詩","learned":true,"portions":0,"attr":"速度","icon":"","ingredients":{"水":1,"嘟嘟莓":1}},
-            {"name":"黃金散蛋","rank":"史詩","learned":true,"portions":63,"attr":"生命","icon":"","ingredients":{"百花蜜":2}},
-            {"name":"樹莓蛋糕","rank":"傳說","learned":true,"portions":30,"attr":"生命","icon":"","ingredients":{"青禾":1,"多汁嘟嘟莓":2,"藍鳥蛋":1}},
-            {"name":"焦甜殼栗","rank":"稀有","learned":true,"portions":95,"attr":"防禦","icon":"","ingredients":{"奶油":1,"甲殼栗":1}},
-            {"name":"滾栗子烤肉","rank":"史詩","learned":true,"portions":40,"attr":"防禦","icon":"","ingredients":{"胡椒":1,"嫩肉":1,"甲殼栗":5}},
-            {"name":"鮮果燒肉","rank":"史詩","learned":true,"portions":0,"attr":"攻擊","icon":"","ingredients":{"嫩肉":1,"咖哩":1,"尖刺刺果":1}},
-            {"name":"咖哩什錦燉菜","rank":"傳說","learned":true,"portions":12,"attr":"速度","icon":"","ingredients":{"精肉":2,"濃香咖哩":4,"鐵甲殼栗":3,"綠洲之星":3}},
-            {"name":"海之味","rank":"史詩","learned":true,"portions":0,"attr":"生命","icon":"","ingredients":{"味噌":1,"天舞青葉":1,"花瓣魚":1}},
-            {"name":"源式章魚燒","rank":"傳說","learned":true,"portions":19,"attr":"攻擊","icon":"","ingredients":{"多汁嘟嘟莓":2,"辛味噌":3,"章魚":5}},
-            {"name":"蜜汁豆餅","rank":"史詩","learned":true,"portions":0,"attr":"生命","icon":"","ingredients":{"蜂蜜":1,"乾脆豆子":1}},
-            {"name":"竹筍控肉","rank":"史詩","learned":true,"portions":16,"attr":"攻擊","icon":"","ingredients":{"嫩肉":1,"竹筍":5}},
-            {"name":"太陽光暈","rank":"傳說","learned":true,"portions":6,"attr":"速度","icon":"","ingredients":{"咸奶油":4,"鐵甲殼栗":3,"綠洲之星":3}},
-            {"name":"雲端果塔","rank":"史詩","learned":true,"portions":20,"attr":"速度","icon":"","ingredients":{"嘟嘟莓":1,"奶油":2,"星夜蘭香茸":7}},
-            {"name":"解厄刺身","rank":"傳說","learned":true,"portions":8,"attr":"攻擊","icon":"","ingredients":{"辛味噌":2,"鮮花瓣魚":5,"章魚":3}},
-            {"name":"將軍破陣","rank":"傳說","learned":true,"portions":0,"attr":"防禦","icon":"","ingredients":{"精肉":1,"妖魔辣椒":1,"大螯蟹":1}},
-            {"name":"身披金甲","rank":"傳說","learned":true,"portions":10,"attr":"防禦","icon":"","ingredients":{"精肉":2,"山珍竹筍":5,"大螯蟹":5}},
-            {"name":"聖輝拔絲","rank":"傳說","learned":true,"portions":27,"attr":"攻擊","icon":"","ingredients":{"百花蜜":1,"純淨雷電香油":2,"陽光果":7}},
-            {"name":"坎斯汀漢堡","rank":"史詩","learned":true,"portions":0,"attr":"防禦","icon":"","ingredients":{"嫩肉":1,"甜馬鈴薯":1}},
-            {"name":"塔吉鍋燉肉","rank":"史詩","learned":true,"portions":0,"attr":"攻擊","icon":"","ingredients":{"嫩肉":1,"甜馬鈴薯":1,"咖哩":1}},
-            {"name":"源式拉麵","rank":"史詩","learned":true,"portions":0,"attr":"攻擊","icon":"","ingredients":{"嫩肉":1,"味噌":1,"花瓣魚":1}},
-            {"name":"花魚天婦羅","rank":"史詩","learned":true,"portions":0,"attr":"生命","icon":"","ingredients":{"尖刺刺果":1,"天舞青葉":1,"花瓣魚":1}},
-            {"name":"醬香滷肉","rank":"史詩","learned":true,"portions":0,"attr":"生命","icon":"","ingredients":{"胡椒":1,"嫩肉":1,"乾脆豆子":1}},
-            {"name":"紅燒獅子頭","rank":"史詩","learned":true,"portions":26,"attr":"攻擊","icon":"","ingredients":{"嫩肉":1,"辣椒":5}},
-            {"name":"軍團燒肉","rank":"史詩","learned":true,"portions":56,"attr":"防禦","icon":"","ingredients":{"嫩肉":1,"竹筍":1,"雲海螺肉":4}},
-            {"name":"芳香裹肉捲","rank":"史詩","learned":true,"portions":29,"attr":"速度","icon":"","ingredients":{"嫩肉":2,"雷電香油":5,"星夜蘭香茸":5}}
-        ];
+        const userProvidedRabbitRecipes = [{"name":"蜜汁烤肉","rank":"史詩","learned":true,"attr":"攻擊","icon":"","ingredients":{"蜂蜜":5,"嫩肉":1},"portions":40},{"name":"酸甜嘟嘟肉","rank":"史詩","learned":true,"attr":"速度","icon":"","ingredients":{"嘟嘟莓":1,"嫩肉":1},"portions":0},{"name":"嘟嘟果釀","rank":"史詩","learned":true,"attr":"速度","icon":"","ingredients":{"嘟嘟莓":1,"水":1},"portions":0},{"name":"黃金散蛋","rank":"史詩","learned":true,"attr":"生命","ingredients":{"百花蜜":1},"portions":126},{"name":"樹莓蛋糕","rank":"傳說","learned":true,"portions":0,"attr":"生命","icon":"","ingredients":{"青禾":2,"多汁嘟嘟莓":3,"藍鳥蛋":6}},{"name":"焦甜殼栗","rank":"稀有","learned":true,"attr":"防禦","icon":"","ingredients":{"甲殼栗":1,"奶油":1},"portions":95},{"name":"滾栗子烤肉","rank":"史詩","learned":true,"attr":"防禦","icon":"","ingredients":{"甲殼栗":5,"嫩肉":1,"胡椒":1},"portions":40},{"name":"鮮果燒肉","rank":"史詩","learned":true,"attr":"攻擊","icon":"","ingredients":{"尖刺刺果":1,"咖哩":1,"嫩肉":1},"portions":0},{"name":"咖哩什錦燉菜","rank":"傳說","learned":true,"portions":12,"attr":"速度","icon":"","ingredients":{"精肉":2,"濃香咖哩":4,"鐵甲殼栗":3,"綠洲之星":3}},{"name":"海之味","rank":"史詩","learned":true,"attr":"生命","icon":"","ingredients":{"天舞青葉":1,"花瓣魚":1,"味噌":1},"portions":0},{"name":"源式章魚燒","rank":"傳說","learned":true,"portions":19,"attr":"攻擊","icon":"","ingredients":{"多汁嘟嘟莓":2,"辛味噌":3,"章魚":5}},{"name":"蜜汁豆餅","rank":"史詩","learned":true,"attr":"生命","icon":"","ingredients":{"蜂蜜":1,"乾脆豆子":1},"portions":0},{"name":"竹筍控肉","rank":"史詩","learned":true,"attr":"攻擊","icon":"","ingredients":{"竹筍":5,"嫩肉":1},"portions":16},{"name":"太陽光暈","rank":"傳說","learned":true,"attr":"速度","icon":"","ingredients":{"鐵甲殼栗":3,"綠洲之星":3,"咸奶油":4},"portions":6},{"name":"雲端果塔","rank":"史詩","learned":true,"attr":"速度","icon":"","ingredients":{"嘟嘟莓":1,"奶油":2,"星夜蘭香茸":7},"portions":20},{"name":"解厄刺身","rank":"傳說","learned":true,"attr":"攻擊","icon":"","ingredients":{"鮮花瓣魚":5,"章魚":3,"辛味噌":2},"portions":8},{"name":"將軍破陣","rank":"傳說","learned":true,"attr":"防禦","icon":"","ingredients":{"精肉":1,"妖魔辣椒":1,"大螯蟹":1},"portions":0},{"name":"身披金甲","rank":"傳說","learned":true,"attr":"防禦","icon":"","ingredients":{"山珍竹筍":5,"大螯蟹":5,"精肉":2},"portions":10},{"name":"聖輝拔絲","rank":"傳說","learned":true,"attr":"攻擊","icon":"","ingredients":{"百花蜜":1,"陽光果":7,"純淨雷電香油":2},"portions":27},{"name":"坎斯汀漢堡","rank":"史詩","learned":true,"attr":"防禦","icon":"","ingredients":{"甜馬鈴薯":1,"嫩肉":1},"portions":0},{"name":"塔吉鍋燉肉","rank":"史詩","learned":true,"attr":"攻擊","icon":"","ingredients":{"甜馬鈴薯":1,"咖哩":1,"嫩肉":1},"portions":0},{"name":"源式拉麵","rank":"史詩","learned":true,"attr":"攻擊","icon":"","ingredients":{"花瓣魚":1,"味噌":1,"嫩肉":1},"portions":0},{"name":"花魚天婦羅","rank":"史詩","learned":true,"attr":"生命","icon":"","ingredients":{"尖刺刺果":1,"天舞青葉":1,"花瓣魚":1},"portions":0},{"name":"醬香滷肉","rank":"史詩","learned":true,"attr":"生命","icon":"","ingredients":{"乾脆豆子":1,"嫩肉":1,"胡椒":1},"portions":0},{"name":"紅燒獅子頭","rank":"史詩","learned":true,"attr":"攻擊","icon":"","ingredients":{"辣椒":5,"嫩肉":1},"portions":26},{"name":"軍團燒肉","rank":"史詩","learned":true,"attr":"防禦","icon":"","ingredients":{"竹筍":1,"雲海螺肉":4,"嫩肉":1},"portions":56},{"name":"芳香裹肉捲","rank":"史詩","learned":true,"attr":"速度","icon":"","ingredients":{"星夜蘭香茸":5,"雷電香油":5,"嫩肉":2},"portions":29}];
 
-        const userProvidedRabbitInv = {
-            "馬鈴薯":11,"甜馬鈴薯":27,"嘟嘟莓":21,"多汁嘟嘟莓":71,"藍鳥蛋":54,"刺刺果":3,"甲殼栗":23,"鐵甲殼栗":15,"綠洲之星":21,"綠洲新星":1,
-            "潔白松露":1,"寶藏駝奶":1,"水舞葉":2,"天舞青葉":17,"花瓣魚":9,"章魚":12,"麵粉":22,"咖哩":4,"味噌":44,"蜂蜜":36,"濃香咖哩":32,"辛味噌":8,
-            "百花蜜":16,"奶油":80,"咸奶油":8,"鈷藍鳥蛋":0,"尖刺刺果":0,"鮮花瓣魚":0,"潮汐八爪魚":0,"紺青龍蝦":0,"蜂王漿":0,"脫脂奶油":0,"乾脆豆子":0,
-            "竹筍":0,"山珍竹筍":47,"辣椒":0,"妖魔辣椒":0,"大螯蟹":47,"星夜蘭香茸":21,"雲海螺肉":0,"陽光果":0,"雷電香油":0,"純淨雷電香油":0,
-            "精肉":0,"青禾":0,"嫩肉":0,"水":0,"胡椒":0,"糖":0,"鹽":0,"蘑菇":0,"芥菜":0,"琥珀凝膠":0,"絕品肉":0,"金盞靈芝":0,"黃金陽光果":0,"女神之淚":0,
-            "生肉":0,"豆子":0,"大螯蟹王":0,"蘭香茸":0,"風飄雲海螺肉":0
-        };
+        const userProvidedRabbitInv = {"馬鈴薯":11,"甜馬鈴薯":27,"嘟嘟莓":21,"多汁嘟嘟莓":71,"藍鳥蛋":54,"刺刺果":3,"甲殼栗":23,"鐵甲殼栗":15,"綠洲之星":21,"綠洲新星":1,"潔白松露":1,"寶藏駝奶":1,"水舞葉":2,"天舞青葉":17,"花瓣魚":9,"章魚":12,"麵粉":22,"咖哩":4,"味噌":44,"蜂蜜":36,"濃香咖哩":32,"辛味噌":8,"百花蜜":16,"奶油":80,"咸奶油":8,"鈷藍鳥蛋":0,"尖刺刺果":0,"鮮花瓣魚":0,"潮汐八爪魚":0,"紺青龍蝦":0,"蜂王漿":0,"脫脂奶油":0,"乾脆豆子":0,"竹筍":0,"山珍竹筍":47,"辣椒":0,"妖魔辣椒":0,"大螯蟹":47,"星夜蘭香茸":21,"雲海螺肉":0,"陽光果":0,"雷電香油":0,"純淨雷電香油":0,"精肉":0,"青禾":0,"嫩肉":0,"水":0,"胡椒":0,"糖":0,"鹽":0,"蘑菇":0,"芥菜":0,"琥珀凝膠":0,"絕品肉":0,"金盞靈芝":0,"黃金陽光果":0,"女神之淚":0,"生肉":0,"豆子":0,"大螯蟹王":0,"蘭香茸":0,"風飄雲海螺肉":0};
 
-        const userProvidedArtemisRecipes = [
-            {"name":"蜜汁烤肉","rank":"史詩","learned":true,"portions":14,"attr":"攻擊","icon":"","ingredients":{"蜂蜜":10,"百花蜜":9}},
-            {"name":"酸甜嘟嘟肉","rank":"史詩","learned":true,"portions":95,"attr":"速度","icon":"","ingredients":{"嘟嘟莓":2}},
-            {"name":"黃金散蛋","rank":"史詩","learned":true,"portions":6,"attr":"生命","icon":"","ingredients":{"百花蜜":7,"藍鳥蛋":3}},
-            {"name":"咖哩什錦燉菜","rank":"傳說","learned":true,"portions":12,"attr":"速度","icon":"","ingredients":{"精肉":2,"濃香咖哩":4,"鐵甲殼栗":3,"綠洲之星":3}},
-            {"name":"嘟嘟果釀","rank":"史詩","learned":false,"portions":0,"attr":"速度","icon":"","ingredients":{"水":1,"嘟嘟莓":1}},
-            {"name":"樹莓蛋糕","rank":"傳說","learned":false,"portions":0,"attr":"生命","icon":"","ingredients":{"青禾":1,"多汁嘟嘟莓":2,"藍鳥蛋":1}},
-            {"name":"焦甜殼栗","rank":"稀有","learned":false,"portions":0,"attr":"防禦","icon":"","ingredients":{"奶油":1,"甲殼栗":1}},
-            {"name":"滾栗子烤肉","rank":"史詩","learned":false,"portions":0,"attr":"防禦","icon":"","ingredients":{"胡椒":1,"嫩肉":1,"甲殼栗":5}},
-            {"name":"鮮果燒肉","rank":"史詩","learned":false,"portions":0,"attr":"攻擊","icon":"","ingredients":{"嫩肉":1,"咖哩":1,"尖刺刺果":1}},
-            {"name":"海之味","rank":"史詩","learned":false,"portions":0,"attr":"生命","icon":"","ingredients":{"味噌":1,"天舞青葉":1,"花瓣魚":1}},
-            {"name":"源式章魚燒","rank":"傳說","learned":false,"portions":0,"attr":"攻擊","icon":"","ingredients":{"多汁嘟嘟莓":2,"辛味噌":3,"章魚":5}},
-            {"name":"蜜汁豆餅","rank":"史詩","learned":false,"portions":0,"attr":"生命","icon":"","ingredients":{"蜂蜜":1,"乾脆豆子":1}},
-            {"name":"竹筍控肉","rank":"史詩","learned":false,"portions":0,"attr":"攻擊","icon":"","ingredients":{"嫩肉":1,"竹筍":5}},
-            {"name":"太陽光暈","rank":"傳說","learned":false,"portions":0,"attr":"速度","icon":"","ingredients":{"咸奶油":4,"鐵甲殼栗":3,"綠洲之星":3}},
-            {"name":"雲端果塔","rank":"史詩","learned":false,"portions":0,"attr":"速度","icon":"","ingredients":{"嘟嘟莓":1,"奶油":2,"星夜蘭香茸":7}},
-            {"name":"解厄刺身","rank":"傳說","learned":false,"portions":0,"attr":"攻擊","icon":"","ingredients":{"辛味噌":2,"鮮花瓣魚":5,"章魚":3}},
-            {"name":"將軍破陣","rank":"傳說","learned":false,"portions":0,"attr":"防禦","icon":"","ingredients":{"精肉":1,"妖魔辣椒":1,"大螯蟹":1}},
-            {"name":"身披金甲","rank":"傳說","learned":false,"portions":0,"attr":"防禦","icon":"","ingredients":{"精肉":2,"山珍竹筍":5,"大螯蟹":5}},
-            {"name":"聖輝拔絲","rank":"傳說","learned":false,"portions":0,"attr":"攻擊","icon":"","ingredients":{"百花蜜":1,"純淨雷電香油":2,"陽光果":7}},
-            {"name":"坎斯汀漢堡","rank":"史詩","learned":false,"portions":0,"attr":"防禦","icon":"","ingredients":{"嫩肉":1,"甜馬鈴薯":1}},
-            {"name":"塔吉鍋燉肉","rank":"史詩","learned":false,"portions":0,"attr":"攻擊","icon":"","ingredients":{"嫩肉":1,"甜馬鈴薯":1,"咖哩":1}},
-            {"name":"源式拉麵","rank":"史詩","learned":false,"portions":0,"attr":"攻擊","icon":"","ingredients":{"嫩肉":1,"味噌":1,"花瓣魚":1}},
-            {"name":"花魚天婦羅","rank":"史詩","learned":false,"portions":0,"attr":"生命","icon":"","ingredients":{"尖刺刺果":1,"天舞青葉":1,"花瓣魚":1}},
-            {"name":"醬香滷肉","rank":"史詩","learned":false,"portions":0,"attr":"生命","icon":"","ingredients":{"胡椒":1,"嫩肉":1,"乾脆豆子":1}},
-            {"name":"紅燒獅子頭","rank":"史詩","learned":false,"portions":0,"attr":"攻擊","icon":"","ingredients":{"嫩肉":1,"辣椒":5}},
-            {"name":"軍團燒肉","rank":"史詩","learned":false,"portions":0,"attr":"防禦","icon":"","ingredients":{"嫩肉":1,"竹筍":1,"雲海螺肉":4}},
-            {"name":"芳香裹肉捲","rank":"史詩","learned":false,"portions":0,"attr":"速度","icon":"","ingredients":{"嫩肉":2,"雷電香油":5,"星夜蘭香茸":5}}
-        ];
+        const userProvidedArtemisRecipes = [{"name":"蜜汁烤肉","rank":"稀有","learned":true,"attr":"攻擊","ingredients":{"蜂蜜":10,"百花蜜":9},"portions":14},{"name":"酸甜嘟嘟肉","rank":"稀有","learned":true,"attr":"速度","ingredients":{"嘟嘟莓":1},"portions":190},{"name":"黃金散蛋","rank":"史詩","learned":true,"attr":"生命","ingredients":{"藍鳥蛋":3,"百花蜜":7},"portions":6},{"name":"咖哩什錦燉菜","rank":"傳說","learned":true,"attr":"速度","icon":"","ingredients":{"精肉":2,"濃香咖哩":4,"鐵甲殼栗":3,"綠洲之星":3},"portions":44},{"name":"嘟嘟果釀","rank":"史詩","learned":false,"portions":0,"attr":"速度","icon":"","ingredients":{"嘟嘟莓":1,"水":1}},{"name":"樹莓蛋糕","rank":"傳說","learned":false,"portions":0,"attr":"生命","icon":"","ingredients":{"青禾":2,"多汁嘟嘟莓":3,"藍鳥蛋":6}},{"name":"焦甜殼栗","rank":"稀有","learned":false,"portions":0,"attr":"防禦","icon":"","ingredients":{"甲殼栗":1,"奶油":1}},{"name":"滾栗子烤肉","rank":"史詩","learned":false,"portions":0,"attr":"防禦","icon":"","ingredients":{"甲殼栗":5,"嫩肉":1,"胡椒":1}},{"name":"鮮果燒肉","rank":"史詩","learned":false,"portions":0,"attr":"攻擊","icon":"","ingredients":{"尖刺刺果":1,"咖哩":1,"嫩肉":1}},{"name":"海之味","rank":"史詩","learned":false,"portions":0,"attr":"生命","icon":"","ingredients":{"天舞青葉":1,"花瓣魚":1,"味噌":1}},{"name":"源式章魚燒","rank":"傳說","learned":false,"portions":0,"attr":"攻擊","icon":"","ingredients":{"多汁嘟嘟莓":2,"辛味噌":3,"章魚":5}},{"name":"蜜汁豆餅","rank":"史詩","learned":false,"portions":0,"attr":"生命","icon":"","ingredients":{"蜂蜜":1,"乾脆豆子":1}},{"name":"竹筍控肉","rank":"史詩","learned":false,"portions":0,"attr":"攻擊","icon":"","ingredients":{"竹筍":5,"嫩肉":1}},{"name":"太陽光暈","rank":"傳說","learned":false,"portions":0,"attr":"速度","icon":"","ingredients":{"鐵甲殼栗":3,"綠洲之星":3,"咸奶油":4}},{"name":"雲端果塔","rank":"史詩","learned":false,"portions":0,"attr":"速度","icon":"","ingredients":{"嘟嘟莓":1,"奶油":2,"星夜蘭香茸":7}},{"name":"解厄刺身","rank":"傳說","learned":false,"portions":0,"attr":"攻擊","icon":"","ingredients":{"鮮花瓣魚":5,"章魚":3,"辛味噌":2}},{"name":"將軍破陣","rank":"傳說","learned":false,"portions":0,"attr":"防禦","icon":"","ingredients":{"精肉":1,"妖魔辣椒":1,"大螯蟹":1}},{"name":"身披金甲","rank":"傳說","learned":false,"portions":0,"attr":"防禦","icon":"","ingredients":{"山珍竹筍":5,"大螯蟹":5,"精肉":2}},{"name":"聖輝拔絲","rank":"傳說","learned":false,"portions":0,"attr":"攻擊","icon":"","ingredients":{"百花蜜":1,"陽光果":7,"純淨雷電香油":2}},{"name":"坎斯汀漢堡","rank":"史詩","learned":false,"portions":0,"attr":"防禦","icon":"","ingredients":{"甜馬鈴薯":1,"嫩肉":1}},{"name":"塔吉鍋燉肉","rank":"史詩","learned":false,"portions":0,"attr":"攻擊","icon":"","ingredients":{"甜馬鈴薯":1,"咖哩":1,"嫩肉":1}},{"name":"源式拉麵","rank":"史詩","learned":false,"portions":0,"attr":"攻擊","icon":"","ingredients":{"花瓣魚":1,"味噌":1,"嫩肉":1}},{"name":"花魚天婦羅","rank":"史詩","learned":false,"portions":0,"attr":"生命","icon":"","ingredients":{"尖刺刺果":1,"天舞青葉":1,"花瓣魚":1}},{"name":"醬香滷肉","rank":"史詩","learned":false,"portions":0,"attr":"生命","icon":"","ingredients":{"乾脆豆子":1,"嫩肉":1,"胡椒":1}},{"name":"紅燒獅子頭","rank":"史詩","learned":false,"portions":0,"attr":"攻擊","icon":"","ingredients":{"辣椒":5,"嫩肉":1}},{"name":"軍團燒肉","rank":"史詩","learned":false,"portions":0,"attr":"防禦","icon":"","ingredients":{"竹筍":1,"雲海螺肉":4,"嫩肉":1}},{"name":"芳香裹肉捲","rank":"史詩","learned":false,"portions":0,"attr":"速度","icon":"","ingredients":{"星夜蘭香茸":5,"雷電香油":5,"嫩肉":2}}];
 
-        const userProvidedArtemisInv = {
-            "多汁嘟嘟莓":40,"馬鈴薯":0,"甜馬鈴薯":0,"嘟嘟莓":0,"藍鳥蛋":0,"鈷藍鳥蛋":0,"潔白松露":0,"刺刺果":0,"尖刺刺果":0,"甲殼栗":0,
-            "鐵甲殼栗":0,"綠洲之星":0,"綠洲新星":0,"寶藏駝奶":0,"水舞葉":0,"天舞青葉":0,"花瓣魚":0,"鮮花瓣魚":0,"章魚":0,"潮汐八爪魚":0,
-            "紺青龍蝦":0,"麵粉":0,"蜂蜜":0,"百花蜜":0,"蜂王漿":0,"奶油":0,"咸奶油":0,"脫脂奶油":0,"咖哩":0,"濃香咖哩":0,"味噌":0,"辛味噌":0,
-            "乾脆豆子":0,"竹筍":0,"山珍竹筍":0,"辣椒":0,"妖魔辣椒":0,"大螯蟹":0,"星夜蘭香茸":0,"雲海螺肉":0,"陽光果":0,"雷電香油":0,"純淨雷電香油":0,
-            "精肉":0,"青禾":0,"嫩肉":0,"水":0,"胡椒":0,"糖":0,"鹽":0,"蘑菇":0,"芥菜":0,"琥珀凝膠":0,"絕品肉":0,"金盞靈芝":0,"黃金陽光果":0,"女神之淚":0,
-            "生肉":0,"豆子":0,"大螯蟹王":0,"蘭香茸":0,"風飄雲海螺肉":0
-        };
+        const userProvidedArtemisInv = {"多汁嘟嘟莓":40,"馬鈴薯":0,"甜馬鈴薯":0,"嘟嘟莓":0,"藍鳥蛋":0,"鈷藍鳥蛋":0,"潔白松露":0,"刺刺果":0,"尖刺刺果":0,"甲殼栗":0,"鐵甲殼栗":0,"綠洲之星":0,"綠洲新星":0,"寶藏駝奶":0,"水舞葉":0,"天舞青葉":0,"花瓣魚":0,"鮮花瓣魚":0,"章魚":0,"潮汐八爪魚":0,"紺青龍蝦":0,"麵粉":0,"蜂蜜":0,"百花蜜":0,"蜂王漿":0,"奶油":0,"咸奶油":0,"脫脂奶油":0,"咖哩":0,"濃香咖哩":0,"味噌":0,"辛味噌":0,"乾脆豆子":0,"竹筍":0,"山珍竹筍":0,"辣椒":0,"妖魔辣椒":0,"大螯蟹":0,"星夜蘭香茸":0,"雲海螺肉":0,"陽光果":0,"雷電香油":0,"純淨雷電香油":0,"精肉":0,"青禾":0,"嫩肉":0,"水":0,"胡椒":0,"糖":0,"鹽":0,"蘑菇":0,"芥菜":0,"琥珀凝膠":0,"絕品肉":0,"金盞靈芝":0,"黃金陽光果":0,"女神之淚":0,"生肉":0,"豆子":0,"大螯蟹王":0,"蘭香茸":0,"風飄雲海螺肉":0};
 
         function exportCurrentData() {
             const dataObj = {
@@ -1333,13 +1247,11 @@
             try {
                 const savedVer = localStorage.getItem('app_data_version');
                 if (savedVer !== DATA_VERSION) {
-                    if (!localStorage.getItem('recipes_rabbit')) {
-                        localStorage.setItem('global_ingredients_map', JSON.stringify(userProvidedIngredientsMap));
-                        localStorage.setItem('recipes_rabbit', JSON.stringify(userProvidedRabbitRecipes.map(migrateRecipeFormat)));
-                        localStorage.setItem('recipes_artemis', JSON.stringify(userProvidedArtemisRecipes.map(migrateRecipeFormat)));
-                        localStorage.setItem('inv_rabbit', JSON.stringify(userProvidedRabbitInv));
-                        localStorage.setItem('inv_artemis', JSON.stringify(userProvidedArtemisInv));
-                    }
+                    localStorage.setItem('global_ingredients_map', JSON.stringify(userProvidedIngredientsMap));
+                    localStorage.setItem('recipes_rabbit', JSON.stringify(userProvidedRabbitRecipes.map(migrateRecipeFormat)));
+                    localStorage.setItem('recipes_artemis', JSON.stringify(userProvidedArtemisRecipes.map(migrateRecipeFormat)));
+                    localStorage.setItem('inv_rabbit', JSON.stringify(userProvidedRabbitInv));
+                    localStorage.setItem('inv_artemis', JSON.stringify(userProvidedArtemisInv));
                     localStorage.setItem('app_data_version', DATA_VERSION);
                 }
             } catch(e) {
@@ -1583,7 +1495,7 @@
                         const unlearnedClass = recipe.learned === false ? 'unlearned' : '';
 
                         recipeContainer.innerHTML += `
-                            <div class="recipe-card ${unlearnedClass}" onclick="openRecipeDetailByIndex(${recipe.originalIndex})">
+                            <div class="recipe-card ${unlearnedClass}" onclick="openRecipeDetailByIndex(${recipe.originalIndex}, false)">
                                 <div class="recipe-header-flex">
                                     ${renderImgHtml(recipe.icon, "recipe-icon", defaultRecipeIconImg, recipe.name)}
                                     <div>
@@ -1662,7 +1574,9 @@
             }
         }
 
-        function openRecipeDetailByIndex(recipeIndex) {
+        // 支援紀錄是否由「食譜總覽」點入 (fromAllRecipes)
+        function openRecipeDetailByIndex(recipeIndex, fromAllRecipes = false) {
+            openedFromAllRecipes = fromAllRecipes;
             const recipes = getRecipes(currentKey);
             const inv = getInventory(currentKey);
             const ingMap = getIngredientsMap();
@@ -1738,6 +1652,20 @@
             document.getElementById('recipe-modal').style.display = 'flex';
         }
 
+        function closeRecipeDetailModal() {
+            closeModal('recipe-modal');
+            if (openedFromAllRecipes) {
+                openAllRecipesModal();
+            }
+        }
+
+        function cancelEditRecipeModal() {
+            closeModal('add-recipe-modal');
+            if (openedFromAllRecipes) {
+                openAllRecipesModal();
+            }
+        }
+
         function deleteRecipe(recipeIndex) {
             let recipes = getRecipes(currentKey);
             const targetName = recipes[recipeIndex]?.name;
@@ -1751,6 +1679,10 @@
 
             closeModal('recipe-modal');
             renderUI();
+
+            if (openedFromAllRecipes) {
+                openAllRecipesModal();
+            }
         }
 
         function openAllRecipesModal() {
@@ -1815,7 +1747,7 @@
                         : '';
 
                     listContainer.innerHTML += `
-                        <div class="overview-item ${stateClass}" onclick="closeModal('all-recipes-modal'); openRecipeDetailByIndex(${recipe.originalIndex})" title="${recipe.name} (${recipe.rank || '稀有'})">
+                        <div class="overview-item ${stateClass}" onclick="closeModal('all-recipes-modal'); openRecipeDetailByIndex(${recipe.originalIndex}, true)" title="${recipe.name} (${recipe.rank || '稀有'})">
                             <div class="overview-circle ${circleRankClass}">
                                 ${attrBadgeHtml}
                                 ${renderImgHtml(recipe.icon, "overview-food-img", defaultRecipeIconImg, recipe.name)}
@@ -1829,7 +1761,6 @@
             document.getElementById('all-recipes-modal').style.display = 'flex';
         }
 
-        // 所有可出售食材總覽：採用與食譜總覽相同的圓形徽章網格顯示及品質排列方式
         function openAllSurplusModal() {
             const recipes = getRecipes(currentKey);
             const inv = getInventory(currentKey);
@@ -1859,7 +1790,6 @@
                 }
             }
 
-            // 與食譜一覽相同：優先依照品質排列（傳說 -> 史詩 -> 稀有 -> 一般），同品質則依62種食材順序排列
             surplusList.sort((a, b) => {
                 const wA = rankWeight[a.rank] !== undefined ? rankWeight[a.rank] : 0;
                 const wB = rankWeight[b.rank] !== undefined ? rankWeight[b.rank] : 0;
@@ -2132,6 +2062,7 @@
         }
 
         function openAddRecipeModal() {
+            openedFromAllRecipes = false;
             document.getElementById('recipe-editor-title').innerText = '➕ 新增食譜';
             document.getElementById('editing-recipe-index').value = '-1';
             document.getElementById('new-recipe-name').value = '';
@@ -2294,7 +2225,12 @@
             closeModal('add-recipe-modal');
             renderUI();
 
-            openRecipeDetailByIndex(targetIndex);
+            // 若是從「所有食譜總覽」點進去編輯，儲存後直接回到「所有食譜總覽」
+            if (openedFromAllRecipes) {
+                openAllRecipesModal();
+            } else {
+                openRecipeDetailByIndex(targetIndex, false);
+            }
         }
 
         function closeModal(modalId) {
