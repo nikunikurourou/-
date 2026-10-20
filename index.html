@@ -242,6 +242,7 @@
         .recipe-card:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0px rgba(0,0,0,0.5); }
 
         .recipe-header-flex { display: flex; align-items: center; gap: 12px; }
+        .ing-info-flex { display: flex; align-items: center; gap: 10px; }
 
         .recipe-icon, .ing-icon {
             width: 40px;
@@ -254,14 +255,17 @@
             image-rendering: pixelated;
         }
 
-        /* 屬性圖示 */
+        /* 屬性圖示：與食譜名稱 (22px) 完全同高並垂直對齊，圓角裁切白邊 */
         .attr-icon {
-            width: 24px;
-            height: 24px;
+            width: 22px;
+            height: 22px;
             object-fit: contain;
             image-rendering: pixelated;
             display: block;
             background-color: transparent;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
         }
 
         /* 圓形食材 ICON 容器 (用於食譜詳情與主頁缺少食材) */
@@ -364,10 +368,14 @@
             border-bottom: 2px dashed #3a4e8c;
         }
 
+        /* 食譜名稱與屬性ICON等高(22px)並完美垂直置中對齊 */
         .game-recipe-header-title {
             font-size: 22px;
+            height: 22px;
+            line-height: 22px;
             font-weight: bold;
-            line-height: 1;
+            display: flex;
+            align-items: center;
             text-shadow: 2px 2px 0px #000;
         }
 
@@ -538,7 +546,7 @@
             cursor: pointer;
         }
 
-        /* 圖二風格：所有食譜總覽圓形徽章網格 */
+        /* 圖二風格：所有食譜總覽 & 可出售食材總覽 圓形徽章網格 */
         .overview-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -561,7 +569,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
             cursor: pointer;
             transition: transform 0.15s;
         }
@@ -582,7 +590,11 @@
             transition: all 0.2s;
         }
 
-        /* 圖二品質圓框配色 */
+        /* 圖二品質圓框配色 (含一般品質) */
+        .overview-circle.circle-normal {
+            background: radial-gradient(circle, #64748b 20%, #334155 90%);
+            border-color: #94a3b8;
+        }
         .overview-circle.circle-rare {
             background: radial-gradient(circle, #3b82f6 20%, #1d4ed8 90%);
             border-color: #60a5fa;
@@ -624,11 +636,13 @@
             align-items: center;
             z-index: 3;
             box-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+            overflow: hidden;
         }
         .overview-attr-badge img {
-            width: 16px;
-            height: 16px;
-            object-fit: contain;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
         }
 
         .overview-name {
@@ -640,10 +654,16 @@
             word-break: keep-all;
         }
 
-        /* 圖二明暗狀態控制：
-           1. active-missing (有缺少份數)：維持原鮮豔色彩 (如太陽光暈)
-           2. dimmed-sufficient (已習得但無缺少食材/份數0)：改暗保留色調 (如黃金散蛋)
-           3. unlearned-gray (未取得食譜)：灰階暗化 (如星輝麵包) */
+        .overview-subtext {
+            font-size: 12px;
+            color: #ffcb05;
+            font-weight: bold;
+            text-align: center;
+            text-shadow: 1px 1px 0 #000;
+            line-height: 1.1;
+        }
+
+        /* 圖二明暗狀態控制 */
         .overview-item.dimmed-sufficient .overview-circle {
             filter: brightness(0.48) saturate(0.75);
         }
@@ -720,6 +740,7 @@
             <div class="header-btns">
                 <button class="action-btn add-recipe" onclick="openAddRecipeModal()">➕ 新增食譜</button>
                 <button class="action-btn" onclick="openInventoryEditModal()">📦 修改庫存</button>
+                <button class="action-btn" onclick="exportCurrentData()" title="複製目前網頁上的最新資料">📋 匯出資料</button>
             </div>
         </div>
 
@@ -768,10 +789,9 @@
                     <button id="modal-delete-btn" class="btn-mini" style="background-color:#e74c3c;">🗑️ 刪除</button>
                 </div>
                 
-                <!-- 標題與屬性圖示並列，緊靠 -->
-                <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="display: flex; align-items: center; gap: 8px; height: 22px;">
                     <div class="game-recipe-header-title" id="modal-recipe-name">食譜名稱</div>
-                    <div id="modal-recipe-attr-badge" style="display: flex; align-items: center;"></div>
+                    <div id="modal-recipe-attr-badge" style="display: flex; align-items: center; height: 22px;"></div>
                 </div>
             </div>
             
@@ -792,7 +812,7 @@
         </div>
     </div>
 
-    <!-- 所有食譜清單彈跳視窗 (圖二圓形徽章風格) -->
+    <!-- 所有食譜清單彈跳視窗 (圓形徽章風格) -->
     <div id="all-recipes-modal" class="modal">
         <div class="modal-content" style="padding: 20px;">
             <h2 style="font-size: 20px; color: #ffcb05; margin-bottom: 15px; text-shadow: 2px 2px 0px #000;">所有食譜總覽</h2>
@@ -816,17 +836,17 @@
         </div>
     </div>
 
-    <!-- 所有可出售食材彈跳視窗 -->
+    <!-- 所有可出售食材彈跳視窗 (與食譜總覽相同的圓形徽章風格) -->
     <div id="all-surplus-modal" class="modal">
         <div class="modal-content" style="padding: 20px;">
             <h2 style="font-size: 20px; color: #ffcb05; margin-bottom: 15px; text-shadow: 2px 2px 0px #000;">所有可出售食材總覽</h2>
             <input type="text" id="all-surplus-search" class="search-input" placeholder="🔍 搜尋可出售食材..." style="width: 100%; margin-bottom: 15px; height: 34px;">
-            <div id="all-surplus-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
+            <div id="all-surplus-list" class="overview-grid"></div>
             <button class="close-btn" onclick="closeModal('all-surplus-modal')">關閉視窗</button>
         </div>
     </div>
 
-    <!-- 修改庫存彈跳視窗 (圖一 4欄網格排列) -->
+    <!-- 修改庫存彈跳視窗 -->
     <div id="edit-inventory-modal" class="modal">
         <div class="modal-content" style="padding: 20px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 3px dashed #3a4e8c; padding-bottom: 10px;">
@@ -903,7 +923,6 @@
                 </div>
                 <div style="width: 100px;">
                     <label>所需份數：</label>
-                    <!-- 欄位縮小，適合 2 位數 -->
                     <input type="number" id="new-recipe-portions" class="text-input" value="1" min="0" style="width: 80px; height: 38px; text-align: center; font-size: 16px; font-weight: bold;">
                 </div>
             </div>
@@ -937,24 +956,17 @@
     </div>
 
     <script>
-        const DATA_VERSION = 'v2026_final_sync_v2';
+        const DATA_VERSION = 'v2026_perfect_restore_v6';
         const defaultRecipeIconImg = "食譜預設.png";
         const defaultIngIconImg = "食材預設.png";
 
-        const attrIconMap = {
-            "攻擊": "攻擊",
-            "防禦": "防禦",
-            "生命": "生命",
-            "速度": "速度"
+        const gameData = {
+            rabbit: { name: "小兔子" },
+            artemis: { name: "亞緹米絲" }
         };
 
-        const rankWeight = {
-            "奇蹟": 4,
-            "傳說": 3,
-            "史詩": 2,
-            "稀有": 1
-        };
-
+        const attrIconMap = { "攻擊": "攻擊", "防禦": "防禦", "生命": "生命", "速度": "速度" };
+        const rankWeight = { "奇蹟": 4, "傳說": 3, "史詩": 2, "稀有": 1, "一般": 0 };
         const EXCLUDED_INGS = ["水", "胡椒", "糖", "鹽", "蘑菇", "青禾", "芥菜", "琥珀凝膠"];
 
         const INGREDIENT_ORDER = [
@@ -974,44 +986,157 @@
         let currentModalLearnedFilter = 'ALL';
         let currentModalAttrFilter = 'ALL';
         let addIngReturnTarget = 'inventory';
+        let currentKey = 'rabbit';
 
-        const userProvidedIngredientsMap = {"馬鈴薯":{"rank":"一般","icon":""},"甜馬鈴薯":{"rank":"一般","icon":""},"嘟嘟莓":{"rank":"一般","icon":""},"多汁嘟嘟莓":{"rank":"稀有","icon":""},"藍鳥蛋":{"rank":"一般","icon":""},"鈷藍鳥蛋":{"rank":"一般","icon":""},"潔白松露":{"rank":"傳說","icon":""},"刺刺果":{"rank":"一般","icon":""},"尖刺刺果":{"rank":"稀有","icon":""},"甲殼栗":{"rank":"一般","icon":""},"鐵甲殼栗":{"rank":"稀有","icon":""},"綠洲之星":{"rank":"史詩","icon":""},"綠洲新星":{"rank":"傳說","icon":""},"寶藏駝奶":{"rank":"史詩","icon":""},"水舞葉":{"rank":"一般","icon":""},"天舞青葉":{"rank":"稀有","icon":""},"花瓣魚":{"rank":"一般","icon":""},"鮮花瓣魚":{"rank":"稀有","icon":""},"章魚":{"rank":"一般","icon":""},"潮汐八爪魚":{"rank":"史詩","icon":""},"紺青龍蝦":{"rank":"傳說","icon":""},"麵粉":{"rank":"一般","icon":""},"蜂蜜":{"rank":"一般","icon":""},"百花蜜":{"rank":"稀有","icon":""},"蜂王漿":{"rank":"傳說","icon":""},"奶油":{"rank":"一般","icon":""},"咸奶油":{"rank":"稀有","icon":""},"脫脂奶油":{"rank":"史詩","icon":""},"咖哩":{"rank":"一般","icon":""},"濃香咖哩":{"rank":"稀有","icon":""},"味噌":{"rank":"一般","icon":""},"辛味噌":{"rank":"稀有","icon":""},"乾脆豆子":{"rank":"一般","icon":""},"竹筍":{"rank":"一般","icon":""},"山珍竹筍":{"rank":"稀有","icon":""},"辣椒":{"rank":"一般","icon":""},"妖魔辣椒":{"rank":"史詩","icon":""},"大螯蟹":{"rank":"稀有","icon":""},"星夜蘭香茸":{"rank":"史詩","icon":""},"雲海螺肉":{"rank":"史詩","icon":""},"陽光果":{"rank":"史詩","icon":""},"雷電香油":{"rank":"史詩","icon":""},"純淨雷電香油":{"rank":"傳說","icon":""},"精肉":{"rank":"史詩","icon":""},"青禾":{"rank":"一般","icon":""},"嫩肉":{"rank":"稀有","icon":""},"水":{"rank":"一般","icon":""},"胡椒":{"rank":"一般","icon":""},"糖":{"rank":"一般","icon":""},"鹽":{"rank":"一般","icon":""},"蘑菇":{"rank":"一般","icon":""},"芥菜":{"rank":"一般","icon":""},"琥珀凝膠":{"rank":"一般","icon":""},"絕品肉":{"rank":"傳說","icon":""},"金盞靈芝":{"rank":"傳說","icon":""},"黃金陽光果":{"rank":"傳說","icon":""},"女神之淚":{"rank":"傳說","icon":""}};
+        const userProvidedIngredientsMap = {
+            "水":{"rank":"一般","icon":""},"胡椒":{"rank":"一般","icon":""},"糖":{"rank":"一般","icon":""},"鹽":{"rank":"一般","icon":""},
+            "蘑菇":{"rank":"一般","icon":""},"青禾":{"rank":"一般","icon":""},"芥菜":{"rank":"一般","icon":""},"琥珀凝膠":{"rank":"一般","icon":""},
+            "生肉":{"rank":"一般","icon":""},"嫩肉":{"rank":"稀有","icon":""},"精肉":{"rank":"史詩","icon":""},"絕品肉":{"rank":"傳說","icon":""},
+            "麵粉":{"rank":"一般","icon":""},"蜂蜜":{"rank":"一般","icon":""},"百花蜜":{"rank":"稀有","icon":""},"蜂王漿":{"rank":"傳說","icon":""},
+            "馬鈴薯":{"rank":"一般","icon":""},"甜馬鈴薯":{"rank":"一般","icon":""},"嘟嘟莓":{"rank":"一般","icon":""},"多汁嘟嘟莓":{"rank":"稀有","icon":""},
+            "藍鳥蛋":{"rank":"一般","icon":""},"鈷藍鳥蛋":{"rank":"稀有","icon":""},"潔白松露":{"rank":"傳說","icon":""},"奶油":{"rank":"一般","icon":""},
+            "咸奶油":{"rank":"稀有","icon":""},"脫脂奶油":{"rank":"史詩","icon":""},"咖哩":{"rank":"一般","icon":""},"濃香咖哩":{"rank":"稀有","icon":""},
+            "刺刺果":{"rank":"一般","icon":""},"尖刺刺果":{"rank":"稀有","icon":""},"甲殼栗":{"rank":"一般","icon":""},"鐵甲殼栗":{"rank":"稀有","icon":""},
+            "綠洲之星":{"rank":"史詩","icon":""},"綠洲新星":{"rank":"傳說","icon":""},"寶藏駝奶":{"rank":"史詩","icon":""},"味噌":{"rank":"一般","icon":""},
+            "辛味噌":{"rank":"稀有","icon":""},"水舞葉":{"rank":"一般","icon":""},"天舞青葉":{"rank":"稀有","icon":""},"花瓣魚":{"rank":"一般","icon":""},
+            "鮮花瓣魚":{"rank":"稀有","icon":""},"章魚":{"rank":"一般","icon":""},"潮汐八爪魚":{"rank":"史詩","icon":""},"紺青龍蝦":{"rank":"傳說","icon":""},
+            "辣椒":{"rank":"一般","icon":""},"妖魔辣椒":{"rank":"史詩","icon":""},"豆子":{"rank":"一般","icon":""},"乾脆豆子":{"rank":"一般","icon":""},
+            "竹筍":{"rank":"一般","icon":""},"山珍竹筍":{"rank":"稀有","icon":""},"大螯蟹":{"rank":"稀有","icon":""},"大螯蟹王":{"rank":"史詩","icon":""},
+            "金盞靈芝":{"rank":"傳說","icon":""},"雷電香油":{"rank":"史詩","icon":""},"純淨雷電香油":{"rank":"傳說","icon":""},"蘭香茸":{"rank":"稀有","icon":""},
+            "星夜蘭香茸":{"rank":"史詩","icon":""},"雲海螺肉":{"rank":"史詩","icon":""},"風飄雲海螺肉":{"rank":"傳說","icon":""},"陽光果":{"rank":"史詩","icon":""},
+            "黃金陽光果":{"rank":"傳說","icon":""},"女神之淚":{"rank":"傳說","icon":""}
+        };
 
-        const userProvidedRabbitRecipes = [{"name":"蜜汁烤肉","rank":"史詩","learned":true,"attr":"攻擊","icon":"","ingredients":{"蜂蜜":200,"嫩肉":40}},{"name":"酸甜嘟嘟肉","rank":"史詩","learned":true,"attr":"速度","icon":"","ingredients":{"嘟嘟莓":0,"嫩肉":0}},{"name":"嘟嘟果釀","rank":"史詩","learned":true,"attr":"速度","icon":"","ingredients":{"嘟嘟莓":0,"水":0}},{"name":"黃金散蛋","rank":"史詩","learned":true,"attr":"生命","ingredients":{"百花蜜":126}},{"name":"樹莓蛋糕","rank":"傳說","learned":true,"attr":"生命","icon":"","ingredients":{"多汁嘟嘟莓":60,"藍鳥蛋":0,"青禾":0}},{"name":"焦甜殼栗","rank":"稀有","learned":true,"attr":"防禦","icon":"","ingredients":{"甲殼栗":95,"奶油":95}},{"name":"滾栗子烤肉","rank":"史詩","learned":true,"attr":"防禦","icon":"","ingredients":{"甲殼栗":200,"嫩肉":40,"胡椒":40}},{"name":"鮮果燒肉","rank":"史詩","learned":true,"attr":"攻擊","icon":"","ingredients":{"尖刺刺果":0,"咖哩":0,"嫩肉":0}},{"name":"咖哩什錦燉菜","rank":"傳說","learned":true,"attr":"速度","icon":"","ingredients":{"鐵甲殼栗":36,"綠洲之星":36,"濃香咖哩":48,"精肉":24}},{"name":"海之味","rank":"史詩","learned":true,"attr":"生命","icon":"","ingredients":{"天舞青葉":0,"花瓣魚":0,"味噌":0}},{"name":"源式章魚燒","rank":"傳說","learned":true,"attr":"攻擊","icon":"","ingredients":{"多汁嘟嘟莓":38,"章魚":95,"辛味噌":57}},{"name":"蜜汁豆餅","rank":"史詩","learned":true,"attr":"生命","icon":"","ingredients":{"蜂蜜":0,"乾脆豆子":0}},{"name":"竹筍控肉","rank":"史詩","learned":true,"attr":"攻擊","icon":"","ingredients":{"竹筍":80,"嫩肉":16}},{"name":"太陽光暈","rank":"傳說","learned":true,"attr":"速度","icon":"","ingredients":{"鐵甲殼栗":18,"綠洲之星":18,"咸奶油":24}},{"name":"雲端果塔","rank":"史詩","learned":true,"attr":"速度","icon":"","ingredients":{"嘟嘟莓":20,"奶油":40,"星夜蘭香茸":140}},{"name":"解厄刺身","rank":"傳說","learned":true,"attr":"攻擊","icon":"","ingredients":{"鮮花瓣魚":40,"章魚":24,"辛味噌":16}},{"name":"將軍破陣","rank":"傳說","learned":true,"attr":"防禦","icon":"","ingredients":{"精肉":0,"妖魔辣椒":0,"大螯蟹":0}},{"name":"身披金甲","rank":"傳說","learned":true,"attr":"防禦","icon":"","ingredients":{"山珍竹筍":50,"大螯蟹":50,"精肉":20}},{"name":"聖輝拔絲","rank":"傳說","learned":true,"attr":"攻擊","icon":"","ingredients":{"百花蜜":27,"陽光果":189,"純淨雷電香油":54}},{"name":"坎斯汀漢堡","rank":"史詩","learned":true,"attr":"防禦","icon":"","ingredients":{"甜馬鈴薯":0,"嫩肉":0}},{"name":"塔吉鍋燉肉","rank":"史詩","learned":true,"attr":"攻擊","icon":"","ingredients":{"甜馬鈴薯":0,"咖哩":0,"嫩肉":0}},{"name":"源式拉麵","rank":"史詩","learned":true,"attr":"攻擊","icon":"","ingredients":{"花瓣魚":0,"味噌":0,"嫩肉":0}},{"name":"花魚天婦羅","rank":"史詩","learned":true,"attr":"生命","icon":"","ingredients":{"尖刺刺果":0,"天舞青葉":0,"花瓣魚":0}},{"name":"醬香滷肉","rank":"史詩","learned":true,"attr":"生命","icon":"","ingredients":{"乾脆豆子":0,"嫩肉":0,"胡椒":0}},{"name":"紅燒獅子頭","rank":"史詩","learned":true,"attr":"攻擊","icon":"","ingredients":{"辣椒":130,"嫩肉":26}},{"name":"軍團燒肉","rank":"史詩","learned":true,"attr":"防禦","icon":"","ingredients":{"竹筍":56,"雲海螺肉":224,"嫩肉":56}},{"name":"芳香裹肉捲","rank":"史詩","learned":true,"attr":"速度","icon":"","ingredients":{"星夜蘭香茸":145,"雷電香油":145,"嫩肉":58}}];
+        const defaultIngredientsMap = userProvidedIngredientsMap;
 
-        const userProvidedRabbitInv = {"馬鈴薯":11,"甜馬鈴薯":27,"嘟嘟莓":21,"多汁嘟嘟莓":71,"藍鳥蛋":54,"刺刺果":3,"甲殼栗":23,"鐵甲殼栗":15,"綠洲之星":21,"綠洲新星":1,"潔白松露":1,"寶藏駝奶":1,"水舞葉":2,"天舞青葉":17,"花瓣魚":9,"章魚":12,"麵粉":22,"咖哩":4,"味噌":44,"蜂蜜":36,"濃香咖哩":32,"辛味噌":8,"百花蜜":16,"奶油":80,"咸奶油":8,"鈷藍鳥蛋":0,"尖刺刺果":0,"鮮花瓣魚":0,"潮汐八爪魚":0,"紺青龍蝦":0,"蜂王漿":0,"脫脂奶油":0,"乾脆豆子":0,"竹筍":0,"山珍竹筍":47,"辣椒":0,"妖魔辣椒":0,"大螯蟹":47,"星夜蘭香茸":21,"雲海螺肉":0,"陽光果":0,"雷電香油":0,"純淨雷電香油":0,"精肉":0,"青禾":0,"嫩肉":0,"水":0,"胡椒":0,"糖":0,"鹽":0,"蘑菇":0,"芥菜":0,"琥珀凝膠":0,"絕品肉":0,"金盞靈芝":0,"黃金陽光果":0,"女神之淚":0};
+        const userProvidedRabbitRecipes = [
+            {"name":"蜜汁烤肉","rank":"史詩","learned":true,"portions":40,"attr":"攻擊","icon":"","ingredients":{"嫩肉":1,"蜂蜜":5}},
+            {"name":"酸甜嘟嘟肉","rank":"史詩","learned":true,"portions":0,"attr":"速度","icon":"","ingredients":{"嫩肉":1,"嘟嘟莓":1}},
+            {"name":"嘟嘟果釀","rank":"史詩","learned":true,"portions":0,"attr":"速度","icon":"","ingredients":{"水":1,"嘟嘟莓":1}},
+            {"name":"黃金散蛋","rank":"史詩","learned":true,"portions":63,"attr":"生命","icon":"","ingredients":{"百花蜜":2}},
+            {"name":"樹莓蛋糕","rank":"傳說","learned":true,"portions":30,"attr":"生命","icon":"","ingredients":{"青禾":1,"多汁嘟嘟莓":2,"藍鳥蛋":1}},
+            {"name":"焦甜殼栗","rank":"稀有","learned":true,"portions":95,"attr":"防禦","icon":"","ingredients":{"奶油":1,"甲殼栗":1}},
+            {"name":"滾栗子烤肉","rank":"史詩","learned":true,"portions":40,"attr":"防禦","icon":"","ingredients":{"胡椒":1,"嫩肉":1,"甲殼栗":5}},
+            {"name":"鮮果燒肉","rank":"史詩","learned":true,"portions":0,"attr":"攻擊","icon":"","ingredients":{"嫩肉":1,"咖哩":1,"尖刺刺果":1}},
+            {"name":"咖哩什錦燉菜","rank":"傳說","learned":true,"portions":12,"attr":"速度","icon":"","ingredients":{"精肉":2,"濃香咖哩":4,"鐵甲殼栗":3,"綠洲之星":3}},
+            {"name":"海之味","rank":"史詩","learned":true,"portions":0,"attr":"生命","icon":"","ingredients":{"味噌":1,"天舞青葉":1,"花瓣魚":1}},
+            {"name":"源式章魚燒","rank":"傳說","learned":true,"portions":19,"attr":"攻擊","icon":"","ingredients":{"多汁嘟嘟莓":2,"辛味噌":3,"章魚":5}},
+            {"name":"蜜汁豆餅","rank":"史詩","learned":true,"portions":0,"attr":"生命","icon":"","ingredients":{"蜂蜜":1,"乾脆豆子":1}},
+            {"name":"竹筍控肉","rank":"史詩","learned":true,"portions":16,"attr":"攻擊","icon":"","ingredients":{"嫩肉":1,"竹筍":5}},
+            {"name":"太陽光暈","rank":"傳說","learned":true,"portions":6,"attr":"速度","icon":"","ingredients":{"咸奶油":4,"鐵甲殼栗":3,"綠洲之星":3}},
+            {"name":"雲端果塔","rank":"史詩","learned":true,"portions":20,"attr":"速度","icon":"","ingredients":{"嘟嘟莓":1,"奶油":2,"星夜蘭香茸":7}},
+            {"name":"解厄刺身","rank":"傳說","learned":true,"portions":8,"attr":"攻擊","icon":"","ingredients":{"辛味噌":2,"鮮花瓣魚":5,"章魚":3}},
+            {"name":"將軍破陣","rank":"傳說","learned":true,"portions":0,"attr":"防禦","icon":"","ingredients":{"精肉":1,"妖魔辣椒":1,"大螯蟹":1}},
+            {"name":"身披金甲","rank":"傳說","learned":true,"portions":10,"attr":"防禦","icon":"","ingredients":{"精肉":2,"山珍竹筍":5,"大螯蟹":5}},
+            {"name":"聖輝拔絲","rank":"傳說","learned":true,"portions":27,"attr":"攻擊","icon":"","ingredients":{"百花蜜":1,"純淨雷電香油":2,"陽光果":7}},
+            {"name":"坎斯汀漢堡","rank":"史詩","learned":true,"portions":0,"attr":"防禦","icon":"","ingredients":{"嫩肉":1,"甜馬鈴薯":1}},
+            {"name":"塔吉鍋燉肉","rank":"史詩","learned":true,"portions":0,"attr":"攻擊","icon":"","ingredients":{"嫩肉":1,"甜馬鈴薯":1,"咖哩":1}},
+            {"name":"源式拉麵","rank":"史詩","learned":true,"portions":0,"attr":"攻擊","icon":"","ingredients":{"嫩肉":1,"味噌":1,"花瓣魚":1}},
+            {"name":"花魚天婦羅","rank":"史詩","learned":true,"portions":0,"attr":"生命","icon":"","ingredients":{"尖刺刺果":1,"天舞青葉":1,"花瓣魚":1}},
+            {"name":"醬香滷肉","rank":"史詩","learned":true,"portions":0,"attr":"生命","icon":"","ingredients":{"胡椒":1,"嫩肉":1,"乾脆豆子":1}},
+            {"name":"紅燒獅子頭","rank":"史詩","learned":true,"portions":26,"attr":"攻擊","icon":"","ingredients":{"嫩肉":1,"辣椒":5}},
+            {"name":"軍團燒肉","rank":"史詩","learned":true,"portions":56,"attr":"防禦","icon":"","ingredients":{"嫩肉":1,"竹筍":1,"雲海螺肉":4}},
+            {"name":"芳香裹肉捲","rank":"史詩","learned":true,"portions":29,"attr":"速度","icon":"","ingredients":{"嫩肉":2,"雷電香油":5,"星夜蘭香茸":5}}
+        ];
 
-        const userProvidedArtemisRecipes = [{"name":"蜜汁烤肉","rank":"稀有","learned":true,"attr":"攻擊","ingredients":{"蜂蜜":140,"百花蜜":126}},{"name":"酸甜嘟嘟肉","rank":"稀有","learned":true,"attr":"速度","ingredients":{"嘟嘟莓":190}},{"name":"黃金散蛋","rank":"史詩","learned":true,"attr":"生命","ingredients":{"藍鳥蛋":18,"百花蜜":42}},{"name":"咖哩什錦燉菜","rank":"傳說","learned":true,"attr":"速度","icon":"","ingredients":{"濃香咖哩":44}}];
+        const userProvidedRabbitInv = {
+            "馬鈴薯":11,"甜馬鈴薯":27,"嘟嘟莓":21,"多汁嘟嘟莓":71,"藍鳥蛋":54,"刺刺果":3,"甲殼栗":23,"鐵甲殼栗":15,"綠洲之星":21,"綠洲新星":1,
+            "潔白松露":1,"寶藏駝奶":1,"水舞葉":2,"天舞青葉":17,"花瓣魚":9,"章魚":12,"麵粉":22,"咖哩":4,"味噌":44,"蜂蜜":36,"濃香咖哩":32,"辛味噌":8,
+            "百花蜜":16,"奶油":80,"咸奶油":8,"鈷藍鳥蛋":0,"尖刺刺果":0,"鮮花瓣魚":0,"潮汐八爪魚":0,"紺青龍蝦":0,"蜂王漿":0,"脫脂奶油":0,"乾脆豆子":0,
+            "竹筍":0,"山珍竹筍":47,"辣椒":0,"妖魔辣椒":0,"大螯蟹":47,"星夜蘭香茸":21,"雲海螺肉":0,"陽光果":0,"雷電香油":0,"純淨雷電香油":0,
+            "精肉":0,"青禾":0,"嫩肉":0,"水":0,"胡椒":0,"糖":0,"鹽":0,"蘑菇":0,"芥菜":0,"琥珀凝膠":0,"絕品肉":0,"金盞靈芝":0,"黃金陽光果":0,"女神之淚":0,
+            "生肉":0,"豆子":0,"大螯蟹王":0,"蘭香茸":0,"風飄雲海螺肉":0
+        };
 
-        const userProvidedArtemisInv = {"多汁嘟嘟莓":40,"馬鈴薯":0,"甜馬鈴薯":0,"嘟嘟莓":0,"藍鳥蛋":0,"鈷藍鳥蛋":0,"潔白松露":0,"刺刺果":0,"尖刺刺果":0,"甲殼栗":0,"鐵甲殼栗":0,"綠洲之星":0,"綠洲新星":0,"寶藏駝奶":0,"水舞葉":0,"天舞青葉":0,"花瓣魚":0,"鮮花瓣魚":0,"章魚":0,"潮汐八爪魚":0,"紺青龍蝦":0,"麵粉":0,"蜂蜜":0,"百花蜜":0,"蜂王漿":0,"奶油":0,"咸奶油":0,"脫脂奶油":0,"咖哩":0,"濃香咖哩":0,"味噌":0,"辛味噌":0,"乾脆豆子":0,"竹筍":0,"山珍竹筍":0,"辣椒":0,"妖魔辣椒":0,"大螯蟹":0,"星夜蘭香茸":0,"雲海螺肉":0,"陽光果":0,"雷電香油":0,"純淨雷電香油":0,"精肉":0,"青禾":0,"嫩肉":0,"水":0,"胡椒":0,"糖":0,"鹽":0,"蘑菇":0,"芥菜":0,"琥珀凝膠":0,"絕品肉":0,"金盞靈芝":0,"黃金陽光果":0,"女神之淚":0};
+        const userProvidedArtemisRecipes = [
+            {"name":"蜜汁烤肉","rank":"史詩","learned":true,"portions":14,"attr":"攻擊","icon":"","ingredients":{"蜂蜜":10,"百花蜜":9}},
+            {"name":"酸甜嘟嘟肉","rank":"史詩","learned":true,"portions":95,"attr":"速度","icon":"","ingredients":{"嘟嘟莓":2}},
+            {"name":"黃金散蛋","rank":"史詩","learned":true,"portions":6,"attr":"生命","icon":"","ingredients":{"百花蜜":7,"藍鳥蛋":3}},
+            {"name":"咖哩什錦燉菜","rank":"傳說","learned":true,"portions":12,"attr":"速度","icon":"","ingredients":{"精肉":2,"濃香咖哩":4,"鐵甲殼栗":3,"綠洲之星":3}},
+            {"name":"嘟嘟果釀","rank":"史詩","learned":false,"portions":0,"attr":"速度","icon":"","ingredients":{"水":1,"嘟嘟莓":1}},
+            {"name":"樹莓蛋糕","rank":"傳說","learned":false,"portions":0,"attr":"生命","icon":"","ingredients":{"青禾":1,"多汁嘟嘟莓":2,"藍鳥蛋":1}},
+            {"name":"焦甜殼栗","rank":"稀有","learned":false,"portions":0,"attr":"防禦","icon":"","ingredients":{"奶油":1,"甲殼栗":1}},
+            {"name":"滾栗子烤肉","rank":"史詩","learned":false,"portions":0,"attr":"防禦","icon":"","ingredients":{"胡椒":1,"嫩肉":1,"甲殼栗":5}},
+            {"name":"鮮果燒肉","rank":"史詩","learned":false,"portions":0,"attr":"攻擊","icon":"","ingredients":{"嫩肉":1,"咖哩":1,"尖刺刺果":1}},
+            {"name":"海之味","rank":"史詩","learned":false,"portions":0,"attr":"生命","icon":"","ingredients":{"味噌":1,"天舞青葉":1,"花瓣魚":1}},
+            {"name":"源式章魚燒","rank":"傳說","learned":false,"portions":0,"attr":"攻擊","icon":"","ingredients":{"多汁嘟嘟莓":2,"辛味噌":3,"章魚":5}},
+            {"name":"蜜汁豆餅","rank":"史詩","learned":false,"portions":0,"attr":"生命","icon":"","ingredients":{"蜂蜜":1,"乾脆豆子":1}},
+            {"name":"竹筍控肉","rank":"史詩","learned":false,"portions":0,"attr":"攻擊","icon":"","ingredients":{"嫩肉":1,"竹筍":5}},
+            {"name":"太陽光暈","rank":"傳說","learned":false,"portions":0,"attr":"速度","icon":"","ingredients":{"咸奶油":4,"鐵甲殼栗":3,"綠洲之星":3}},
+            {"name":"雲端果塔","rank":"史詩","learned":false,"portions":0,"attr":"速度","icon":"","ingredients":{"嘟嘟莓":1,"奶油":2,"星夜蘭香茸":7}},
+            {"name":"解厄刺身","rank":"傳說","learned":false,"portions":0,"attr":"攻擊","icon":"","ingredients":{"辛味噌":2,"鮮花瓣魚":5,"章魚":3}},
+            {"name":"將軍破陣","rank":"傳說","learned":false,"portions":0,"attr":"防禦","icon":"","ingredients":{"精肉":1,"妖魔辣椒":1,"大螯蟹":1}},
+            {"name":"身披金甲","rank":"傳說","learned":false,"portions":0,"attr":"防禦","icon":"","ingredients":{"精肉":2,"山珍竹筍":5,"大螯蟹":5}},
+            {"name":"聖輝拔絲","rank":"傳說","learned":false,"portions":0,"attr":"攻擊","icon":"","ingredients":{"百花蜜":1,"純淨雷電香油":2,"陽光果":7}},
+            {"name":"坎斯汀漢堡","rank":"史詩","learned":false,"portions":0,"attr":"防禦","icon":"","ingredients":{"嫩肉":1,"甜馬鈴薯":1}},
+            {"name":"塔吉鍋燉肉","rank":"史詩","learned":false,"portions":0,"attr":"攻擊","icon":"","ingredients":{"嫩肉":1,"甜馬鈴薯":1,"咖哩":1}},
+            {"name":"源式拉麵","rank":"史詩","learned":false,"portions":0,"attr":"攻擊","icon":"","ingredients":{"嫩肉":1,"味噌":1,"花瓣魚":1}},
+            {"name":"花魚天婦羅","rank":"史詩","learned":false,"portions":0,"attr":"生命","icon":"","ingredients":{"尖刺刺果":1,"天舞青葉":1,"花瓣魚":1}},
+            {"name":"醬香滷肉","rank":"史詩","learned":false,"portions":0,"attr":"生命","icon":"","ingredients":{"胡椒":1,"嫩肉":1,"乾脆豆子":1}},
+            {"name":"紅燒獅子頭","rank":"史詩","learned":false,"portions":0,"attr":"攻擊","icon":"","ingredients":{"嫩肉":1,"辣椒":5}},
+            {"name":"軍團燒肉","rank":"史詩","learned":false,"portions":0,"attr":"防禦","icon":"","ingredients":{"嫩肉":1,"竹筍":1,"雲海螺肉":4}},
+            {"name":"芳香裹肉捲","rank":"史詩","learned":false,"portions":0,"attr":"速度","icon":"","ingredients":{"嫩肉":2,"雷電香油":5,"星夜蘭香茸":5}}
+        ];
 
-        function gcd(a, b) {
-            return b === 0 ? a : gcd(b, a % b);
+        const userProvidedArtemisInv = {
+            "多汁嘟嘟莓":40,"馬鈴薯":0,"甜馬鈴薯":0,"嘟嘟莓":0,"藍鳥蛋":0,"鈷藍鳥蛋":0,"潔白松露":0,"刺刺果":0,"尖刺刺果":0,"甲殼栗":0,
+            "鐵甲殼栗":0,"綠洲之星":0,"綠洲新星":0,"寶藏駝奶":0,"水舞葉":0,"天舞青葉":0,"花瓣魚":0,"鮮花瓣魚":0,"章魚":0,"潮汐八爪魚":0,
+            "紺青龍蝦":0,"麵粉":0,"蜂蜜":0,"百花蜜":0,"蜂王漿":0,"奶油":0,"咸奶油":0,"脫脂奶油":0,"咖哩":0,"濃香咖哩":0,"味噌":0,"辛味噌":0,
+            "乾脆豆子":0,"竹筍":0,"山珍竹筍":0,"辣椒":0,"妖魔辣椒":0,"大螯蟹":0,"星夜蘭香茸":0,"雲海螺肉":0,"陽光果":0,"雷電香油":0,"純淨雷電香油":0,
+            "精肉":0,"青禾":0,"嫩肉":0,"水":0,"胡椒":0,"糖":0,"鹽":0,"蘑菇":0,"芥菜":0,"琥珀凝膠":0,"絕品肉":0,"金盞靈芝":0,"黃金陽光果":0,"女神之淚":0,
+            "生肉":0,"豆子":0,"大螯蟹王":0,"蘭香茸":0,"風飄雲海螺肉":0
+        };
+
+        function exportCurrentData() {
+            const dataObj = {
+                ingredientsMap: getIngredientsMap(),
+                rabbitRecipes: getRecipes('rabbit'),
+                artemisRecipes: getRecipes('artemis'),
+                rabbitInv: getInventory('rabbit'),
+                artemisInv: getInventory('artemis')
+            };
+            const jsonStr = JSON.stringify(dataObj);
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(jsonStr).then(() => {
+                    alert('✅ 最新資料已成功複製到剪貼簿！\n您可以直接貼到對話框中讓我幫您更新程式碼。');
+                }).catch(() => {
+                    prompt('請手動全選並複製以下資料碼：', jsonStr);
+                });
+            } else {
+                prompt('請手動全選並複製以下資料碼：', jsonStr);
+            }
         }
 
+        function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
+
         function migrateRecipeFormat(r) {
-            if (r.portions === undefined) {
-                const vals = Object.values(r.ingredients || {}).filter(v => v > 0);
-                if (vals.length > 0) {
-                    let g = vals[0];
-                    for (let i = 1; i < vals.length; i++) g = gcd(g, vals[i]);
-                    if (g > 1) {
-                        r.portions = g;
-                        for (let k in r.ingredients) {
-                            r.ingredients[k] = r.ingredients[k] > 0 ? Math.round(r.ingredients[k] / g) : 1;
+            try {
+                if (!r.ingredients) r.ingredients = {};
+                if (r.portions === undefined) {
+                    const vals = Object.values(r.ingredients).filter(v => v > 0);
+                    if (vals.length > 0) {
+                        let g = vals[0];
+                        for (let i = 1; i < vals.length; i++) g = gcd(g, vals[i]);
+                        if (g > 1) {
+                            r.portions = g;
+                            for (let k in r.ingredients) {
+                                r.ingredients[k] = r.ingredients[k] > 0 ? Math.round(r.ingredients[k] / g) : 1;
+                            }
+                        } else {
+                            r.portions = 1;
+                            for (let k in r.ingredients) {
+                                if (r.ingredients[k] === 0) r.ingredients[k] = 1;
+                            }
                         }
                     } else {
-                        r.portions = 1;
+                        r.portions = 0;
                         for (let k in r.ingredients) {
                             if (r.ingredients[k] === 0) r.ingredients[k] = 1;
                         }
                     }
-                } else {
-                    r.portions = 0;
-                    for (let k in r.ingredients) {
-                        if (r.ingredients[k] === 0) r.ingredients[k] = 1;
-                    }
                 }
+            } catch(e) {
+                r.portions = 1;
             }
             return r;
         }
@@ -1029,11 +1154,8 @@
             if (!group) return;
             const options = group.querySelectorAll('.tag-option');
             options.forEach(opt => {
-                if (opt.getAttribute('data-val') === String(value)) {
-                    opt.classList.add('active');
-                } else {
-                    opt.classList.remove('active');
-                }
+                if (opt.getAttribute('data-val') === String(value)) opt.classList.add('active');
+                else opt.classList.remove('active');
             });
         }
 
@@ -1105,39 +1227,27 @@
             let attempt = parseInt(img.getAttribute('data-attempt') || '0');
             attempt++;
             img.setAttribute('data-attempt', attempt);
-
-            if (attempt === 1) {
-                img.src = name + '.jpg';
-            } else if (attempt === 2) {
-                img.src = name + '.jpeg';
-            } else {
+            if (attempt === 1) img.src = name + '.jpg';
+            else if (attempt === 2) img.src = name + '.jpeg';
+            else {
                 img.dataset.loaded = 'true';
-                img.onerror = null; 
-                if (def) {
-                    img.src = def;
-                } else {
-                    img.style.display = 'none';
-                }
+                img.onerror = null;
+                if (def) img.src = def;
+                else img.style.display = 'none';
             }
         };
 
         function initBackground() {
             const bgList = ['背景圖片.png', '背景圖片.jpg', '背景圖片.jpeg', '1792464010100.jpg'];
             let bgIndex = 0;
-            
             function tryNextBg() {
                 if (bgIndex >= bgList.length) {
                     document.body.style.backgroundColor = '#111827';
                     return; 
                 }
                 let img = new Image();
-                img.onload = () => {
-                    document.body.style.backgroundImage = `url('${bgList[bgIndex]}')`;
-                };
-                img.onerror = () => {
-                    bgIndex++;
-                    tryNextBg();
-                };
+                img.onload = () => { document.body.style.backgroundImage = `url('${bgList[bgIndex]}')`; };
+                img.onerror = () => { bgIndex++; tryNextBg(); };
                 img.src = bgList[bgIndex];
             }
             tryNextBg();
@@ -1145,7 +1255,7 @@
         window.addEventListener('DOMContentLoaded', initBackground);
 
         function getIngredientsMap() {
-            let map = { ...defaultIngredientsMap, ...userProvidedIngredientsMap };
+            let map = { ...userProvidedIngredientsMap };
             try {
                 const saved = localStorage.getItem('global_ingredients_map');
                 if (saved) {
@@ -1220,14 +1330,20 @@
         }
 
         function syncBothCharactersRecipes() {
-            const savedVer = localStorage.getItem('app_data_version');
-            if (savedVer !== DATA_VERSION) {
-                localStorage.setItem('global_ingredients_map', JSON.stringify(userProvidedIngredientsMap));
-                localStorage.setItem('recipes_rabbit', JSON.stringify(userProvidedRabbitRecipes.map(migrateRecipeFormat)));
-                localStorage.setItem('recipes_artemis', JSON.stringify(userProvidedArtemisRecipes.map(migrateRecipeFormat)));
-                localStorage.setItem('inv_rabbit', JSON.stringify(userProvidedRabbitInv));
-                localStorage.setItem('inv_artemis', JSON.stringify(userProvidedArtemisInv));
-                localStorage.setItem('app_data_version', DATA_VERSION);
+            try {
+                const savedVer = localStorage.getItem('app_data_version');
+                if (savedVer !== DATA_VERSION) {
+                    if (!localStorage.getItem('recipes_rabbit')) {
+                        localStorage.setItem('global_ingredients_map', JSON.stringify(userProvidedIngredientsMap));
+                        localStorage.setItem('recipes_rabbit', JSON.stringify(userProvidedRabbitRecipes.map(migrateRecipeFormat)));
+                        localStorage.setItem('recipes_artemis', JSON.stringify(userProvidedArtemisRecipes.map(migrateRecipeFormat)));
+                        localStorage.setItem('inv_rabbit', JSON.stringify(userProvidedRabbitInv));
+                        localStorage.setItem('inv_artemis', JSON.stringify(userProvidedArtemisInv));
+                    }
+                    localStorage.setItem('app_data_version', DATA_VERSION);
+                }
+            } catch(e) {
+                console.error("Storage error:", e);
             }
 
             let rList = [];
@@ -1235,11 +1351,13 @@
             try {
                 const rSaved = localStorage.getItem('recipes_rabbit');
                 rList = rSaved ? JSON.parse(rSaved) : [...userProvidedRabbitRecipes];
+                if (!Array.isArray(rList) || rList.length === 0) rList = [...userProvidedRabbitRecipes];
             } catch (e) { rList = [...userProvidedRabbitRecipes]; }
 
             try {
                 const aSaved = localStorage.getItem('recipes_artemis');
                 aList = aSaved ? JSON.parse(aSaved) : [...userProvidedArtemisRecipes];
+                if (!Array.isArray(aList) || aList.length === 0) aList = [...userProvidedArtemisRecipes];
             } catch (e) { aList = [...userProvidedArtemisRecipes]; }
 
             rList = rList.map(migrateRecipeFormat);
@@ -1273,14 +1391,21 @@
                 }
             });
 
-            localStorage.setItem('recipes_rabbit', JSON.stringify(rList));
-            localStorage.setItem('recipes_artemis', JSON.stringify(aList));
+            try {
+                localStorage.setItem('recipes_rabbit', JSON.stringify(rList));
+                localStorage.setItem('recipes_artemis', JSON.stringify(aList));
+            } catch (e) {}
         }
 
         function getRecipes(key) {
             try {
                 const saved = localStorage.getItem(`recipes_${key}`);
-                if (saved) return JSON.parse(saved).map(migrateRecipeFormat);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        return parsed.map(migrateRecipeFormat);
+                    }
+                }
             } catch (e) {}
             return (key === 'rabbit' ? userProvidedRabbitRecipes : userProvidedArtemisRecipes).map(migrateRecipeFormat);
         }
@@ -1288,13 +1413,13 @@
         function getInventory(key) {
             try {
                 const saved = localStorage.getItem(`inv_${key}`);
-                let inv = saved ? JSON.parse(saved) : (key === 'rabbit' ? userProvidedRabbitInv : userProvidedArtemisInv);
+                let inv = saved ? JSON.parse(saved) : { ...(key === 'rabbit' ? userProvidedRabbitInv : userProvidedArtemisInv) };
                 getAllIngredientsList().forEach(item => {
                     if (inv[item] === undefined) inv[item] = 0;
                 });
                 return inv;
             } catch (e) {
-                return key === 'rabbit' ? userProvidedRabbitInv : userProvidedArtemisInv;
+                return { ...(key === 'rabbit' ? userProvidedRabbitInv : userProvidedArtemisInv) };
             }
         }
 
@@ -1323,6 +1448,7 @@
         }
 
         function getCircleRankClass(rank) {
+            if (rank === "一般") return "circle-normal";
             if (rank === "稀有") return "circle-rare";
             if (rank === "史詩") return "circle-epic";
             if (rank === "傳說") return "circle-legend";
@@ -1582,10 +1708,9 @@
                     const diff = Math.max(0, requiredQty - invQty);
                     const ingMeta = ingMap[ing] || { icon: "" };
 
-                    // 依照需求：顯示「庫存數量 / 每份所需份量僅顯示數字」，缺少數量維持紅色
-                    const stockDisplay = invQty >= requiredQty 
-                        ? `<span class="qty-green" style="font-size:13px; text-shadow: 1px 1px 0 #000;">${invQty} / ${perPortionQty} (充足)</span>`
-                        : `<span class="qty-red" style="font-size:13px; text-shadow: 1px 1px 0 #000;">${invQty} / ${perPortionQty} (缺 ${diff})</span>`;
+                    const stockDisplay = diff > 0
+                        ? `<span class="qty-red" style="font-size:14px; text-shadow: 1px 1px 0 #000;">${invQty}/${perPortionQty}</span>`
+                        : `<span class="qty-green" style="font-size:14px; text-shadow: 1px 1px 0 #000;">${invQty}/${perPortionQty}</span>`;
 
                     flexContainer.innerHTML += `
                         <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
@@ -1631,7 +1756,6 @@
         function openAllRecipesModal() {
             const recipes = getRecipes(currentKey);
             const inv = getInventory(currentKey);
-            const ingMap = getIngredientsMap();
             const listContainer = document.getElementById('all-recipes-list');
             listContainer.innerHTML = '';
 
@@ -1705,6 +1829,7 @@
             document.getElementById('all-recipes-modal').style.display = 'flex';
         }
 
+        // 所有可出售食材總覽：採用與食譜總覽相同的圓形徽章網格顯示及品質排列方式
         function openAllSurplusModal() {
             const recipes = getRecipes(currentKey);
             const inv = getInventory(currentKey);
@@ -1733,26 +1858,35 @@
                     surplusList.push({ name: item, inventory: invQty, demand: demQty, surplus: invQty - demQty, ...ingMeta });
                 }
             }
-            surplusList.sort((a, b) => b.surplus - a.surplus);
+
+            // 與食譜一覽相同：優先依照品質排列（傳說 -> 史詩 -> 稀有 -> 一般），同品質則依62種食材順序排列
+            surplusList.sort((a, b) => {
+                const wA = rankWeight[a.rank] !== undefined ? rankWeight[a.rank] : 0;
+                const wB = rankWeight[b.rank] !== undefined ? rankWeight[b.rank] : 0;
+                if (wA !== wB) return wB - wA;
+                let idxA = INGREDIENT_ORDER.indexOf(a.name);
+                let idxB = INGREDIENT_ORDER.indexOf(b.name);
+                if (idxA === -1) idxA = 9999;
+                if (idxB === -1) idxB = 9999;
+                return idxA - idxB;
+            });
 
             if (filterKey) {
                 surplusList = surplusList.filter(s => s.name.toLowerCase().includes(filterKey));
             }
 
             if (surplusList.length === 0) {
-                listContainer.innerHTML = `<p style="color: #ffffff; text-shadow: 1px 1px 0 #000; padding: 10px;">目前沒有可出售食材。</p>`;
+                listContainer.innerHTML = `<p style="color: #ffffff; text-shadow: 1px 1px 0 #000; padding: 10px; grid-column: 1 / -1;">目前沒有可出售食材。</p>`;
             } else {
                 surplusList.forEach(item => {
+                    const circleRankClass = getCircleRankClass(item.rank || "一般");
                     listContainer.innerHTML += `
-                        <div class="recipe-card" style="cursor: default;">
-                            <div class="ing-info-flex">
-                                ${renderImgHtml(item.icon, "ing-icon", defaultIngIconImg, item.name)}
-                                <div>
-                                    <h3 style="color:#ffcb05; text-shadow: 1px 1px 0 #000;">${item.name}</h3>
-                                </div>
+                        <div class="overview-item" style="cursor: default;" title="${item.name} (${item.rank || '一般'})｜庫存: ${item.inventory} / 需求: ${item.demand} / 可出售: ${item.surplus}">
+                            <div class="overview-circle ${circleRankClass}">
+                                ${renderImgHtml(item.icon, "overview-food-img", defaultIngIconImg, item.name)}
                             </div>
-                            <p>庫存: ${item.inventory} | 需求: ${item.demand}</p>
-                            <div class="badge-sell">可出售: ${item.surplus}</div>
+                            <span class="overview-name">${item.name}</span>
+                            <span class="overview-subtext">可售 ${item.surplus}</span>
                         </div>
                     `;
                 });
