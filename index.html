@@ -124,13 +124,9 @@
             margin: 20px 0 15px 0;
             border-bottom: 2px dashed #3a4e8c;
             padding-bottom: 8px;
-            flex-wrap: nowrap;
-            gap: 12px;
-            overflow-x: auto;
+            flex-wrap: wrap;
+            gap: 10px;
         }
-
-        .section-header::-webkit-scrollbar { height: 6px; }
-        .section-header::-webkit-scrollbar-thumb { background: #ffffff; border-radius: 4px; }
 
         .section-title {
             font-size: 18px;
@@ -145,27 +141,77 @@
             display: flex;
             gap: 8px;
             align-items: center;
-            flex-wrap: nowrap;
+            flex-wrap: wrap;
+            justify-content: flex-end;
         }
 
-        /* 統一輸入框與下拉選單 */
-        .search-input, .select-filter {
+        /* 點選標籤群組樣式 (取代下拉選單) */
+        .tag-group {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .filter-tag-group {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 3px;
+            border-radius: 6px;
+            border: 1px solid #3a4e8c;
+        }
+
+        .tag-option {
+            background-color: #1c284d;
+            color: #b3c0e6;
+            border: 2px solid #3a4e8c;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.1s;
+            text-shadow: 1px 1px 0px #000;
+            user-select: none;
+        }
+
+        .tag-option.sm {
+            padding: 3px 8px;
+            font-size: 12px;
+            border-width: 1px;
+        }
+
+        .tag-option:hover {
+            background-color: #2c3e75;
+            color: #ffffff;
+        }
+
+        .tag-option.active {
+            background-color: #3a4e8c;
+            color: #ffcb05;
+            border-color: #ffcb05;
+            font-weight: bold;
+            box-shadow: 0 2px 0px rgba(0,0,0,0.4);
+        }
+
+        /* 搜尋輸入框 */
+        .search-input {
             background-color: #1c284d;
             color: #ffffff;
             border: 2px solid #ffffff;
             border-radius: 4px;
             padding: 0 10px;
-            height: 34px;
-            font-size: 14px;
+            height: 32px;
+            font-size: 13px;
             box-sizing: border-box;
             margin: 0;
             outline: none;
             vertical-align: middle;
             text-shadow: 1px 1px 0px #000000;
+            width: 135px;
+            flex-shrink: 0;
         }
-
-        .select-filter { width: max-content; flex-shrink: 0; cursor: pointer; }
-        .search-input { width: 140px; flex-shrink: 0; }
         .search-input::placeholder { color: #8a9fc4; text-shadow: none; }
 
         .grid-container {
@@ -240,7 +286,7 @@
         .rank-legend { color: #f39c12 !important; text-shadow: 1px 1px 0px #000; }
         .rank-miracle { color: #f1c40f !important; text-shadow: 1px 1px 0px #d35400; }
 
-        /* 補回食譜品質漸層背景 */
+        /* 食譜品質漸層背景 */
         .bg-rank-rare { background: linear-gradient(135deg, #2980b9, #1c284d); }
         .bg-rank-epic { background: linear-gradient(135deg, #8e44ad, #1c284d); }
         .bg-rank-legend { background: linear-gradient(135deg, #d35400, #1c284d); }
@@ -248,7 +294,7 @@
 
         .recipe-card p { font-size: 13px; color: #b3c0e6; margin: 0; text-shadow: 1px 1px 0px #000; }
 
-        /* 缺少食材列表 */
+        /* 食材狀態列表 */
         .missing-ing-list {
             display: flex;
             flex-direction: column;
@@ -259,9 +305,14 @@
             border-radius: 4px;
         }
 
+        .missing-ing-list.sufficient-border {
+            border-color: #2ecc71;
+            background-color: rgba(46, 204, 113, 0.08);
+        }
+
         .missing-ing-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #ffffff; text-shadow: 1px 1px 0 #000;}
-        .qty-red { color: #ff4757; font-weight: bold; font-size: 14px;}
-        .qty-black { color: #ffffff; font-weight: bold; font-size: 14px;}
+        .qty-red { color: #ff4757; font-weight: bold; font-size: 14px; margin-left: auto;}
+        .qty-green { color: #2ecc71; font-weight: bold; font-size: 13px; margin-left: auto;}
 
         /* 「+」展開按鈕卡片 */
         .more-card {
@@ -299,8 +350,8 @@
             border: 4px solid #ffffff;
             box-shadow: 8px 8px 0px rgba(0,0,0,0.8);
             border-radius: 12px;
-            width: 480px;
-            max-width: 92%;
+            width: 500px;
+            max-width: 94%;
             max-height: 90vh;
             overflow-y: auto;
             padding: 0;
@@ -375,11 +426,26 @@
             justify-content: space-between;
             align-items: center;
             font-size: 15px;
-            padding: 10px 0;
-            border-bottom: 2px dashed #3a4e8c;
+            padding: 8px 6px;
+            border-bottom: 1px dashed #3a4e8c;
+            border-radius: 4px;
+            transition: background-color 0.15s;
+        }
+
+        .ingredient-row.selected-row {
+            background-color: rgba(255, 203, 5, 0.15);
+            border: 1px solid rgba(255, 203, 5, 0.5);
         }
 
         .ing-info-flex { display: flex; align-items: center; gap: 10px; }
+
+        /* 勾選框樣式 */
+        .ing-checkbox {
+            width: 20px;
+            height: 20px;
+            accent-color: #ffcb05;
+            cursor: pointer;
+        }
 
         .close-btn, .save-btn {
             color: #ffffff;
@@ -443,7 +509,7 @@
             font-size: 14px;
             color: #ffcb05;
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
             text-shadow: 1px 1px 0px #000;
         }
     </style>
@@ -467,18 +533,20 @@
         <div class="section-header">
             <span class="section-title">食譜</span>
             <div class="filter-group">
-                <select id="recipe-learned-filter" class="select-filter" onchange="renderUI()">
-                    <option value="ALL">全部狀態</option>
-                    <option value="LEARNED">已習得</option>
-                    <option value="UNLEARNED">未取得</option>
-                </select>
-                <select id="recipe-attr-filter" class="select-filter" onchange="renderUI()">
-                    <option value="ALL">全部屬性</option>
-                    <option value="攻擊">攻擊</option>
-                    <option value="速度">速度</option>
-                    <option value="生命">生命</option>
-                    <option value="防禦">防禦</option>
-                </select>
+                <!-- 習得狀態點選標籤 -->
+                <div class="filter-tag-group" id="main-learned-tags">
+                    <span class="tag-option sm active" onclick="setMainFilter('learned', 'ALL', this)">全部狀態</span>
+                    <span class="tag-option sm" onclick="setMainFilter('learned', 'LEARNED', this)">已習得</span>
+                    <span class="tag-option sm" onclick="setMainFilter('learned', 'UNLEARNED', this)">未取得</span>
+                </div>
+                <!-- 加成屬性點選標籤 -->
+                <div class="filter-tag-group" id="main-attr-tags">
+                    <span class="tag-option sm active" onclick="setMainFilter('attr', 'ALL', this)">全部屬性</span>
+                    <span class="tag-option sm" onclick="setMainFilter('attr', '攻擊', this)">攻擊</span>
+                    <span class="tag-option sm" onclick="setMainFilter('attr', '速度', this)">速度</span>
+                    <span class="tag-option sm" onclick="setMainFilter('attr', '生命', this)">生命</span>
+                    <span class="tag-option sm" onclick="setMainFilter('attr', '防禦', this)">防禦</span>
+                </div>
                 <input type="text" id="recipe-search" class="search-input" placeholder="🔍 搜尋食譜..." oninput="renderUI()">
             </div>
         </div>
@@ -493,7 +561,7 @@
         <div id="surplus-container" class="grid-container"></div>
     </div>
 
-    <!-- 食譜詳情彈跳視窗 (已補回 id="modal-recipe-header-bg") -->
+    <!-- 食譜詳情彈跳視窗 -->
     <div id="recipe-modal" class="modal">
         <div class="modal-content">
             <div id="modal-recipe-header-bg" class="game-recipe-header bg-rank-rare">
@@ -529,19 +597,19 @@
     <div id="all-recipes-modal" class="modal">
         <div class="modal-content" style="padding: 20px;">
             <h2 style="font-size: 20px; color: #ffcb05; margin-bottom: 15px; text-shadow: 2px 2px 0px #000;">所有食譜總覽</h2>
-            <div class="filter-group" style="margin-bottom: 15px; flex-wrap: wrap; justify-content: flex-end;">
-                <select id="all-recipes-learned-filter" class="select-filter" onchange="openAllRecipesModal()">
-                    <option value="ALL">全部狀態</option>
-                    <option value="LEARNED">已習得</option>
-                    <option value="UNLEARNED">未取得</option>
-                </select>
-                <select id="all-recipes-attr-filter" class="select-filter" onchange="openAllRecipesModal()">
-                    <option value="ALL">全部屬性</option>
-                    <option value="攻擊">攻擊</option>
-                    <option value="速度">速度</option>
-                    <option value="生命">生命</option>
-                    <option value="防禦">防禦</option>
-                </select>
+            <div class="filter-group" style="margin-bottom: 15px; flex-wrap: wrap; justify-content: flex-start;">
+                <div class="filter-tag-group" id="modal-learned-tags">
+                    <span class="tag-option sm active" onclick="setModalFilter('learned', 'ALL', this)">全部狀態</span>
+                    <span class="tag-option sm" onclick="setModalFilter('learned', 'LEARNED', this)">已習得</span>
+                    <span class="tag-option sm" onclick="setModalFilter('learned', 'UNLEARNED', this)">未取得</span>
+                </div>
+                <div class="filter-tag-group" id="modal-attr-tags">
+                    <span class="tag-option sm active" onclick="setModalFilter('attr', 'ALL', this)">全部屬性</span>
+                    <span class="tag-option sm" onclick="setModalFilter('attr', '攻擊', this)">攻擊</span>
+                    <span class="tag-option sm" onclick="setModalFilter('attr', '速度', this)">速度</span>
+                    <span class="tag-option sm" onclick="setModalFilter('attr', '生命', this)">生命</span>
+                    <span class="tag-option sm" onclick="setModalFilter('attr', '防禦', this)">防禦</span>
+                </div>
                 <input type="text" id="all-recipes-search" class="search-input" placeholder="🔍 搜尋食譜..." oninput="openAllRecipesModal()" style="flex: 1; min-width: 130px;">
             </div>
             <div id="all-recipes-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
@@ -585,13 +653,14 @@
             <label>食材名稱：</label>
             <input type="text" id="edit-ing-name" class="text-input">
             
-            <label>食材品質等級：</label>
-            <select id="edit-ing-rank" class="text-input">
-                <option value="一般">一般</option>
-                <option value="稀有">稀有</option>
-                <option value="史詩">史詩</option>
-                <option value="傳說">傳說</option>
-            </select>
+            <label>食材品質：</label>
+            <input type="hidden" id="edit-ing-rank" value="一般">
+            <div class="tag-group" id="edit-ing-rank-tags">
+                <span class="tag-option active" data-val="一般" onclick="selectFormTag('edit-ing-rank', '一般', this)">一般</span>
+                <span class="tag-option" data-val="稀有" onclick="selectFormTag('edit-ing-rank', '稀有', this)">稀有</span>
+                <span class="tag-option" data-val="史詩" onclick="selectFormTag('edit-ing-rank', '史詩', this)">史詩</span>
+                <span class="tag-option" data-val="傳說" onclick="selectFormTag('edit-ing-rank', '傳說', this)">傳說</span>
+            </div>
 
             <label>圖示：</label>
             <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; background: rgba(0,0,0,0.3); padding: 10px; border: 2px dashed #3a4e8c; border-radius: 6px;">
@@ -615,27 +684,30 @@
             <label>食譜名稱：</label>
             <input type="text" id="new-recipe-name" class="text-input" placeholder="例如：豪華海鮮丼">
             
-            <label>食譜等級（品質）：</label>
-            <select id="new-recipe-rank" class="text-input">
-                <option value="稀有">稀有 (藍色)</option>
-                <option value="史詩">史詩 (紫色)</option>
-                <option value="傳說">傳說 (橘色)</option>
-                <option value="奇蹟">奇蹟 (金色)</option>
-            </select>
+            <label>食譜品質：</label>
+            <input type="hidden" id="new-recipe-rank" value="稀有">
+            <div class="tag-group" id="new-recipe-rank-tags">
+                <span class="tag-option active" data-val="稀有" onclick="selectFormTag('new-recipe-rank', '稀有', this)">稀有 (藍)</span>
+                <span class="tag-option" data-val="史詩" onclick="selectFormTag('new-recipe-rank', '史詩', this)">史詩 (紫)</span>
+                <span class="tag-option" data-val="傳說" onclick="selectFormTag('new-recipe-rank', '傳說', this)">傳說 (橘)</span>
+                <span class="tag-option" data-val="奇蹟" onclick="selectFormTag('new-recipe-rank', '奇蹟', this)">奇蹟 (金)</span>
+            </div>
 
             <label>習得狀態：</label>
-            <select id="new-recipe-status" class="text-input">
-                <option value="true">已習得</option>
-                <option value="false">未取得</option>
-            </select>
+            <input type="hidden" id="new-recipe-status" value="true">
+            <div class="tag-group" id="new-recipe-status-tags">
+                <span class="tag-option active" data-val="true" onclick="selectFormTag('new-recipe-status', 'true', this)">已習得</span>
+                <span class="tag-option" data-val="false" onclick="selectFormTag('new-recipe-status', 'false', this)">未取得</span>
+            </div>
 
-            <label>屬性標籤：</label>
-            <select id="new-recipe-attr" class="text-input">
-                <option value="攻擊">攻擊</option>
-                <option value="速度">速度</option>
-                <option value="生命">生命</option>
-                <option value="防禦">防禦</option>
-            </select>
+            <label>加成屬性：</label>
+            <input type="hidden" id="new-recipe-attr" value="攻擊">
+            <div class="tag-group" id="new-recipe-attr-tags">
+                <span class="tag-option active" data-val="攻擊" onclick="selectFormTag('new-recipe-attr', '攻擊', this)">攻擊</span>
+                <span class="tag-option" data-val="速度" onclick="selectFormTag('new-recipe-attr', '速度', this)">速度</span>
+                <span class="tag-option" data-val="生命" onclick="selectFormTag('new-recipe-attr', '生命', this)">生命</span>
+                <span class="tag-option" data-val="防禦" onclick="selectFormTag('new-recipe-attr', '防禦', this)">防禦</span>
+            </div>
 
             <label>圖示：</label>
             <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; background: rgba(0,0,0,0.3); padding: 10px; border: 2px dashed #3a4e8c; border-radius: 6px;">
@@ -644,7 +716,7 @@
                 <button class="action-btn add-recipe" onclick="removeUploadedFile('new-recipe-icon-base64', 'new-recipe-icon-preview', 'recipe-file-input')" style="margin-left:auto;">❌ 移除圖示</button>
             </div>
 
-            <label>設定所需食材數量：</label>
+            <label>選擇所需食材與數量（勾選並設為 0 代表需求為 0 / 充足）：</label>
             <input type="text" id="recipe-ing-search" class="search-input" placeholder="🔍 搜尋食材..." oninput="filterRecipeIngList()" style="width: 100%; margin-bottom: 10px; height: 34px;">
             <div id="new-recipe-ingredients-list" style="max-height: 250px; overflow-y: auto; border: 2px solid #ffffff; padding: 10px; margin-bottom: 10px; background:rgba(0,0,0,0.3); border-radius: 6px;"></div>
 
@@ -665,6 +737,12 @@
             "生命": "生命",
             "速度": "速度"
         };
+
+        // 篩選狀態變數
+        let currentMainLearnedFilter = 'ALL';
+        let currentMainAttrFilter = 'ALL';
+        let currentModalLearnedFilter = 'ALL';
+        let currentModalAttrFilter = 'ALL';
 
         const defaultIngredientsMap = {
             "馬鈴薯": { rank: "一般", icon: "" }, "甜馬鈴薯": { rank: "一般", icon: "" }, 
@@ -690,6 +768,68 @@
             "陽光果": { rank: "史詩", icon: "" }, "雷電香油": { rank: "史詩", icon: "" }, 
             "純淨雷電香油": { rank: "傳說", icon: "" }
         };
+
+        // 點選標籤控制邏輯 (表單用)
+        function selectFormTag(inputId, value, element) {
+            document.getElementById(inputId).value = value;
+            const siblings = element.parentElement.querySelectorAll('.tag-option');
+            siblings.forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+        }
+
+        function setTagGroupValue(inputId, groupId, value) {
+            document.getElementById(inputId).value = value;
+            const group = document.getElementById(groupId);
+            if (!group) return;
+            const options = group.querySelectorAll('.tag-option');
+            options.forEach(opt => {
+                if (opt.getAttribute('data-val') === String(value)) {
+                    opt.classList.add('active');
+                } else {
+                    opt.classList.remove('active');
+                }
+            });
+        }
+
+        // 點選標籤控制邏輯 (主頁篩選用)
+        function setMainFilter(type, value, element) {
+            if (type === 'learned') currentMainLearnedFilter = value;
+            if (type === 'attr') currentMainAttrFilter = value;
+            const siblings = element.parentElement.querySelectorAll('.tag-option');
+            siblings.forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+            renderUI();
+        }
+
+        // 點選標籤控制邏輯 (總覽彈窗篩選用)
+        function setModalFilter(type, value, element) {
+            if (type === 'learned') currentModalLearnedFilter = value;
+            if (type === 'attr') currentModalAttrFilter = value;
+            const siblings = element.parentElement.querySelectorAll('.tag-option');
+            siblings.forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+            openAllRecipesModal();
+        }
+
+        // 食材勾選與數量連動邏輯
+        function onIngCheckChange(checkbox) {
+            const row = checkbox.closest('.ingredient-row');
+            if (checkbox.checked) {
+                row.classList.add('selected-row');
+            } else {
+                row.classList.remove('selected-row');
+            }
+        }
+
+        function onIngQtyInput(input) {
+            const row = input.closest('.ingredient-row');
+            const checkbox = row.querySelector('.ing-checkbox');
+            const val = parseInt(input.value) || 0;
+            if (val > 0 && !checkbox.checked) {
+                checkbox.checked = true;
+                row.classList.add('selected-row');
+            }
+        }
 
         // 安全無縫圖片容錯機制 (尋找 .png -> .jpg -> .jpeg -> fallbackUrl)
         window.imgErr = function(img) {
@@ -888,20 +1028,23 @@
             return "";
         }
 
+        // 計算食材狀態（包含欠缺與充足的所有已選食材）
         function calculateRecipeShortage(recipe, inv) {
             let missingItems = [];
+            let allItems = [];
             let totalMissing = 0;
             if (recipe && recipe.ingredients) {
                 for (let [ing, requiredQty] of Object.entries(recipe.ingredients)) {
                     const invQty = inv[ing] || 0;
-                    const diff = requiredQty - invQty;
+                    const diff = Math.max(0, requiredQty - invQty);
                     if (diff > 0) {
                         totalMissing += diff;
                         missingItems.push({ name: ing, diff });
                     }
+                    allItems.push({ name: ing, requiredQty, invQty, diff });
                 }
             }
-            return { totalMissing, missingItems };
+            return { totalMissing, missingItems, allItems };
         }
 
         function sortRecipesByMissing(recipes, inv) {
@@ -911,7 +1054,8 @@
                     ...recipe,
                     originalIndex: index,
                     missingTotal: shortage.totalMissing,
-                    missingItems: shortage.missingItems
+                    missingItems: shortage.missingItems,
+                    allItems: shortage.allItems
                 };
             });
 
@@ -924,6 +1068,32 @@
             return scoredRecipes;
         }
 
+        // 產生卡片上的食材列表 HTML（支援顯示「充足」）
+        function buildCardIngredientsHtml(recipe, ingMap) {
+            if (!recipe.allItems || recipe.allItems.length === 0) {
+                return `<div style="font-size:13px; color:#2ecc71; font-weight:bold; background:rgba(46,204,113,0.1); padding:4px 6px; border:1px solid #2ecc71; border-radius: 4px; text-shadow: 1px 1px 0px #000;">充足 ✓</div>`;
+            }
+
+            const isAllSufficient = recipe.missingTotal === 0;
+            const borderClass = isAllSufficient ? 'sufficient-border' : '';
+
+            const itemsList = recipe.allItems.map(item => {
+                const iconSrc = ingMap[item.name] ? ingMap[item.name].icon : "";
+                const statusBadge = item.diff > 0
+                    ? `<span class="qty-red">缺 ${item.diff}</span>`
+                    : `<span class="qty-green">充足</span>`;
+                return `
+                    <div class="missing-ing-item">
+                        ${renderImgHtml(iconSrc, "ing-icon", defaultIngIconImg, item.name)}
+                        <span>${item.name}</span>
+                        ${statusBadge}
+                    </div>
+                `;
+            }).join('');
+
+            return `<div class="missing-ing-list ${borderClass}">${itemsList}</div>`;
+        }
+
         function renderUI() {
             try {
                 const recipes = getRecipes(currentKey);
@@ -931,8 +1101,6 @@
                 const ingMap = getIngredientsMap();
 
                 const recipeSearchKey = document.getElementById('recipe-search')?.value.trim().toLowerCase() || '';
-                const recipeAttrFilter = document.getElementById('recipe-attr-filter')?.value || 'ALL';
-                const recipeLearnedFilter = document.getElementById('recipe-learned-filter')?.value || 'ALL';
                 const surplusSearchKey = document.getElementById('surplus-search')?.value.trim().toLowerCase() || '';
 
                 const recipeContainer = document.getElementById('recipe-container');
@@ -945,14 +1113,14 @@
 
                 let sortedRecipes = sortRecipesByMissing(recipes, inv);
 
-                if (recipeLearnedFilter === 'LEARNED') {
+                if (currentMainLearnedFilter === 'LEARNED') {
                     sortedRecipes = sortedRecipes.filter(r => r.learned !== false);
-                } else if (recipeLearnedFilter === 'UNLEARNED') {
+                } else if (currentMainLearnedFilter === 'UNLEARNED') {
                     sortedRecipes = sortedRecipes.filter(r => r.learned === false);
                 }
 
-                if (recipeAttrFilter !== 'ALL') {
-                    sortedRecipes = sortedRecipes.filter(r => r.attr === recipeAttrFilter);
+                if (currentMainAttrFilter !== 'ALL') {
+                    sortedRecipes = sortedRecipes.filter(r => r.attr === currentMainAttrFilter);
                 }
 
                 if (recipeSearchKey) {
@@ -962,23 +1130,7 @@
                 const top3Recipes = sortedRecipes.slice(0, 3);
                 if (top3Recipes.length > 0) {
                     top3Recipes.forEach(recipe => {
-                        let missingHtml = '';
-                        if (recipe.missingTotal > 0) {
-                            const itemsList = recipe.missingItems.map(item => {
-                                const iconSrc = ingMap[item.name] ? ingMap[item.name].icon : "";
-                                return `
-                                    <div class="missing-ing-item">
-                                        ${renderImgHtml(iconSrc, "ing-icon", defaultIngIconImg, item.name)}
-                                        <span>${item.name}</span>
-                                        <span class="qty-red">${item.diff}</span>
-                                    </div>
-                                `;
-                            }).join('');
-                            missingHtml = `<div class="missing-ing-list">${itemsList}</div>`;
-                        } else {
-                            missingHtml = `<div style="font-size:13px; color:#2ecc71; font-weight:bold; background:rgba(46,204,113,0.1); padding:4px 6px; border:1px solid #2ecc71; border-radius: 4px; text-shadow: 1px 1px 0px #000;">食材充足 ✓</div>`;
-                        }
-
+                        const ingListHtml = buildCardIngredientsHtml(recipe, ingMap);
                         const rankClass = getRankClass(recipe.rank || "稀有");
                         const unlearnedClass = recipe.learned === false ? 'unlearned' : '';
 
@@ -990,7 +1142,7 @@
                                         <h3 class="${rankClass}">${recipe.name}</h3>
                                     </div>
                                 </div>
-                                ${missingHtml}
+                                ${ingListHtml}
                             </div>
                         `;
                     });
@@ -1099,7 +1251,9 @@
                     const diff = Math.max(0, requiredQty - invQty);
                     const ingMeta = ingMap[ing] || { icon: "" };
 
-                    const qtyClass = diff > 0 ? 'qty-red' : 'qty-black';
+                    const statusHtml = diff > 0
+                        ? `<span class="qty-red" style="font-size:14px; text-shadow: 1px 1px 0 #000; margin-left:0;">缺 ${diff}</span>`
+                        : `<span class="qty-green" style="font-size:14px; text-shadow: 1px 1px 0 #000; margin-left:0;">充足</span>`;
 
                     flexContainer.innerHTML += `
                         <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
@@ -1107,7 +1261,7 @@
                                 ${renderImgHtml(ingMeta.icon, "", defaultIngIconImg, ing)}
                             </div>
                             <span style="font-size:13px; color:#ffffff; text-shadow: 1px 1px 0 #000;">${ing}</span>
-                            <span class="${qtyClass}" style="font-size:14px; text-shadow: 1px 1px 0 #000;">${diff}</span>
+                            ${statusHtml}
                         </div>
                     `;
                 }
@@ -1138,23 +1292,22 @@
         function openAllRecipesModal() {
             const recipes = getRecipes(currentKey);
             const inv = getInventory(currentKey);
+            const ingMap = getIngredientsMap();
             const listContainer = document.getElementById('all-recipes-list');
             listContainer.innerHTML = '';
 
             const filterKey = document.getElementById('all-recipes-search')?.value.trim().toLowerCase() || '';
-            const attrFilter = document.getElementById('all-recipes-attr-filter')?.value || 'ALL';
-            const learnedFilter = document.getElementById('all-recipes-learned-filter')?.value || 'ALL';
 
             let sortedRecipes = sortRecipesByMissing(recipes, inv);
 
-            if (learnedFilter === 'LEARNED') {
+            if (currentModalLearnedFilter === 'LEARNED') {
                 sortedRecipes = sortedRecipes.filter(r => r.learned !== false);
-            } else if (learnedFilter === 'UNLEARNED') {
+            } else if (currentModalLearnedFilter === 'UNLEARNED') {
                 sortedRecipes = sortedRecipes.filter(r => r.learned === false);
             }
 
-            if (attrFilter !== 'ALL') {
-                sortedRecipes = sortedRecipes.filter(r => r.attr === attrFilter);
+            if (currentModalAttrFilter !== 'ALL') {
+                sortedRecipes = sortedRecipes.filter(r => r.attr === currentModalAttrFilter);
             }
 
             if (filterKey) {
@@ -1165,14 +1318,7 @@
                 listContainer.innerHTML = `<p style="color: #ffffff; text-shadow: 1px 1px 0 #000; padding: 10px;">找不到符合的食譜。</p>`;
             } else {
                 sortedRecipes.forEach(recipe => {
-                    let missingHtml = '';
-                    if (recipe.missingTotal > 0) {
-                        const itemsList = recipe.missingItems.map(item => `${item.name} <span class="qty-red">${item.diff}</span>`).join(' | ');
-                        missingHtml = `<div style="font-size:13px; color:#fff; text-shadow:1px 1px 0 #000;">${itemsList}</div>`;
-                    } else {
-                        missingHtml = `<div style="font-size:13px; color:#2ecc71; font-weight:bold; text-shadow:1px 1px 0 #000;">食材充足 ✓</div>`;
-                    }
-
+                    const ingListHtml = buildCardIngredientsHtml(recipe, ingMap);
                     const rankClass = getRankClass(recipe.rank || "稀有");
 
                     listContainer.innerHTML += `
@@ -1183,7 +1329,7 @@
                                     <h3 class="${rankClass}">${recipe.name}</h3>
                                 </div>
                             </div>
-                            ${missingHtml}
+                            ${ingListHtml}
                         </div>
                     `;
                 });
@@ -1297,7 +1443,7 @@
             document.getElementById('ing-item-editor-title').innerText = "➕ 新增食材種類";
             document.getElementById('editing-ing-original-name').value = "";
             document.getElementById('edit-ing-name').value = "";
-            document.getElementById('edit-ing-rank').value = "一般";
+            setTagGroupValue('edit-ing-rank', 'edit-ing-rank-tags', '一般');
             document.getElementById('edit-ing-icon-base64').value = "";
             
             const preview = document.getElementById('edit-ing-icon-preview');
@@ -1317,7 +1463,7 @@
             document.getElementById('ing-item-editor-title').innerText = `✏️ 編輯食材：${ingName}`;
             document.getElementById('editing-ing-original-name').value = ingName;
             document.getElementById('edit-ing-name').value = ingName;
-            document.getElementById('edit-ing-rank').value = meta.rank || "一般";
+            setTagGroupValue('edit-ing-rank', 'edit-ing-rank-tags', meta.rank || "一般");
             document.getElementById('edit-ing-icon-base64').value = meta.icon || "";
             
             const preview = document.getElementById('edit-ing-icon-preview');
@@ -1413,9 +1559,11 @@
             document.getElementById('recipe-editor-title').innerText = '➕ 新增食譜';
             document.getElementById('editing-recipe-index').value = '-1';
             document.getElementById('new-recipe-name').value = '';
-            document.getElementById('new-recipe-rank').value = '稀有';
-            document.getElementById('new-recipe-status').value = 'true';
-            document.getElementById('new-recipe-attr').value = '攻擊';
+            
+            setTagGroupValue('new-recipe-rank', 'new-recipe-rank-tags', '稀有');
+            setTagGroupValue('new-recipe-status', 'new-recipe-status-tags', 'true');
+            setTagGroupValue('new-recipe-attr', 'new-recipe-attr-tags', '攻擊');
+            
             document.getElementById('new-recipe-icon-base64').value = '';
             
             const preview = document.getElementById('new-recipe-icon-preview');
@@ -1436,11 +1584,12 @@
 
                 listContainer.innerHTML += `
                     <div class="ingredient-row">
-                        <div class="ing-info-flex">
+                        <label class="ing-info-flex" style="cursor:pointer; margin:0; color:#ffffff;">
+                            <input type="checkbox" class="ing-checkbox" data-item="${item}" onchange="onIngCheckChange(this)">
                             ${renderImgHtml(ingMeta.icon, "ing-icon", defaultIngIconImg, item)}
                             <span>${item}</span>
-                        </div>
-                        <input type="number" class="recipe-input new-ing-input" data-item="${item}" value="0" min="0">
+                        </label>
+                        <input type="number" class="recipe-input new-ing-input" data-item="${item}" value="0" min="0" oninput="onIngQtyInput(this)">
                     </div>
                 `;
             });
@@ -1457,9 +1606,11 @@
             document.getElementById('recipe-editor-title').innerText = `✏️ 編輯食譜：${recipe.name}`;
             document.getElementById('editing-recipe-index').value = recipeIndex;
             document.getElementById('new-recipe-name').value = recipe.name;
-            document.getElementById('new-recipe-rank').value = recipe.rank || '稀有';
-            document.getElementById('new-recipe-status').value = recipe.learned !== false ? 'true' : 'false';
-            document.getElementById('new-recipe-attr').value = recipe.attr || '攻擊';
+            
+            setTagGroupValue('new-recipe-rank', 'new-recipe-rank-tags', recipe.rank || '稀有');
+            setTagGroupValue('new-recipe-status', 'new-recipe-status-tags', recipe.learned !== false ? 'true' : 'false');
+            setTagGroupValue('new-recipe-attr', 'new-recipe-attr-tags', recipe.attr || '攻擊');
+            
             document.getElementById('new-recipe-icon-base64').value = recipe.icon || '';
             
             const preview = document.getElementById('new-recipe-icon-preview');
@@ -1484,16 +1635,18 @@
             const ingMap = getIngredientsMap();
 
             getAllIngredientsList().forEach(item => {
-                const currentQty = (recipe.ingredients && recipe.ingredients[item]) ? recipe.ingredients[item] : 0;
+                const isSelected = recipe.ingredients && Object.prototype.hasOwnProperty.call(recipe.ingredients, item);
+                const currentQty = isSelected ? recipe.ingredients[item] : 0;
                 const ingMeta = ingMap[item] || { icon: "" };
 
                 listContainer.innerHTML += `
-                    <div class="ingredient-row">
-                        <div class="ing-info-flex">
+                    <div class="ingredient-row ${isSelected ? 'selected-row' : ''}">
+                        <label class="ing-info-flex" style="cursor:pointer; margin:0; color:#ffffff;">
+                            <input type="checkbox" class="ing-checkbox" data-item="${item}" ${isSelected ? 'checked' : ''} onchange="onIngCheckChange(this)">
                             ${renderImgHtml(ingMeta.icon, "ing-icon", defaultIngIconImg, item)}
                             <span>${item}</span>
-                        </div>
-                        <input type="number" class="recipe-input new-ing-input" data-item="${item}" value="${currentQty}" min="0">
+                        </label>
+                        <input type="number" class="recipe-input new-ing-input" data-item="${item}" value="${currentQty}" min="0" oninput="onIngQtyInput(this)">
                     </div>
                 `;
             });
@@ -1515,17 +1668,20 @@
             }
 
             let ingredients = {};
-            const inputs = document.querySelectorAll('.new-ing-input');
-            inputs.forEach(input => {
+            const rows = document.querySelectorAll('#new-recipe-ingredients-list .ingredient-row');
+            rows.forEach(row => {
+                const checkbox = row.querySelector('.ing-checkbox');
+                const input = row.querySelector('.new-ing-input');
                 const item = input.getAttribute('data-item');
                 const val = parseInt(input.value) || 0;
-                if (val > 0) {
+                // 只要有打勾（即使數量為 0），或是數量大於 0，就納入食譜配方
+                if (checkbox.checked || val > 0) {
                     ingredients[item] = val;
                 }
             });
 
             if (Object.keys(ingredients).length === 0) {
-                alert('請至少設定一項大於 0 的所需食材數量！');
+                alert('請至少勾選一項所需食材！');
                 return;
             }
 
