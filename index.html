@@ -241,6 +241,2410 @@
         .recipe-card:hover { background-color: #3a4e8c; transform: translate(-2px, -2px); box-shadow: 5px 5px 0px rgba(0,0,0,0.5); }
         .recipe-card:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0px rgba(0,0,0,0.5); }
 
+        /* 主頁食譜卡片右上角的食用按鈕 */
+        .card-consume-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: #27ae60;
+            color: #ffffff;
+            border: 2px solid #ffffff;
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-size: 12px;
+            cursor: pointer;
+            box-shadow: 0 2px 0px rgba(0,0,0,0.5);
+            text-shadow: 1px 1px 0px #000;
+            z-index: 5;
+            transition: all 0.1s;
+        }
+        .card-consume-btn:hover { background-color: #2ecc71; transform: scale(1.05); }
+        .card-consume-btn:active { transform: translateY(2px); box-shadow: none; }
+
+        .recipe-header-flex { display: flex; align-items: center; gap: 12px; padding-right: 58px; }
+        .ing-info-flex { display: flex; align-items: center; gap: 10px; }
+
+        .recipe-icon, .ing-icon {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            border: 2px solid #ffffff;
+            border-radius: 4px;
+            background-color: transparent;
+            flex-shrink: 0;
+            image-rendering: pixelated;
+        }
+
+        /* 屬性圖示：與食譜名稱 (22px) 完全同高並垂直對齊，圓角裁切白邊 */
+        .attr-icon {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+            image-rendering: pixelated;
+            display: block;
+            background-color: transparent;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        /* 圓形食材 ICON 容器 (用於食譜詳情與主頁缺少食材) */
+        .ing-circle-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 2px solid #ffffff;
+            background-color: rgba(0,0,0,0.35);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            box-shadow: 2px 2px 0px rgba(0,0,0,0.5);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .ing-circle-icon img { width: 80%; height: 80%; object-fit: contain; background-color: transparent;}
+
+        /* 主頁與詳情頁共用的圓形食材並列區塊 */
+        .recipe-ings-flex {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            background-color: rgba(0, 0, 0, 0.35);
+            border: 1px dashed #e74c3c;
+            padding: 8px;
+            border-radius: 6px;
+        }
+
+        /* 食譜品質等級標題顏色 */
+        .rank-rare { color: #5dade2 !important; text-shadow: 1px 1px 0px #000; }
+        .rank-epic { color: #c39bd3 !important; text-shadow: 1px 1px 0px #000; }
+        .rank-legend { color: #f39c12 !important; text-shadow: 1px 1px 0px #000; }
+        .rank-miracle { color: #f1c40f !important; text-shadow: 1px 1px 0px #d35400; }
+
+        /* 食譜品質漸層背景 */
+        .bg-rank-rare { background: linear-gradient(135deg, #2980b9, #1c284d); }
+        .bg-rank-epic { background: linear-gradient(135deg, #8e44ad, #1c284d); }
+        .bg-rank-legend { background: linear-gradient(135deg, #d35400, #1c284d); }
+        .bg-rank-miracle { background: linear-gradient(135deg, #f39c12, #1c284d); }
+
+        .recipe-card p { font-size: 13px; color: #b3c0e6; margin: 0; text-shadow: 1px 1px 0px #000; }
+
+        .qty-red { color: #ff4757; font-weight: bold; font-size: 13px; }
+        .qty-green { color: #2ecc71; font-weight: bold; font-size: 13px; }
+
+        /* 「+」展開按鈕卡片 */
+        .more-card {
+            background-color: rgba(255,255,255,0.05);
+            border: 3px dashed #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: none;
+            transition: all 0.15s;
+            min-height: 100px;
+            border-radius: 8px;
+        }
+
+        .more-card:hover { background-color: rgba(255,255,255,0.15); border-color: #ffcb05; }
+        .more-card .plus-icon { font-size: 32px; color: #ffffff; margin-bottom: 2px; text-shadow: 1px 1px 0 #000;}
+        .more-card span { font-size: 14px; color: #ffffff; font-weight: bold; text-shadow: 1px 1px 0 #000;}
+
+        /* 彈窗樣式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .modal-content {
+            background-color: #233363;
+            border: 4px solid #ffffff;
+            box-shadow: 8px 8px 0px rgba(0,0,0,0.8);
+            border-radius: 12px;
+            width: 580px;
+            max-width: 95%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 0;
+            position: relative;
+            color: #ffffff;
+        }
+
+        .modal-content::-webkit-scrollbar { width: 8px; }
+        .modal-content::-webkit-scrollbar-thumb { background: #ffffff; border-radius: 4px; }
+
+        .game-recipe-header {
+            padding: 18px 20px;
+            position: relative;
+            border-bottom: 2px dashed #3a4e8c;
+        }
+
+        /* 食譜名稱與屬性ICON等高(22px)並完美垂直置中對齊 */
+        .game-recipe-header-title {
+            font-size: 22px;
+            height: 22px;
+            line-height: 22px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            text-shadow: 2px 2px 0px #000;
+        }
+
+        .game-recipe-body {
+            background-color: rgba(0,0,0,0.2);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .game-recipe-body-info { display: flex; flex-direction: column; gap: 6px; }
+
+        .game-recipe-icon-large {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            border: 3px solid #ffffff;
+            border-radius: 8px;
+            background-color: transparent;
+            image-rendering: pixelated;
+            box-shadow: 3px 3px 0px rgba(0,0,0,0.5);
+        }
+
+        .game-recipe-content { padding: 20px; }
+
+        .recipe-top-actions {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            display: flex;
+            gap: 6px;
+            z-index: 10;
+        }
+
+        .btn-mini {
+            background-color: #1c284d;
+            color: #ffffff;
+            border: 2px solid #ffffff;
+            border-radius: 4px;
+            padding: 4px 10px;
+            font-size: 13px;
+            cursor: pointer;
+            box-shadow: 0 2px 0px rgba(0,0,0,0.5);
+            text-shadow: 1px 1px 0px #000;
+        }
+        .btn-mini:hover { background-color: #3a4e8c; }
+        .btn-mini:active { transform: translateY(2px); box-shadow: 0 0px 0px #000; }
+
+        /* 圖一風格：4欄式交易行網格排列 (用於庫存與食譜材料選擇) */
+        .ing-grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            max-height: 360px;
+            overflow-y: auto;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid #ffffff;
+            border-radius: 8px;
+        }
+        @media (max-width: 520px) {
+            .ing-grid-4 { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 380px) {
+            .ing-grid-4 { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        .ing-grid-card {
+            background: linear-gradient(180deg, #2b3a67 0%, #1c284d 78%);
+            border: 2px solid #4a62a8;
+            border-radius: 10px;
+            padding: 6px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.15s;
+            min-height: 118px;
+            justify-content: space-between;
+        }
+
+        /* 卡片底部品質色暈 (如圖一) */
+        .ing-grid-card.card-rank-一般 { background: linear-gradient(180deg, #2b3a67 0%, #1c284d 75%, rgba(180, 190, 210, 0.35) 100%); }
+        .ing-grid-card.card-rank-稀有 { background: linear-gradient(180deg, #2b3a67 0%, #1c284d 75%, rgba(59, 130, 246, 0.5) 100%); }
+        .ing-grid-card.card-rank-史詩 { background: linear-gradient(180deg, #2b3a67 0%, #1c284d 75%, rgba(168, 85, 247, 0.55) 100%); }
+        .ing-grid-card.card-rank-傳說 { background: linear-gradient(180deg, #2b3a67 0%, #1c284d 75%, rgba(249, 115, 22, 0.6) 100%); }
+
+        .ing-grid-card.selected-row {
+            border-color: #ffcb05;
+            box-shadow: 0 0 8px rgba(255, 203, 5, 0.6);
+            background: linear-gradient(180deg, #3a4e8c 0%, #233363 75%, rgba(255, 203, 5, 0.45) 100%);
+        }
+
+        .ing-card-top {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            z-index: 2;
+        }
+
+        .ing-qty-corner {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .ing-qty-label {
+            font-size: 10px;
+            color: #b3c0e6;
+            line-height: 1.1;
+            text-shadow: 1px 1px 0 #000;
+        }
+
+        .ing-grid-input {
+            width: 56px;
+            background: rgba(0, 0, 0, 0.45);
+            color: #ffffff;
+            border: 1px solid #8a9fc4;
+            border-radius: 4px;
+            font-size: 15px;
+            font-weight: bold;
+            padding: 1px 4px;
+            text-align: left;
+            outline: none;
+            text-shadow: 1px 1px 0 #000;
+        }
+        .ing-grid-input:focus {
+            border-color: #ffcb05;
+            background: rgba(0, 0, 0, 0.75);
+        }
+
+        .ing-card-pic {
+            width: 46px;
+            height: 46px;
+            object-fit: contain;
+            margin: 2px 0;
+            image-rendering: pixelated;
+            filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.6));
+        }
+
+        .ing-card-name {
+            font-size: 12px;
+            color: #ffffff;
+            text-align: center;
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-shadow: 1px 1px 0 #000;
+            padding-top: 2px;
+            border-top: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .ing-card-name.editable-name {
+            color: #ffcb05;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        /* 勾選框樣式 */
+        .ing-checkbox {
+            width: 18px;
+            height: 18px;
+            accent-color: #ffcb05;
+            cursor: pointer;
+        }
+
+        /* 圖二風格：所有食譜總覽 & 可出售食材總覽 圓形徽章網格 */
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 14px 10px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 8px;
+            border: 2px solid #3a4e8c;
+            max-height: 55vh;
+            overflow-y: auto;
+        }
+        @media (max-width: 520px) {
+            .overview-grid { grid-template-columns: repeat(4, 1fr); }
+        }
+        @media (max-width: 400px) {
+            .overview-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        .overview-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            transition: transform 0.15s;
+        }
+        .overview-item:hover {
+            transform: scale(1.06);
+        }
+
+        .overview-circle {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 4px solid #888;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.6), 0 4px 6px rgba(0,0,0,0.5);
+            transition: all 0.2s;
+        }
+
+        /* 圖二品質圓框配色 (含一般品質) */
+        .overview-circle.circle-normal {
+            background: radial-gradient(circle, #64748b 20%, #334155 90%);
+            border-color: #94a3b8;
+        }
+        .overview-circle.circle-rare {
+            background: radial-gradient(circle, #3b82f6 20%, #1d4ed8 90%);
+            border-color: #60a5fa;
+        }
+        .overview-circle.circle-epic {
+            background: radial-gradient(circle, #9333ea 20%, #581c87 90%);
+            border-color: #c084fc;
+        }
+        .overview-circle.circle-legend {
+            background: radial-gradient(circle, #ea580c 20%, #7c2d12 90%);
+            border-color: #fb923c;
+        }
+        .overview-circle.circle-miracle {
+            background: radial-gradient(circle, #ca8a04 20%, #713f12 90%);
+            border-color: #fef08a;
+            box-shadow: 0 0 12px rgba(254, 240, 138, 0.7), inset 0 0 10px rgba(0,0,0,0.6);
+        }
+
+        .overview-food-img {
+            width: 76%;
+            height: 76%;
+            object-fit: contain;
+            image-rendering: pixelated;
+            border-radius: 50%;
+        }
+
+        /* 左上角加成屬性小徽章 (如圖二) */
+        .overview-attr-badge {
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            width: 24px;
+            height: 24px;
+            background-color: #1e1e24;
+            border-radius: 50%;
+            border: 1.5px solid #555;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 3;
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+            overflow: hidden;
+        }
+        .overview-attr-badge img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .overview-name {
+            font-size: 13px;
+            color: #ffffff;
+            text-align: center;
+            text-shadow: 1px 1px 0 #000;
+            line-height: 1.2;
+            word-break: keep-all;
+        }
+
+        .overview-subtext {
+            font-size: 12px;
+            color: #ffcb05;
+            font-weight: bold;
+            text-align: center;
+            text-shadow: 1px 1px 0 #000;
+            line-height: 1.1;
+        }
+
+        /* 圖二明暗狀態控制 */
+        .overview-item.dimmed-sufficient .overview-circle {
+            filter: brightness(0.48) saturate(0.75);
+        }
+        .overview-item.dimmed-sufficient .overview-name {
+            color: #9ca3af;
+        }
+        .overview-item.unlearned-gray .overview-circle {
+            filter: grayscale(0.95) brightness(0.42);
+            border-color: #52525b;
+        }
+        .overview-item.unlearned-gray .overview-name {
+            color: #6b7280;
+        }
+
+        .close-btn, .save-btn {
+            color: #ffffff;
+            border: 3px solid #ffffff;
+            border-radius: 6px;
+            padding: 10px 15px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 0px rgba(0,0,0,0.5);
+            width: 100%;
+            margin-top: 15px;
+            transition: all 0.1s;
+            text-shadow: 1px 1px 0px #000;
+        }
+        
+        .close-btn { background-color: #e74c3c; }
+        .close-btn:hover { background-color: #c0392b; }
+        .save-btn { background-color: #2ecc71; }
+        .save-btn:hover { background-color: #27ae60; }
+        
+        .close-btn:active, .save-btn:active { transform: translateY(4px); box-shadow: 0 0px 0px rgba(0,0,0,0.5); }
+
+        .badge-sell {
+            background-color: transparent;
+            color: #ffcb05;
+            padding: 4px 8px;
+            font-size: 13px;
+            border: 1px solid #ffcb05;
+            border-radius: 4px;
+            display: inline-block;
+            margin-top: 8px;
+            text-shadow: 1px 1px 0px #000;
+        }
+
+        .text-input {
+            width: 100%;
+            background-color: #1c284d;
+            color: #ffffff;
+            border: 2px solid #ffffff;
+            border-radius: 4px;
+            padding: 8px 10px;
+            margin-bottom: 12px;
+            outline: none;
+        }
+
+        label {
+            font-size: 14px;
+            color: #ffcb05;
+            display: block;
+            margin-bottom: 6px;
+            text-shadow: 1px 1px 0px #000;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header-bar">
+            <h1>⚔️ 杖劍傳說 吃飽飽賺錢錢 🗡️</h1>
+            <div class="header-btns">
+                <button class="action-btn add-recipe" onclick="openAddRecipeModal()">➕ 新增食譜</button>
+                <button class="action-btn" onclick="openInventoryEditModal()">📦 修改庫存</button>
+                <button class="action-btn" onclick="exportCurrentData()" title="複製目前網頁上的最新資料">📋 匯出資料</button>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchCharacter('rabbit', event)">小兔子</button>
+            <button class="tab-btn" onclick="switchCharacter('artemis', event)">亞緹米絲</button>
+        </div>
+
+        <div class="section-header">
+            <span class="section-title">食譜</span>
+            <div class="filter-group">
+                <!-- 習得狀態點選標籤 -->
+                <div class="filter-tag-group" id="main-learned-tags">
+                    <span class="tag-option sm active" onclick="setMainFilter('learned', 'ALL', this)">全部狀態</span>
+                    <span class="tag-option sm" onclick="setMainFilter('learned', 'LEARNED', this)">已習得</span>
+                    <span class="tag-option sm" onclick="setMainFilter('learned', 'UNLEARNED', this)">未取得</span>
+                </div>
+                <!-- 加成屬性點選標籤 -->
+                <div class="filter-tag-group" id="main-attr-tags">
+                    <span class="tag-option sm active" onclick="setMainFilter('attr', 'ALL', this)">全部屬性</span>
+                    <span class="tag-option sm" onclick="setMainFilter('attr', '攻擊', this)">攻擊</span>
+                    <span class="tag-option sm" onclick="setMainFilter('attr', '速度', this)">速度</span>
+                    <span class="tag-option sm" onclick="setMainFilter('attr', '生命', this)">生命</span>
+                    <span class="tag-option sm" onclick="setMainFilter('attr', '防禦', this)">防禦</span>
+                </div>
+                <input type="text" id="recipe-search" class="search-input" placeholder="🔍 搜尋食譜...">
+            </div>
+        </div>
+        <div id="recipe-container" class="grid-container"></div>
+
+        <div class="section-header">
+            <span class="section-title">可出售食材</span>
+            <div class="filter-group">
+                <input type="text" id="surplus-search" class="search-input" placeholder="🔍 搜尋食材...">
+            </div>
+        </div>
+        <div id="surplus-container" class="grid-container"></div>
+    </div>
+
+    <!-- 食譜詳情彈跳視窗 -->
+    <div id="recipe-modal" class="modal">
+        <div class="modal-content">
+            <div id="modal-recipe-header-bg" class="game-recipe-header bg-rank-rare">
+                <div class="recipe-top-actions">
+                    <button id="modal-consume-btn" class="btn-mini" style="background-color:#27ae60;">🍴 食用</button>
+                    <button id="modal-edit-btn" class="btn-mini">✏️ 編輯</button>
+                    <button id="modal-delete-btn" class="btn-mini" style="background-color:#e74c3c;">🗑️ 刪除</button>
+                </div>
+                
+                <div style="display: flex; align-items: center; gap: 8px; height: 22px; padding-right: 175px;">
+                    <div class="game-recipe-header-title" id="modal-recipe-name">食譜名稱</div>
+                    <div id="modal-recipe-attr-badge" style="display: flex; align-items: center; height: 22px;"></div>
+                </div>
+            </div>
+            
+            <div class="game-recipe-body">
+                <div class="game-recipe-body-info">
+                    <div style="font-size:14px; color:#b3c0e6;">料理配方</div>
+                    <div id="modal-recipe-status-text" style="font-size:16px; font-weight:bold; color:#2ecc71; text-shadow:1px 1px 0px #000;">已習得</div>
+                    <div id="modal-recipe-portions-text" style="font-size:14px; color:#ffcb05; text-shadow:1px 1px 0px #000;">所需份數：1 份</div>
+                </div>
+                <img id="modal-recipe-icon-lg" class="game-recipe-icon-large" src="" alt="Recipe Icon">
+            </div>
+
+            <div class="game-recipe-content">
+                <div style="font-size:16px; font-weight:bold; color:#ffcb05; margin-bottom: 12px; border-bottom: 2px dashed #3a4e8c; padding-bottom: 8px; text-shadow: 1px 1px 0px #000;">配方材料</div>
+                <div id="modal-recipe-ingredients-flex" style="display: flex; gap: 16px; margin-bottom: 15px; flex-wrap: wrap;"></div>
+                <button class="close-btn" onclick="closeRecipeDetailModal()">關閉視窗</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 食用食譜彈跳視窗 -->
+    <div id="consume-recipe-modal" class="modal" style="z-index: 120;">
+        <div class="modal-content" style="padding: 20px; width: 400px;">
+            <h2 id="consume-modal-title" style="font-size: 20px; color: #ffcb05; margin-bottom: 12px; text-shadow: 2px 2px 0px #000;">🍴 食用料理</h2>
+            <input type="hidden" id="consume-recipe-index" value="-1">
+            
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; background: rgba(0,0,0,0.25); padding: 10px 14px; border-radius: 6px; border: 1px dashed #3a4e8c;">
+                <label style="margin: 0; font-size: 16px;">輸入食用份數：</label>
+                <input type="number" id="consume-portions-input" class="text-input" value="1" min="1" style="width: 80px; height: 38px; text-align: center; font-size: 16px; font-weight: bold; margin: 0;" oninput="updateConsumePreview()">
+            </div>
+
+            <div style="font-size: 13px; color: #b3c0e6; margin-bottom: 8px; text-shadow: 1px 1px 0 #000;">預計扣除庫存預覽：</div>
+            <div id="consume-preview-list" style="display: flex; flex-wrap: wrap; gap: 12px; background: rgba(0,0,0,0.35); padding: 12px; border-radius: 6px; border: 1px solid #3a4e8c; margin-bottom: 10px;"></div>
+
+            <button class="save-btn" onclick="confirmConsumeRecipe()">✅ 確認食用 (扣除庫存)</button>
+            <button class="close-btn" onclick="closeModal('consume-recipe-modal')">取消</button>
+        </div>
+    </div>
+
+    <!-- 所有食譜清單彈跳視窗 (圓形徽章風格) -->
+    <div id="all-recipes-modal" class="modal">
+        <div class="modal-content" style="padding: 20px;">
+            <h2 style="font-size: 20px; color: #ffcb05; margin-bottom: 15px; text-shadow: 2px 2px 0px #000;">所有食譜總覽</h2>
+            <div class="filter-group" style="margin-bottom: 15px; flex-wrap: wrap; justify-content: flex-start;">
+                <div class="filter-tag-group" id="modal-learned-tags">
+                    <span class="tag-option sm active" onclick="setModalFilter('learned', 'ALL', this)">全部狀態</span>
+                    <span class="tag-option sm" onclick="setModalFilter('learned', 'LEARNED', this)">已習得</span>
+                    <span class="tag-option sm" onclick="setModalFilter('learned', 'UNLEARNED', this)">未取得</span>
+                </div>
+                <div class="filter-tag-group" id="modal-attr-tags">
+                    <span class="tag-option sm active" onclick="setModalFilter('attr', 'ALL', this)">全部屬性</span>
+                    <span class="tag-option sm" onclick="setModalFilter('attr', '攻擊', this)">攻擊</span>
+                    <span class="tag-option sm" onclick="setModalFilter('attr', '速度', this)">速度</span>
+                    <span class="tag-option sm" onclick="setModalFilter('attr', '生命', this)">生命</span>
+                    <span class="tag-option sm" onclick="setModalFilter('attr', '防禦', this)">防禦</span>
+                </div>
+                <input type="text" id="all-recipes-search" class="search-input" placeholder="🔍 搜尋食譜..." style="flex: 1; min-width: 130px;">
+            </div>
+            <div id="all-recipes-list" class="overview-grid"></div>
+            <button class="close-btn" onclick="closeModal('all-recipes-modal')">關閉視窗</button>
+        </div>
+    </div>
+
+    <!-- 所有可出售食材彈跳視窗 (與食譜總覽相同的圓形徽章風格) -->
+    <div id="all-surplus-modal" class="modal">
+        <div class="modal-content" style="padding: 20px;">
+            <h2 style="font-size: 20px; color: #ffcb05; margin-bottom: 15px; text-shadow: 2px 2px 0px #000;">所有可出售食材總覽</h2>
+            <input type="text" id="all-surplus-search" class="search-input" placeholder="🔍 搜尋可出售食材..." style="width: 100%; margin-bottom: 15px; height: 34px;">
+            <div id="all-surplus-list" class="overview-grid"></div>
+            <button class="close-btn" onclick="closeModal('all-surplus-modal')">關閉視窗</button>
+        </div>
+    </div>
+
+    <!-- 修改庫存彈跳視窗 -->
+    <div id="edit-inventory-modal" class="modal">
+        <div class="modal-content" style="padding: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 3px dashed #3a4e8c; padding-bottom: 10px;">
+                <h2 id="modal-inv-title" style="margin:0; font-size:20px; color:#ffcb05; text-shadow: 2px 2px 0px #000;">📦 修改庫存</h2>
+                <button class="action-btn add-recipe" style="padding: 6px 12px; font-size: 13px;" onclick="openAddIngredientModal('inventory')">➕ 新增食材</button>
+            </div>
+
+            <input type="text" id="inv-search" class="search-input" placeholder="🔍 搜尋庫存食材 (點擊名稱可改屬性)..." style="width: 100%; margin-bottom: 12px; height: 34px;">
+
+            <div id="inventory-edit-list" class="ing-grid-4"></div>
+            <button class="save-btn" onclick="saveInventory()">💾 儲存庫存變更</button>
+            <button class="close-btn" onclick="closeModal('edit-inventory-modal')">取消</button>
+        </div>
+    </div>
+
+    <!-- 食材屬性編輯 / 新增彈窗 -->
+    <div id="edit-ingredient-item-modal" class="modal" style="z-index: 110;">
+        <div class="modal-content" style="padding: 20px;">
+            <h2 id="ing-item-editor-title" style="font-size: 20px; margin-bottom: 15px; color:#ffcb05; text-shadow: 2px 2px 0px #000;">✏️ 編輯食材屬性</h2>
+            <input type="hidden" id="editing-ing-original-name" value="">
+            <input type="hidden" id="edit-ing-icon-base64" value="">
+            
+            <label>食材名稱：</label>
+            <input type="text" id="edit-ing-name" class="text-input">
+            
+            <label>食材品質：</label>
+            <input type="hidden" id="edit-ing-rank" value="一般">
+            <div class="tag-group" id="edit-ing-rank-tags">
+                <span class="tag-option active" data-val="一般" onclick="selectFormTag('edit-ing-rank', '一般', this)">一般</span>
+                <span class="tag-option" data-val="稀有" onclick="selectFormTag('edit-ing-rank', '稀有', this)">稀有</span>
+                <span class="tag-option" data-val="史詩" onclick="selectFormTag('edit-ing-rank', '史詩', this)">史詩</span>
+                <span class="tag-option" data-val="傳說" onclick="selectFormTag('edit-ing-rank', '傳說', this)">傳說</span>
+            </div>
+
+            <label>圖示：</label>
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; background: rgba(0,0,0,0.3); padding: 10px; border: 2px dashed #3a4e8c; border-radius: 6px;">
+                <img id="edit-ing-icon-preview" class="recipe-icon" src="" alt="預覽">
+                <input type="file" id="edit-ing-file-input" accept="image/*" onchange="handleFileUpload(event, 'edit-ing-icon-base64', 'edit-ing-icon-preview')" style="font-family: 'DotGothic16'; color: #fff;">
+                <button class="action-btn add-recipe" onclick="removeUploadedFile('edit-ing-icon-base64', 'edit-ing-icon-preview', 'edit-ing-file-input')" style="margin-left:auto;">❌ 移除圖示</button>
+            </div>
+
+            <button class="save-btn" onclick="saveSingleIngredientInfo()">💾 儲存食材資訊</button>
+            <button class="close-btn" onclick="closeModal('edit-ingredient-item-modal')">取消</button>
+        </div>
+    </div>
+
+    <!-- 新增 / 編輯食譜彈跳視窗 -->
+    <div id="add-recipe-modal" class="modal">
+        <div class="modal-content" style="padding: 20px;">
+            <h2 id="recipe-editor-title" style="font-size: 20px; margin-bottom: 15px; color:#ffcb05; text-shadow: 2px 2px 0px #000;">➕ 新增食譜</h2>
+            <input type="hidden" id="editing-recipe-index" value="-1">
+            <input type="hidden" id="new-recipe-icon-base64" value="">
+            
+            <label>食譜名稱：</label>
+            <input type="text" id="new-recipe-name" class="text-input" placeholder="例如：豪華海鮮丼">
+            
+            <label>食譜品質：</label>
+            <input type="hidden" id="new-recipe-rank" value="稀有">
+            <div class="tag-group" id="new-recipe-rank-tags">
+                <span class="tag-option active" data-val="稀有" onclick="selectFormTag('new-recipe-rank', '稀有', this)">稀有 (藍)</span>
+                <span class="tag-option" data-val="史詩" onclick="selectFormTag('new-recipe-rank', '史詩', this)">史詩 (紫)</span>
+                <span class="tag-option" data-val="傳說" onclick="selectFormTag('new-recipe-rank', '傳說', this)">傳說 (橘)</span>
+                <span class="tag-option" data-val="奇蹟" onclick="selectFormTag('new-recipe-rank', '奇蹟', this)">奇蹟 (金)</span>
+            </div>
+
+            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                <div>
+                    <label>習得狀態：</label>
+                    <input type="hidden" id="new-recipe-status" value="true">
+                    <div class="tag-group" id="new-recipe-status-tags">
+                        <span class="tag-option active" data-val="true" onclick="selectFormTag('new-recipe-status', 'true', this)">已習得</span>
+                        <span class="tag-option" data-val="false" onclick="selectFormTag('new-recipe-status', 'false', this)">未取得</span>
+                    </div>
+                </div>
+                <div style="width: 100px;">
+                    <label>所需份數：</label>
+                    <input type="number" id="new-recipe-portions" class="text-input" value="1" min="0" style="width: 80px; height: 38px; text-align: center; font-size: 16px; font-weight: bold;">
+                </div>
+            </div>
+
+            <label>加成屬性：</label>
+            <input type="hidden" id="new-recipe-attr" value="攻擊">
+            <div class="tag-group" id="new-recipe-attr-tags">
+                <span class="tag-option active" data-val="攻擊" onclick="selectFormTag('new-recipe-attr', '攻擊', this)">攻擊</span>
+                <span class="tag-option" data-val="速度" onclick="selectFormTag('new-recipe-attr', '速度', this)">速度</span>
+                <span class="tag-option" data-val="生命" onclick="selectFormTag('new-recipe-attr', '生命', this)">生命</span>
+                <span class="tag-option" data-val="防禦" onclick="selectFormTag('new-recipe-attr', '防禦', this)">防禦</span>
+            </div>
+
+            <label>圖示：</label>
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; background: rgba(0,0,0,0.3); padding: 10px; border: 2px dashed #3a4e8c; border-radius: 6px;">
+                <img id="new-recipe-icon-preview" class="recipe-icon" src="" alt="預覽">
+                <input type="file" id="recipe-file-input" accept="image/*" onchange="handleFileUpload(event, 'new-recipe-icon-base64', 'new-recipe-icon-preview')" style="font-family: 'DotGothic16'; color: #fff;">
+                <button class="action-btn add-recipe" onclick="removeUploadedFile('new-recipe-icon-base64', 'new-recipe-icon-preview', 'recipe-file-input')" style="margin-left:auto;">❌ 移除圖示</button>
+            </div>
+
+            <label>選擇所需食材與每份所需量（已勾選的食材會自動置頂）：</label>
+            <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                <input type="text" id="recipe-ing-search" class="search-input" placeholder="🔍 搜尋食材..." style="flex: 1; height: 34px;">
+                <button type="button" class="action-btn add-recipe" style="padding: 0 12px; height: 34px; font-size: 13px;" onclick="openAddIngredientFromRecipe()">➕ 新增食材</button>
+            </div>
+            <div id="new-recipe-ingredients-list" class="ing-grid-4"></div>
+
+            <button class="save-btn" onclick="saveRecipe()">💾 儲存食譜變更</button>
+            <button class="close-btn" onclick="cancelEditRecipeModal()">取消</button>
+        </div>
+    </div>
+
+    <script>
+        const DATA_VERSION = 'v2026_perfect_restore_v8';
+        const defaultRecipeIconImg = "食譜預設.png";
+        const defaultIngIconImg = "食材預設.png";
+
+        const gameData = {
+            rabbit: { name: "小兔子" },
+            artemis: { name: "亞緹米絲" }
+        };
+
+        const attrIconMap = { "攻擊": "攻擊", "防禦": "防禦", "生命": "生命", "速度": "速度" };
+        const rankWeight = { "奇蹟": 4, "傳說": 3, "史詩": 2, "稀有": 1, "一般": 0 };
+        const EXCLUDED_INGS = ["水", "胡椒", "糖", "鹽", "蘑菇", "青禾", "芥菜", "琥珀凝膠"];
+
+        const INGREDIENT_ORDER = [
+            "水", "胡椒", "糖", "鹽", "蘑菇", "青禾", "芥菜", "琥珀凝膠",
+            "生肉", "嫩肉", "精肉", "絕品肉", "麵粉", "蜂蜜", "百花蜜", "蜂王漿",
+            "馬鈴薯", "甜馬鈴薯", "嘟嘟莓", "多汁嘟嘟莓", "藍鳥蛋", "鈷藍鳥蛋", "潔白松露",
+            "奶油", "咸奶油", "脫脂奶油", "咖哩", "濃香咖哩", "刺刺果", "尖刺刺果",
+            "甲殼栗", "鐵甲殼栗", "綠洲之星", "綠洲新星", "寶藏駝奶", "味噌", "辛味噌",
+            "水舞葉", "天舞青葉", "花瓣魚", "鮮花瓣魚", "章魚", "潮汐八爪魚", "紺青龍蝦",
+            "辣椒", "妖魔辣椒", "豆子", "乾脆豆子", "竹筍", "山珍竹筍",
+            "大螯蟹", "大螯蟹王", "金盞靈芝", "雷電香油", "純淨雷電香油",
+            "蘭香茸", "星夜蘭香茸", "雲海螺肉", "風飄雲海螺肉", "陽光果", "黃金陽光果", "女神之淚"
+        ];
+
+        let currentMainLearnedFilter = 'ALL';
+        let currentMainAttrFilter = 'ALL';
+        let currentModalLearnedFilter = 'ALL';
+        let currentModalAttrFilter = 'ALL';
+        let addIngReturnTarget = 'inventory';
+        let currentKey = 'rabbit';
+        let openedFromAllRecipes = false;
+
+        // 內建您剛剛貼上的最新 62 種食材與 27 道食譜完整資料
+        const userProvidedIngredientsMap = {"水":{"rank":"一般","icon":""},"胡椒":{"rank":"一般","icon":""},"糖":{"rank":"一般","icon":""},"鹽":{"rank":"一般","icon":""},"蘑菇":{"rank":"一般","icon":""},"青禾":{"rank":"一般","icon":""},"芥菜":{"rank":"一般","icon":""},"琥珀凝膠":{"rank":"一般","icon":""},"生肉":{"rank":"一般","icon":""},"嫩肉":{"rank":"稀有","icon":""},"精肉":{"rank":"史詩","icon":""},"絕品肉":{"rank":"傳說","icon":""},"麵粉":{"rank":"一般","icon":""},"蜂蜜":{"rank":"一般","icon":""},"百花蜜":{"rank":"稀有","icon":""},"蜂王漿":{"rank":"傳說","icon":""},"馬鈴薯":{"rank":"一般","icon":""},"甜馬鈴薯":{"rank":"一般","icon":""},"嘟嘟莓":{"rank":"一般","icon":""},"多汁嘟嘟莓":{"rank":"稀有","icon":""},"藍鳥蛋":{"rank":"一般","icon":""},"鈷藍鳥蛋":{"rank":"一般","icon":""},"潔白松露":{"rank":"傳說","icon":""},"奶油":{"rank":"一般","icon":""},"咸奶油":{"rank":"稀有","icon":""},"脫脂奶油":{"rank":"史詩","icon":""},"咖哩":{"rank":"一般","icon":""},"濃香咖哩":{"rank":"稀有","icon":""},"刺刺果":{"rank":"一般","icon":""},"尖刺刺果":{"rank":"稀有","icon":""},"甲殼栗":{"rank":"一般","icon":""},"鐵甲殼栗":{"rank":"稀有","icon":""},"綠洲之星":{"rank":"史詩","icon":""},"綠洲新星":{"rank":"傳說","icon":""},"寶藏駝奶":{"rank":"史詩","icon":""},"味噌":{"rank":"一般","icon":""},"辛味噌":{"rank":"稀有","icon":""},"水舞葉":{"rank":"一般","icon":""},"天舞青葉":{"rank":"稀有","icon":""},"花瓣魚":{"rank":"一般","icon":""},"鮮花瓣魚":{"rank":"稀有","icon":""},"章魚":{"rank":"一般","icon":""},"潮汐八爪魚":{"rank":"史詩","icon":""},"紺青龍蝦":{"rank":"傳說","icon":""},"辣椒":{"rank":"一般","icon":""},"妖魔辣椒":{"rank":"史詩","icon":""},"豆子":{"rank":"一般","icon":""},"乾脆豆子":{"rank":"一般","icon":""},"竹筍":{"rank":"一般","icon":""},"山珍竹筍":{"rank":"稀有","icon":""},"大螯蟹":{"rank":"稀有","icon":""},"大螯蟹王":{"rank":"史詩","icon":""},"金盞靈芝":{"rank":"傳說","icon":""},"雷電香油":{"rank":"稀有","icon":""},"純淨雷電香油":{"rank":"史詩","icon":""},"蘭香茸":{"rank":"一般","icon":""},"星夜蘭香茸":{"rank":"稀有","icon":""},"雲海螺肉":{"rank":"稀有","icon":""},"風飄雲海螺肉":{"rank":"史詩","icon":""},"陽光果":{"rank":"史詩","icon":""},"黃金陽光果":{"rank":"傳說","icon":""},"女神之淚":{"rank":"傳說","icon":""}};
+
+        const defaultIngredientsMap = userProvidedIngredientsMap;
+
+        const userProvidedRabbitRecipes = [{"name":"蜜汁烤肉","rank":"史詩","learned":true,"portions":20,"attr":"攻擊","icon":"","ingredients":{"嫩肉":2,"蜂蜜":10}},{"name":"酸甜嘟嘟肉","rank":"史詩","learned":true,"portions":0,"attr":"速度","icon":"","ingredients":{"嫩肉":2,"嘟嘟莓":10}},{"name":"嘟嘟果釀","rank":"史詩","learned":true,"portions":0,"attr":"速度","icon":"","ingredients":{"水":2,"嘟嘟莓":10}},{"name":"黃金散蛋","rank":"傳說","learned":true,"portions":18,"attr":"生命","icon":"","ingredients":{"青禾":2,"百花蜜":7,"藍鳥蛋":3}},{"name":"樹莓蛋糕","rank":"傳說","learned":true,"portions":0,"attr":"生命","icon":"","ingredients":{"青禾":2,"多汁嘟嘟莓":3,"藍鳥蛋":7}},{"name":"焦甜殼栗","rank":"史詩","learned":true,"portions":19,"attr":"防禦","icon":"","ingredients":{"奶油":5,"甲殼栗":5}},{"name":"滾栗子烤肉","rank":"史詩","learned":true,"portions":20,"attr":"防禦","icon":"","ingredients":{"胡椒":2,"嫩肉":2,"甲殼栗":10}},{"name":"鮮果燒肉","rank":"史詩","learned":true,"portions":0,"attr":"攻擊","icon":"","ingredients":{"嫩肉":2,"咖哩":5,"尖刺刺果":5}},{"name":"咖哩什錦燉菜","rank":"傳說","learned":true,"portions":12,"attr":"速度","icon":"","ingredients":{"精肉":2,"濃香咖哩":4,"鐵甲殼栗":3,"綠洲之星":3}},{"name":"海之味","rank":"史詩","learned":true,"portions":0,"attr":"生命","icon":"","ingredients":{"味噌":2,"天舞青葉":5,"花瓣魚":3}},{"name":"源式章魚燒","rank":"傳說","learned":true,"portions":19,"attr":"攻擊","icon":"","ingredients":{"多汁嘟嘟莓":2,"辛味噌":3,"章魚":5}},{"name":"蜜汁豆餅","rank":"史詩","learned":true,"attr":"生命","icon":"","ingredients":{"蜂蜜":1,"乾脆豆子":1},"portions":0},{"name":"竹筍控肉","rank":"史詩","learned":true,"portions":0,"attr":"攻擊","icon":"","ingredients":{"嫩肉":2,"竹筍":10}},{"name":"太陽光暈","rank":"傳說","learned":true,"portions":6,"attr":"速度","icon":"","ingredients":{"咸奶油":4,"鐵甲殼栗":3,"綠洲之星":3}},{"name":"雲端果塔","rank":"史詩","learned":true,"attr":"速度","icon":"","ingredients":{"嘟嘟莓":1,"奶油":2,"星夜蘭香茸":7},"portions":20},{"name":"解厄刺身","rank":"傳說","learned":true,"portions":8,"attr":"攻擊","icon":"","ingredients":{"辛味噌":2,"鮮花瓣魚":5,"章魚":3}},{"name":"將軍破陣","rank":"傳說","learned":true,"portions":0,"attr":"防禦","icon":"","ingredients":{"精肉":2,"妖魔辣椒":5,"大螯蟹":5}},{"name":"身披金甲","rank":"傳說","learned":true,"portions":10,"attr":"防禦","icon":"","ingredients":{"精肉":2,"山珍竹筍":5,"大螯蟹":5}},{"name":"聖輝拔絲","rank":"傳說","learned":true,"portions":27,"attr":"攻擊","icon":"","ingredients":{"百花蜜":1,"純淨雷電香油":2,"陽光果":7}},{"name":"坎斯汀漢堡","rank":"史詩","learned":true,"portions":0,"attr":"防禦","icon":"","ingredients":{"嫩肉":2,"甜馬鈴薯":10}},{"name":"塔吉鍋燉肉","rank":"史詩","learned":true,"portions":0,"attr":"防禦","icon":"","ingredients":{"嫩肉":2,"甜馬鈴薯":5,"咖哩":5}},{"name":"源式拉麵","rank":"史詩","learned":true,"portions":0,"attr":"生命","icon":"","ingredients":{"嫩肉":2,"味噌":5,"花瓣魚":5}},{"name":"花魚天婦羅","rank":"史詩","learned":true,"portions":0,"attr":"生命","icon":"","ingredients":{"尖刺刺果":5,"天舞青葉":2,"花瓣魚":3}},{"name":"醬香滷肉","rank":"史詩","learned":true,"portions":0,"attr":"生命","icon":"","ingredients":{"胡椒":2,"嫩肉":2,"乾脆豆子":10}},{"name":"紅燒獅子頭","rank":"史詩","learned":true,"portions":13,"attr":"攻擊","icon":"","ingredients":{"嫩肉":2,"辣椒":10}},{"name":"軍團燒肉","rank":"史詩","learned":true,"portions":28,"attr":"防禦","icon":"","ingredients":{"嫩肉":2,"竹筍":2,"雲海螺肉":8}},{"name":"芳香裹肉捲","rank":"史詩","learned":true,"portions":29,"attr":"速度","icon":"","ingredients":{"嫩肉":2,"雷電香油":5,"星夜蘭香茸":5}}];
+
+        const userProvidedRabbitInv = {"馬鈴薯":11,"甜馬鈴薯":27,"嘟嘟莓":21,"多汁嘟嘟莓":73,"藍鳥蛋":54,"刺刺果":11,"甲殼栗":27,"鐵甲殼栗":15,"綠洲之星":21,"綠洲新星":1,"潔白松露":1,"寶藏駝奶":1,"水舞葉":2,"天舞青葉":25,"花瓣魚":9,"章魚":12,"麵粉":22,"咖哩":8,"味噌":44,"蜂蜜":36,"濃香咖哩":32,"辛味噌":8,"百花蜜":16,"奶油":80,"咸奶油":8,"鈷藍鳥蛋":0,"尖刺刺果":4,"鮮花瓣魚":0,"潮汐八爪魚":1,"紺青龍蝦":0,"蜂王漿":0,"脫脂奶油":0,"乾脆豆子":38,"竹筍":16,"山珍竹筍":47,"辣椒":22,"妖魔辣椒":4,"大螯蟹":47,"星夜蘭香茸":21,"雲海螺肉":26,"陽光果":6,"雷電香油":30,"純淨雷電香油":12,"精肉":0,"青禾":0,"嫩肉":0,"水":0,"胡椒":0,"糖":0,"鹽":0,"蘑菇":32,"芥菜":12,"琥珀凝膠":58,"絕品肉":3,"金盞靈芝":0,"黃金陽光果":4,"女神之淚":1,"生肉":548,"豆子":8,"大螯蟹王":9,"蘭香茸":62,"風飄雲海螺肉":11};
+
+        const userProvidedArtemisRecipes = [{"name":"蜜汁烤肉","rank":"史詩","learned":true,"attr":"攻擊","ingredients":{"嫩肉":2,"蜂蜜":10},"portions":14},{"name":"酸甜嘟嘟肉","rank":"史詩","learned":true,"attr":"速度","ingredients":{"嫩肉":2,"嘟嘟莓":10},"portions":190},{"name":"黃金散蛋","rank":"傳說","learned":true,"attr":"生命","ingredients":{"青禾":2,"百花蜜":7,"藍鳥蛋":3},"portions":6},{"name":"咖哩什錦燉菜","rank":"傳說","learned":true,"attr":"速度","icon":"","ingredients":{"精肉":2,"濃香咖哩":4,"鐵甲殼栗":3,"綠洲之星":3},"portions":44},{"name":"嘟嘟果釀","rank":"史詩","learned":false,"portions":0,"attr":"速度","icon":"","ingredients":{"水":2,"嘟嘟莓":10}},{"name":"樹莓蛋糕","rank":"傳說","learned":false,"portions":0,"attr":"生命","icon":"","ingredients":{"青禾":2,"多汁嘟嘟莓":3,"藍鳥蛋":7}},{"name":"焦甜殼栗","rank":"史詩","learned":false,"portions":0,"attr":"防禦","icon":"","ingredients":{"奶油":5,"甲殼栗":5}},{"name":"滾栗子烤肉","rank":"史詩","learned":false,"portions":0,"attr":"防禦","icon":"","ingredients":{"胡椒":2,"嫩肉":2,"甲殼栗":10}},{"name":"鮮果燒肉","rank":"史詩","learned":false,"portions":0,"attr":"攻擊","icon":"","ingredients":{"嫩肉":2,"咖哩":5,"尖刺刺果":5}},{"name":"海之味","rank":"史詩","learned":false,"portions":0,"attr":"生命","icon":"","ingredients":{"味噌":2,"天舞青葉":5,"花瓣魚":3}},{"name":"源式章魚燒","rank":"傳說","learned":false,"portions":0,"attr":"攻擊","icon":"","ingredients":{"多汁嘟嘟莓":2,"辛味噌":3,"章魚":5}},{"name":"蜜汁豆餅","rank":"史詩","learned":false,"portions":0,"attr":"生命","icon":"","ingredients":{"蜂蜜":1,"乾脆豆子":1}},{"name":"竹筍控肉","rank":"史詩","learned":false,"portions":0,"attr":"攻擊","icon":"","ingredients":{"嫩肉":2,"竹筍":10}},{"name":"太陽光暈","rank":"傳說","learned":false,"portions":0,"attr":"速度","icon":"","ingredients":{"咸奶油":4,"鐵甲殼栗":3,"綠洲之星":3}},{"name":"雲端果塔","rank":"史詩","learned":false,"portions":0,"attr":"速度","icon":"","ingredients":{"嘟嘟莓":1,"奶油":2,"星夜蘭香茸":7}},{"name":"解厄刺身","rank":"傳說","learned":false,"portions":0,"attr":"攻擊","icon":"","ingredients":{"辛味噌":2,"鮮花瓣魚":5,"章魚":3}},{"name":"將軍破陣","rank":"傳說","learned":false,"portions":0,"attr":"防禦","icon":"","ingredients":{"精肉":2,"妖魔辣椒":5,"大螯蟹":5}},{"name":"身披金甲","rank":"傳說","learned":false,"portions":0,"attr":"防禦","icon":"","ingredients":{"精肉":2,"山珍竹筍":5,"大螯蟹":5}},{"name":"聖輝拔絲","rank":"傳說","learned":false,"portions":0,"attr":"攻擊","icon":"","ingredients":{"百花蜜":1,"純淨雷電香油":2,"陽光果":7}},{"name":"坎斯汀漢堡","rank":"史詩","learned":false,"portions":0,"attr":"防禦","icon":"","ingredients":{"嫩肉":2,"甜馬鈴薯":10}},{"name":"塔吉鍋燉肉","rank":"史詩","learned":false,"portions":0,"attr":"防禦","icon":"","ingredients":{"嫩肉":2,"甜馬鈴薯":5,"咖哩":5}},{"name":"源式拉麵","rank":"史詩","learned":false,"portions":0,"attr":"生命","icon":"","ingredients":{"嫩肉":2,"味噌":5,"花瓣魚":5}},{"name":"花魚天婦羅","rank":"史詩","learned":false,"portions":0,"attr":"生命","icon":"","ingredients":{"尖刺刺果":5,"天舞青葉":2,"花瓣魚":3}},{"name":"醬香滷肉","rank":"史詩","learned":false,"portions":0,"attr":"生命","icon":"","ingredients":{"胡椒":2,"嫩肉":2,"乾脆豆子":10}},{"name":"紅燒獅子頭","rank":"史詩","learned":false,"portions":0,"attr":"攻擊","icon":"","ingredients":{"嫩肉":2,"辣椒":10}},{"name":"軍團燒肉","rank":"史詩","learned":false,"portions":0,"attr":"防禦","icon":"","ingredients":{"嫩肉":2,"竹筍":2,"雲海螺肉":4}},{"name":"芳香裹肉捲","rank":"史詩","learned":false,"portions":0,"attr":"速度","icon":"","ingredients":{"嫩肉":2,"雷電香油":5,"星夜蘭香茸":5}}];
+
+        const userProvidedArtemisInv = {"多汁嘟嘟莓":40,"馬鈴薯":0,"甜馬鈴薯":0,"嘟嘟莓":0,"藍鳥蛋":0,"鈷藍鳥蛋":0,"潔白松露":0,"刺刺果":0,"尖刺刺果":0,"甲殼栗":0,"鐵甲殼栗":0,"綠洲之星":0,"綠洲新星":0,"寶藏駝奶":0,"水舞葉":0,"天舞青葉":0,"花瓣魚":0,"鮮花瓣魚":0,"章魚":0,"潮汐八爪魚":0,"紺青龍蝦":0,"麵粉":0,"蜂蜜":0,"百花蜜":0,"蜂王漿":0,"奶油":0,"咸奶油":0,"脫脂奶油":0,"咖哩":0,"濃香咖哩":0,"味噌":0,"辛味噌":0,"乾脆豆子":0,"竹筍":0,"山珍竹筍":0,"辣椒":0,"妖魔辣椒":0,"大螯蟹":0,"星夜蘭香茸":0,"雲海螺肉":0,"陽光果":0,"雷電香油":0,"純淨雷電香油":0,"精肉":0,"青禾":0,"嫩肉":0,"水":0,"胡椒":0,"糖":0,"鹽":0,"蘑菇":0,"芥菜":0,"琥珀凝膠":0,"絕品肉":0,"金盞靈芝":0,"黃金陽光果":0,"女神之淚":0,"生肉":0,"豆子":0,"大螯蟹王":0,"蘭香茸":0,"風飄雲海螺肉":0};
+
+        function exportCurrentData() {
+            const dataObj = {
+                ingredientsMap: getIngredientsMap(),
+                rabbitRecipes: getRecipes('rabbit'),
+                artemisRecipes: getRecipes('artemis'),
+                rabbitInv: getInventory('rabbit'),
+                artemisInv: getInventory('artemis')
+            };
+            const jsonStr = JSON.stringify(dataObj);
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(jsonStr).then(() => {
+                    alert('✅ 最新資料已成功複製到剪貼簿！\n您可以直接貼到對話框中讓我幫您更新程式碼。');
+                }).catch(() => {
+                    prompt('請手動全選並複製以下資料碼：', jsonStr);
+                });
+            } else {
+                prompt('請手動全選並複製以下資料碼：', jsonStr);
+            }
+        }
+
+        function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
+
+        function migrateRecipeFormat(r) {
+            try {
+                if (!r.ingredients) r.ingredients = {};
+                if (r.portions === undefined) {
+                    const vals = Object.values(r.ingredients).filter(v => v > 0);
+                    if (vals.length > 0) {
+                        let g = vals[0];
+                        for (let i = 1; i < vals.length; i++) g = gcd(g, vals[i]);
+                        if (g > 1) {
+                            r.portions = g;
+                            for (let k in r.ingredients) {
+                                r.ingredients[k] = r.ingredients[k] > 0 ? Math.round(r.ingredients[k] / g) : 1;
+                            }
+                        } else {
+                            r.portions = 1;
+                            for (let k in r.ingredients) {
+                                if (r.ingredients[k] === 0) r.ingredients[k] = 1;
+                            }
+                        }
+                    } else {
+                        r.portions = 0;
+                        for (let k in r.ingredients) {
+                            if (r.ingredients[k] === 0) r.ingredients[k] = 1;
+                        }
+                    }
+                }
+            } catch(e) {
+                r.portions = 1;
+            }
+            return r;
+        }
+
+        function selectFormTag(inputId, value, element) {
+            document.getElementById(inputId).value = value;
+            const siblings = element.parentElement.querySelectorAll('.tag-option');
+            siblings.forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+        }
+
+        function setTagGroupValue(inputId, groupId, value) {
+            document.getElementById(inputId).value = value;
+            const group = document.getElementById(groupId);
+            if (!group) return;
+            const options = group.querySelectorAll('.tag-option');
+            options.forEach(opt => {
+                if (opt.getAttribute('data-val') === String(value)) opt.classList.add('active');
+                else opt.classList.remove('active');
+            });
+        }
+
+        function setMainFilter(type, value, element) {
+            if (type === 'learned') currentMainLearnedFilter = value;
+            if (type === 'attr') currentMainAttrFilter = value;
+            const siblings = element.parentElement.querySelectorAll('.tag-option');
+            siblings.forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+            renderUI();
+        }
+
+        function setModalFilter(type, value, element) {
+            if (type === 'learned') currentModalLearnedFilter = value;
+            if (type === 'attr') currentModalAttrFilter = value;
+            const siblings = element.parentElement.querySelectorAll('.tag-option');
+            siblings.forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+            openAllRecipesModal();
+        }
+
+        function onIngCheckChange(checkbox) {
+            const card = checkbox.closest('.ing-grid-card');
+            const input = card.querySelector('.new-ing-input');
+            if (checkbox.checked) {
+                card.classList.add('selected-row');
+                if ((parseInt(input.value) || 0) === 0) input.value = 1;
+            } else {
+                card.classList.remove('selected-row');
+                input.value = 0;
+            }
+            sortRecipeIngCards();
+        }
+
+        function onIngQtyInput(input) {
+            const card = input.closest('.ing-grid-card');
+            const checkbox = card.querySelector('.ing-checkbox');
+            const val = parseInt(input.value) || 0;
+            if (val > 0 && !checkbox.checked) {
+                checkbox.checked = true;
+                card.classList.add('selected-row');
+                sortRecipeIngCards();
+            } else if (val === 0 && checkbox.checked) {
+                checkbox.checked = false;
+                card.classList.remove('selected-row');
+                sortRecipeIngCards();
+            }
+        }
+
+        function sortRecipeIngCards() {
+            const container = document.getElementById('new-recipe-ingredients-list');
+            if (!container) return;
+            const cards = Array.from(container.querySelectorAll('.ing-grid-card'));
+            cards.sort((a, b) => {
+                const aChecked = a.querySelector('.ing-checkbox').checked ? 1 : 0;
+                const bChecked = b.querySelector('.ing-checkbox').checked ? 1 : 0;
+                if (aChecked !== bChecked) return bChecked - aChecked;
+                const aOrder = parseInt(a.getAttribute('data-order')) || 0;
+                const bOrder = parseInt(b.getAttribute('data-order')) || 0;
+                return aOrder - bOrder;
+            });
+            cards.forEach(c => container.appendChild(c));
+        }
+
+        window.imgErr = function(img) {
+            if (img.dataset.loaded === 'true') return;
+            let name = img.getAttribute('data-name');
+            let def = img.getAttribute('data-fallback');
+            let attempt = parseInt(img.getAttribute('data-attempt') || '0');
+            attempt++;
+            img.setAttribute('data-attempt', attempt);
+            if (attempt === 1) img.src = name + '.jpg';
+            else if (attempt === 2) img.src = name + '.jpeg';
+            else {
+                img.dataset.loaded = 'true';
+                img.onerror = null;
+                if (def) img.src = def;
+                else img.style.display = 'none';
+            }
+        };
+
+        function initBackground() {
+            const bgList = ['背景圖片.png', '背景圖片.jpg', '背景圖片.jpeg', '1792464010100.jpg'];
+            let bgIndex = 0;
+            function tryNextBg() {
+                if (bgIndex >= bgList.length) {
+                    document.body.style.backgroundColor = '#111827';
+                    return; 
+                }
+                let img = new Image();
+                img.onload = () => { document.body.style.backgroundImage = `url('${bgList[bgIndex]}')`; };
+                img.onerror = () => { bgIndex++; tryNextBg(); };
+                img.src = bgList[bgIndex];
+            }
+            tryNextBg();
+        }
+        window.addEventListener('DOMContentLoaded', initBackground);
+
+        function getIngredientsMap() {
+            let map = { ...userProvidedIngredientsMap };
+            try {
+                const saved = localStorage.getItem('global_ingredients_map');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    for (let [k, v] of Object.entries(parsed)) {
+                        map[k] = { ...(map[k] || { rank: "一般", icon: "" }), ...v };
+                    }
+                }
+            } catch (e) {}
+            return map;
+        }
+
+        function saveIngredientsMap(map) {
+            localStorage.setItem('global_ingredients_map', JSON.stringify(map));
+        }
+
+        function getAllIngredientsList() {
+            const map = getIngredientsMap();
+            const mapKeys = Object.keys(map);
+            const ordered = [];
+            INGREDIENT_ORDER.forEach(item => { ordered.push(item); });
+            mapKeys.forEach(item => {
+                if (!ordered.includes(item)) ordered.push(item);
+            });
+            return ordered;
+        }
+
+        function getSortedRecipeIngredientsEntries(ingredientsObj) {
+            if (!ingredientsObj) return [];
+            const entries = Object.entries(ingredientsObj);
+            entries.sort((a, b) => {
+                let idxA = INGREDIENT_ORDER.indexOf(a[0]);
+                let idxB = INGREDIENT_ORDER.indexOf(b[0]);
+                if (idxA === -1) idxA = 9999;
+                if (idxB === -1) idxB = 9999;
+                return idxA - idxB;
+            });
+            return entries;
+        }
+
+        function handleFileUpload(evt, hiddenId, previewId) {
+            const file = evt.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64Str = e.target.result;
+                document.getElementById(hiddenId).value = base64Str;
+                const img = document.getElementById(previewId);
+                img.src = base64Str;
+                img.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function removeUploadedFile(hiddenId, previewId, fileInputId) {
+            document.getElementById(hiddenId).value = '';
+            const img = document.getElementById(previewId);
+            img.src = '';
+            img.style.display = 'none';
+            if (fileInputId) document.getElementById(fileInputId).value = '';
+        }
+
+        function renderImgHtml(iconUrl, className, fallbackUrl, itemName) {
+            if (iconUrl && iconUrl.startsWith('data:image')) {
+                return `<img src="${iconUrl}" class="${className}" alt="${itemName}">`;
+            }
+            if (itemName) {
+                const safeName = String(itemName).replace(/"/g, "&quot;");
+                return `<img src="${safeName}.png" class="${className}" data-name="${safeName}" data-fallback="${fallbackUrl}" data-attempt="0" onerror="window.imgErr(this)" alt="${safeName}">`;
+            }
+            return `<img src="${fallbackUrl}" class="${className}" alt="Default">`;
+        }
+
+        function syncBothCharactersRecipes() {
+            try {
+                const savedVer = localStorage.getItem('app_data_version');
+                if (savedVer !== DATA_VERSION) {
+                    localStorage.setItem('global_ingredients_map', JSON.stringify(userProvidedIngredientsMap));
+                    localStorage.setItem('recipes_rabbit', JSON.stringify(userProvidedRabbitRecipes.map(migrateRecipeFormat)));
+                    localStorage.setItem('recipes_artemis', JSON.stringify(userProvidedArtemisRecipes.map(migrateRecipeFormat)));
+                    localStorage.setItem('inv_rabbit', JSON.stringify(userProvidedRabbitInv));
+                    localStorage.setItem('inv_artemis', JSON.stringify(userProvidedArtemisInv));
+                    localStorage.setItem('app_data_version', DATA_VERSION);
+                }
+            } catch(e) {
+                console.error("Storage error:", e);
+            }
+
+            let rList = [];
+            let aList = [];
+            try {
+                const rSaved = localStorage.getItem('recipes_rabbit');
+                rList = rSaved ? JSON.parse(rSaved) : [...userProvidedRabbitRecipes];
+                if (!Array.isArray(rList) || rList.length === 0) rList = [...userProvidedRabbitRecipes];
+            } catch (e) { rList = [...userProvidedRabbitRecipes]; }
+
+            try {
+                const aSaved = localStorage.getItem('recipes_artemis');
+                aList = aSaved ? JSON.parse(aSaved) : [...userProvidedArtemisRecipes];
+                if (!Array.isArray(aList) || aList.length === 0) aList = [...userProvidedArtemisRecipes];
+            } catch (e) { aList = [...userProvidedArtemisRecipes]; }
+
+            rList = rList.map(migrateRecipeFormat);
+            aList = aList.map(migrateRecipeFormat);
+
+            rList.forEach(r => {
+                if (!aList.some(a => a.name === r.name)) {
+                    aList.push({
+                        name: r.name,
+                        rank: r.rank || '稀有',
+                        learned: false,
+                        portions: 0,
+                        attr: r.attr || '攻擊',
+                        icon: r.icon || '',
+                        ingredients: { ...(r.ingredients || {}) }
+                    });
+                }
+            });
+
+            aList.forEach(a => {
+                if (!rList.some(r => r.name === a.name)) {
+                    rList.push({
+                        name: a.name,
+                        rank: a.rank || '稀有',
+                        learned: false,
+                        portions: 0,
+                        attr: a.attr || '攻擊',
+                        icon: a.icon || '',
+                        ingredients: { ...(a.ingredients || {}) }
+                    });
+                }
+            });
+
+            try {
+                localStorage.setItem('recipes_rabbit', JSON.stringify(rList));
+                localStorage.setItem('recipes_artemis', JSON.stringify(aList));
+            } catch (e) {}
+        }
+
+        function getRecipes(key) {
+            try {
+                const saved = localStorage.getItem(`recipes_${key}`);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        return parsed.map(migrateRecipeFormat);
+                    }
+                }
+            } catch (e) {}
+            return (key === 'rabbit' ? userProvidedRabbitRecipes : userProvidedArtemisRecipes).map(migrateRecipeFormat);
+        }
+
+        function getInventory(key) {
+            try {
+                const saved = localStorage.getItem(`inv_${key}`);
+                let inv = saved ? JSON.parse(saved) : { ...(key === 'rabbit' ? userProvidedRabbitInv : userProvidedArtemisInv) };
+                getAllIngredientsList().forEach(item => {
+                    if (inv[item] === undefined) inv[item] = 0;
+                });
+                return inv;
+            } catch (e) {
+                return { ...(key === 'rabbit' ? userProvidedRabbitInv : userProvidedArtemisInv) };
+            }
+        }
+
+        function switchCharacter(key, evt) {
+            currentKey = key;
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            if (evt && evt.target) evt.target.classList.add('active');
+            renderUI();
+        }
+
+        function getRankClass(rank) {
+            if (rank === "稀有") return "rank-rare";
+            if (rank === "史詩") return "rank-epic";
+            if (rank === "傳說") return "rank-legend";
+            if (rank === "奇蹟") return "rank-miracle";
+            return "rank-rare";
+        }
+
+        function getRankBgClass(rank) {
+            if (rank === "稀有") return "bg-rank-rare";
+            if (rank === "史詩") return "bg-rank-epic";
+            if (rank === "傳說") return "bg-rank-legend";
+            if (rank === "奇蹟") return "bg-rank-miracle";
+            return "bg-rank-rare";
+        }
+
+        function getCircleRankClass(rank) {
+            if (rank === "一般") return "circle-normal";
+            if (rank === "稀有") return "circle-rare";
+            if (rank === "史詩") return "circle-epic";
+            if (rank === "傳說") return "circle-legend";
+            if (rank === "奇蹟") return "circle-miracle";
+            return "circle-rare";
+        }
+
+        function getAttrBadgeHtml(attr) {
+            if (!attr) return "";
+            const attrBaseName = attrIconMap[attr];
+            if (attrBaseName) {
+                const safeAttr = String(attrBaseName).replace(/"/g, "&quot;");
+                return `<img src="${safeAttr}.png" class="attr-icon" data-name="${safeAttr}" data-fallback="" data-attempt="0" onerror="window.imgErr(this)" alt="${safeAttr}" title="${safeAttr}屬性">`;
+            }
+            return "";
+        }
+
+        function calculateRecipeShortage(recipe, inv) {
+            const portions = recipe.portions !== undefined ? Number(recipe.portions) : 1;
+            let missingItems = [];
+            let allItems = [];
+            let totalMissing = 0;      
+            let rawTotalMissing = 0;   
+
+            if (recipe && recipe.ingredients) {
+                const sortedEntries = getSortedRecipeIngredientsEntries(recipe.ingredients);
+                for (let [ing, perPortionQty] of sortedEntries) {
+                    const requiredQty = perPortionQty * portions;
+                    const invQty = inv[ing] || 0;
+                    const diff = Math.max(0, requiredQty - invQty);
+                    if (diff > 0) {
+                        rawTotalMissing += diff;
+                        if (!EXCLUDED_INGS.includes(ing)) {
+                            totalMissing += diff;
+                        }
+                        missingItems.push({ name: ing, perPortionQty, requiredQty, invQty, diff });
+                    }
+                    allItems.push({ name: ing, perPortionQty, requiredQty, invQty, diff });
+                }
+            }
+            return { portions, totalMissing, rawTotalMissing, missingItems, allItems };
+        }
+
+        function sortRecipesByMissing(recipes, inv) {
+            let scoredRecipes = recipes.map((recipe, index) => {
+                const shortage = calculateRecipeShortage(recipe, inv);
+                return {
+                    ...recipe,
+                    originalIndex: index,
+                    portions: shortage.portions,
+                    missingTotal: shortage.totalMissing,
+                    rawTotalMissing: shortage.rawTotalMissing,
+                    missingItems: shortage.missingItems,
+                    allItems: shortage.allItems
+                };
+            });
+
+            scoredRecipes.sort((a, b) => {
+                const aGroup = a.missingTotal > 0 ? 0 : (a.portions > 0 ? 1 : 2);
+                const bGroup = b.missingTotal > 0 ? 0 : (b.portions > 0 ? 1 : 2);
+                if (aGroup !== bGroup) return aGroup - bGroup;
+                if (aGroup === 0) return a.missingTotal - b.missingTotal;
+                return (rankWeight[b.rank] || 1) - (rankWeight[a.rank] || 1);
+            });
+
+            return scoredRecipes;
+        }
+
+        function buildMainPageMissingHtml(recipe, ingMap) {
+            if (recipe.portions === 0) {
+                return `<div style="font-size:12px; color:#9ca3af; padding:4px 0;">所需份數：0 份</div>`;
+            }
+            const displayMissing = recipe.missingItems.filter(item => !EXCLUDED_INGS.includes(item.name));
+            if (displayMissing.length === 0) {
+                return `<div style="font-size:13px; color:#2ecc71; font-weight:bold; background:rgba(46,204,113,0.1); padding:4px 6px; border:1px solid #2ecc71; border-radius: 4px; text-shadow: 1px 1px 0px #000;">主要食材充足 ✓</div>`;
+            }
+
+            const itemsHtml = displayMissing.map(item => {
+                const iconSrc = ingMap[item.name] ? ingMap[item.name].icon : "";
+                return `
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 3px;">
+                        <div class="ing-circle-icon">
+                            ${renderImgHtml(iconSrc, "", defaultIngIconImg, item.name)}
+                        </div>
+                        <span style="font-size:12px; color:#ffffff; text-shadow: 1px 1px 0 #000;">${item.name}</span>
+                        <span class="qty-red" style="font-size:13px; text-shadow: 1px 1px 0 #000;">缺 ${item.diff}</span>
+                    </div>
+                `;
+            }).join('');
+
+            return `<div class="recipe-ings-flex">${itemsHtml}</div>`;
+        }
+
+        function renderUI() {
+            try {
+                const recipes = getRecipes(currentKey);
+                const inv = getInventory(currentKey);
+                const ingMap = getIngredientsMap();
+
+                const recipeSearchKey = document.getElementById('recipe-search')?.value.trim().toLowerCase() || '';
+                const surplusSearchKey = document.getElementById('surplus-search')?.value.trim().toLowerCase() || '';
+
+                const recipeContainer = document.getElementById('recipe-container');
+                const surplusContainer = document.getElementById('surplus-container');
+
+                if (!recipeContainer || !surplusContainer) return;
+
+                recipeContainer.innerHTML = '';
+                surplusContainer.innerHTML = '';
+
+                let sortedRecipes = sortRecipesByMissing(recipes, inv);
+
+                if (currentMainLearnedFilter === 'LEARNED') {
+                    sortedRecipes = sortedRecipes.filter(r => r.learned !== false);
+                } else if (currentMainLearnedFilter === 'UNLEARNED') {
+                    sortedRecipes = sortedRecipes.filter(r => r.learned === false);
+                }
+
+                if (currentMainAttrFilter !== 'ALL') {
+                    sortedRecipes = sortedRecipes.filter(r => r.attr === currentMainAttrFilter);
+                }
+
+                if (recipeSearchKey) {
+                    sortedRecipes = sortedRecipes.filter(r => r.name.toLowerCase().includes(recipeSearchKey));
+                }
+
+                const top3Recipes = sortedRecipes.slice(0, 3);
+                if (top3Recipes.length > 0) {
+                    top3Recipes.forEach(recipe => {
+                        const ingListHtml = buildMainPageMissingHtml(recipe, ingMap);
+                        const rankClass = getRankClass(recipe.rank || "稀有");
+                        const unlearnedClass = recipe.learned === false ? 'unlearned' : '';
+
+                        recipeContainer.innerHTML += `
+                            <div class="recipe-card ${unlearnedClass}" onclick="openRecipeDetailByIndex(${recipe.originalIndex}, false)">
+                                <button class="card-consume-btn" onclick="openConsumeModal(${recipe.originalIndex}, event)" title="輸入食用份數並自動扣除庫存">🍴 食用</button>
+                                <div class="recipe-header-flex">
+                                    ${renderImgHtml(recipe.icon, "recipe-icon", defaultRecipeIconImg, recipe.name)}
+                                    <div>
+                                        <h3 class="${rankClass}">${recipe.name}</h3>
+                                        <span style="font-size:12px; color:#b3c0e6;">目標：${recipe.portions} 份</span>
+                                    </div>
+                                </div>
+                                ${ingListHtml}
+                            </div>
+                        `;
+                    });
+                } else {
+                    recipeContainer.innerHTML = `<p style="color: #ffffff; text-shadow: 1px 1px 0 #000; padding: 10px;">找不到符合篩選條件的食譜。</p>`;
+                }
+
+                recipeContainer.innerHTML += `
+                    <div class="more-card" onclick="openAllRecipesModal()">
+                        <div class="plus-icon">+</div>
+                        <span>顯示更多食譜</span>
+                    </div>
+                `;
+
+                let totalDemand = {};
+                recipes.forEach(recipe => {
+                    const portions = recipe.portions !== undefined ? Number(recipe.portions) : 1;
+                    if (recipe.ingredients && portions > 0) {
+                        for (let [ing, perPortionQty] of Object.entries(recipe.ingredients)) {
+                            totalDemand[ing] = (totalDemand[ing] || 0) + (perPortionQty * portions);
+                        }
+                    }
+                });
+
+                let surplusList = [];
+                for (let [item, invQty] of Object.entries(inv)) {
+                    if (EXCLUDED_INGS.includes(item)) continue;
+                    const demQty = totalDemand[item] || 0;
+                    if (invQty > demQty) {
+                        const ingMeta = ingMap[item] || { rank: "一般", icon: "" };
+                        surplusList.push({ name: item, inventory: invQty, demand: demQty, surplus: invQty - demQty, ...ingMeta });
+                    }
+                }
+                surplusList.sort((a, b) => b.surplus - a.surplus);
+
+                if (surplusSearchKey) {
+                    surplusList = surplusList.filter(s => s.name.toLowerCase().includes(surplusSearchKey));
+                }
+
+                const top3Surplus = surplusList.slice(0, 3);
+                if (top3Surplus.length > 0) {
+                    top3Surplus.forEach(item => {
+                        surplusContainer.innerHTML += `
+                            <div class="recipe-card" style="cursor: default;">
+                                <div class="ing-info-flex">
+                                    ${renderImgHtml(item.icon, "ing-icon", defaultIngIconImg, item.name)}
+                                    <div>
+                                        <h3 style="color:#ffcb05; text-shadow: 1px 1px 0 #000;">${item.name}</h3>
+                                    </div>
+                                </div>
+                                <p>庫存: ${item.inventory} | 需求: ${item.demand}</p>
+                                <div class="badge-sell">可出售: ${item.surplus}</div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    surplusContainer.innerHTML = `<p style="color: #718096; font-style: italic; padding: 10px;">目前沒有可出售食材。</p>`;
+                }
+
+                surplusContainer.innerHTML += `
+                    <div class="more-card" onclick="openAllSurplusModal()">
+                        <div class="plus-icon">+</div>
+                        <span>更多可出售</span>
+                    </div>
+                `;
+            } catch (error) {
+                console.error("UI 渲染錯誤：", error);
+            }
+        }
+
+        function openRecipeDetailByIndex(recipeIndex, fromAllRecipes = false) {
+            openedFromAllRecipes = fromAllRecipes;
+            const recipes = getRecipes(currentKey);
+            const inv = getInventory(currentKey);
+            const ingMap = getIngredientsMap();
+            const recipe = recipes[recipeIndex];
+
+            if (!recipe) return;
+
+            const portions = recipe.portions !== undefined ? Number(recipe.portions) : 1;
+
+            const headerBg = document.getElementById('modal-recipe-header-bg');
+            if (headerBg) {
+                headerBg.className = `game-recipe-header ${getRankBgClass(recipe.rank || "稀有")}`;
+            }
+            
+            document.getElementById('modal-recipe-name').innerText = recipe.name;
+            document.getElementById('modal-recipe-status-text').innerText = recipe.learned !== false ? '已習得' : '未取得';
+            document.getElementById('modal-recipe-status-text').style.color = recipe.learned !== false ? '#2ecc71' : '#9ca3af';
+            document.getElementById('modal-recipe-portions-text').innerText = `所需份數：${portions} 份`;
+            
+            document.getElementById('modal-recipe-attr-badge').innerHTML = getAttrBadgeHtml(recipe.attr);
+
+            const iconLg = document.getElementById('modal-recipe-icon-lg');
+            iconLg.removeAttribute('data-loaded');
+            if (recipe.icon && recipe.icon.startsWith('data:image')) {
+                iconLg.onerror = null;
+                iconLg.src = recipe.icon;
+            } else {
+                iconLg.setAttribute('data-name', recipe.name);
+                iconLg.setAttribute('data-fallback', defaultRecipeIconImg);
+                iconLg.setAttribute('data-attempt', '0');
+                iconLg.onerror = function() { window.imgErr(this); };
+                iconLg.src = `${recipe.name}.png`;
+            }
+
+            const flexContainer = document.getElementById('modal-recipe-ingredients-flex');
+            flexContainer.innerHTML = '';
+
+            if (recipe.ingredients) {
+                const sortedEntries = getSortedRecipeIngredientsEntries(recipe.ingredients);
+                for (let [ing, perPortionQty] of sortedEntries) {
+                    const requiredQty = perPortionQty * portions;
+                    const invQty = inv[ing] || 0;
+                    const diff = Math.max(0, requiredQty - invQty);
+                    const ingMeta = ingMap[ing] || { icon: "" };
+
+                    const stockDisplay = diff > 0
+                        ? `<span class="qty-red" style="font-size:14px; text-shadow: 1px 1px 0 #000;">${invQty}/${perPortionQty}</span>`
+                        : `<span class="qty-green" style="font-size:14px; text-shadow: 1px 1px 0 #000;">${invQty}/${perPortionQty}</span>`;
+
+                    flexContainer.innerHTML += `
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                            <div class="ing-circle-icon">
+                                ${renderImgHtml(ingMeta.icon, "", defaultIngIconImg, ing)}
+                            </div>
+                            <span style="font-size:13px; color:#ffffff; text-shadow: 1px 1px 0 #000;">${ing}</span>
+                            ${stockDisplay}
+                        </div>
+                    `;
+                }
+            }
+
+            document.getElementById('modal-consume-btn').onclick = function(event) {
+                openConsumeModal(recipeIndex, event);
+            };
+
+            document.getElementById('modal-edit-btn').onclick = function() {
+                closeModal('recipe-modal');
+                openEditRecipeModal(recipeIndex);
+            };
+
+            document.getElementById('modal-delete-btn').onclick = function() {
+                if (confirm(`確定要刪除食譜「${recipe.name}」嗎？（兩位角色皆會同步刪除）`)) {
+                    deleteRecipe(recipeIndex);
+                }
+            };
+
+            document.getElementById('recipe-modal').style.display = 'flex';
+        }
+
+        // 開啟「食用」彈窗
+        function openConsumeModal(recipeIndex, evt) {
+            if (evt) evt.stopPropagation();
+            const recipes = getRecipes(currentKey);
+            const recipe = recipes[recipeIndex];
+            if (!recipe) return;
+
+            document.getElementById('consume-recipe-index').value = recipeIndex;
+            document.getElementById('consume-modal-title').innerText = `🍴 食用：${recipe.name}`;
+            document.getElementById('consume-portions-input').value = 1;
+            updateConsumePreview();
+
+            document.getElementById('consume-recipe-modal').style.display = 'flex';
+        }
+
+        // 即時更新食用扣除庫存預覽
+        function updateConsumePreview() {
+            const recipeIndex = parseInt(document.getElementById('consume-recipe-index').value);
+            const count = Math.max(0, parseInt(document.getElementById('consume-portions-input').value) || 0);
+            const recipes = getRecipes(currentKey);
+            const inv = getInventory(currentKey);
+            const ingMap = getIngredientsMap();
+            const recipe = recipes[recipeIndex];
+            const previewContainer = document.getElementById('consume-preview-list');
+            previewContainer.innerHTML = '';
+
+            if (!recipe || !recipe.ingredients) return;
+
+            const sortedEntries = getSortedRecipeIngredientsEntries(recipe.ingredients);
+            for (let [ing, perPortionQty] of sortedEntries) {
+                if (EXCLUDED_INGS.includes(ing)) continue; // 基礎8食材無須在庫存預覽中佔版面，但實際仍會扣除
+                const deductQty = perPortionQty * count;
+                const invQty = inv[ing] || 0;
+                const remainQty = Math.max(0, invQty - deductQty);
+                const isShort = invQty < deductQty;
+                const ingMeta = ingMap[ing] || { icon: "" };
+
+                previewContainer.innerHTML += `
+                    <div style="display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 68px;">
+                        <div class="ing-circle-icon" style="width: 42px; height: 42px;">
+                            ${renderImgHtml(ingMeta.icon, "", defaultIngIconImg, ing)}
+                        </div>
+                        <span style="font-size: 12px; color: #fff; text-shadow: 1px 1px 0 #000;">${ing}</span>
+                        <span style="font-size: 12px; color: #ff4757; font-weight: bold; text-shadow: 1px 1px 0 #000;">-${deductQty}</span>
+                        <span style="font-size: 11px; color: ${isShort ? '#ff4757' : '#2ecc71'}; text-shadow: 1px 1px 0 #000;">剩 ${remainQty}</span>
+                    </div>
+                `;
+            }
+
+            if (previewContainer.innerHTML === '') {
+                previewContainer.innerHTML = `<span style="font-size:12px; color:#b3c0e6;">僅消耗基礎食材</span>`;
+            }
+        }
+
+        // 確認食用並扣除庫存與所需份數
+        function confirmConsumeRecipe() {
+            const recipeIndex = parseInt(document.getElementById('consume-recipe-index').value);
+            const count = parseInt(document.getElementById('consume-portions-input').value) || 0;
+
+            if (count <= 0) {
+                alert('請輸入大於 0 的食用份數！');
+                return;
+            }
+
+            const recipes = getRecipes(currentKey);
+            const inv = getInventory(currentKey);
+            const recipe = recipes[recipeIndex];
+            if (!recipe) return;
+
+            if (recipe.ingredients) {
+                for (let [ing, perPortionQty] of Object.entries(recipe.ingredients)) {
+                    const deduct = perPortionQty * count;
+                    inv[ing] = Math.max(0, (inv[ing] || 0) - deduct);
+                }
+            }
+
+            // 同步扣減該食譜的目標所需份數（最低扣至 0）
+            const currentPortions = recipe.portions !== undefined ? Number(recipe.portions) : 0;
+            recipe.portions = Math.max(0, currentPortions - count);
+
+            localStorage.setItem(`inv_${currentKey}`, JSON.stringify(inv));
+            localStorage.setItem(`recipes_${currentKey}`, JSON.stringify(recipes));
+
+            closeModal('consume-recipe-modal');
+            renderUI();
+
+            // 如果食譜詳情視窗正開著，即時刷新詳情視窗內的數字
+            if (document.getElementById('recipe-modal').style.display === 'flex') {
+                openRecipeDetailByIndex(recipeIndex, openedFromAllRecipes);
+            }
+        }
+
+        function closeRecipeDetailModal() {
+            closeModal('recipe-modal');
+            if (openedFromAllRecipes) {
+                openAllRecipesModal();
+            }
+        }
+
+        function cancelEditRecipeModal() {
+            closeModal('add-recipe-modal');
+            if (openedFromAllRecipes) {
+                openAllRecipesModal();
+            }
+        }
+
+        function deleteRecipe(recipeIndex) {
+            let recipes = getRecipes(currentKey);
+            const targetName = recipes[recipeIndex]?.name;
+            recipes.splice(recipeIndex, 1);
+            localStorage.setItem(`recipes_${currentKey}`, JSON.stringify(recipes));
+
+            const otherKey = currentKey === 'rabbit' ? 'artemis' : 'rabbit';
+            let otherRecipes = getRecipes(otherKey);
+            otherRecipes = otherRecipes.filter(r => r.name !== targetName);
+            localStorage.setItem(`recipes_${otherKey}`, JSON.stringify(otherRecipes));
+
+            closeModal('recipe-modal');
+            renderUI();
+
+            if (openedFromAllRecipes) {
+                openAllRecipesModal();
+            }
+        }
+
+        function openAllRecipesModal() {
+            const recipes = getRecipes(currentKey);
+            const inv = getInventory(currentKey);
+            const listContainer = document.getElementById('all-recipes-list');
+            listContainer.innerHTML = '';
+
+            const filterKey = document.getElementById('all-recipes-search')?.value.trim().toLowerCase() || '';
+
+            let scoredRecipes = recipes.map((recipe, index) => {
+                const shortage = calculateRecipeShortage(recipe, inv);
+                return {
+                    ...recipe,
+                    originalIndex: index,
+                    portions: shortage.portions,
+                    missingTotal: shortage.totalMissing,
+                    rawTotalMissing: shortage.rawTotalMissing
+                };
+            });
+
+            scoredRecipes.sort((a, b) => {
+                const wA = rankWeight[a.rank] || 1;
+                const wB = rankWeight[b.rank] || 1;
+                if (wA !== wB) return wB - wA;
+                return a.originalIndex - b.originalIndex;
+            });
+
+            if (currentModalLearnedFilter === 'LEARNED') {
+                scoredRecipes = scoredRecipes.filter(r => r.learned !== false);
+            } else if (currentModalLearnedFilter === 'UNLEARNED') {
+                scoredRecipes = scoredRecipes.filter(r => r.learned === false);
+            }
+
+            if (currentModalAttrFilter !== 'ALL') {
+                scoredRecipes = scoredRecipes.filter(r => r.attr === currentModalAttrFilter);
+            }
+
+            if (filterKey) {
+                scoredRecipes = scoredRecipes.filter(r => r.name.toLowerCase().includes(filterKey));
+            }
+
+            if (scoredRecipes.length === 0) {
+                listContainer.innerHTML = `<p style="color: #ffffff; text-shadow: 1px 1px 0 #000; padding: 10px; grid-column: 1 / -1;">找不到符合的食譜。</p>`;
+            } else {
+                scoredRecipes.forEach(recipe => {
+                    const circleRankClass = getCircleRankClass(recipe.rank || "稀有");
+                    
+                    let stateClass = '';
+                    if (recipe.learned === false) {
+                        stateClass = 'unlearned-gray';
+                    } else if (recipe.missingTotal > 0) {
+                        stateClass = 'active-missing';
+                    } else {
+                        stateClass = 'dimmed-sufficient';
+                    }
+
+                    const attrBaseName = attrIconMap[recipe.attr];
+                    const safeAttr = attrBaseName ? String(attrBaseName).replace(/"/g, "&quot;") : "";
+                    const attrBadgeHtml = safeAttr
+                        ? `<div class="overview-attr-badge"><img src="${safeAttr}.png" data-name="${safeAttr}" data-fallback="" data-attempt="0" onerror="window.imgErr(this)" alt="${safeAttr}"></div>`
+                        : '';
+
+                    listContainer.innerHTML += `
+                        <div class="overview-item ${stateClass}" onclick="closeModal('all-recipes-modal'); openRecipeDetailByIndex(${recipe.originalIndex}, true)" title="${recipe.name} (${recipe.rank || '稀有'})">
+                            <div class="overview-circle ${circleRankClass}">
+                                ${attrBadgeHtml}
+                                ${renderImgHtml(recipe.icon, "overview-food-img", defaultRecipeIconImg, recipe.name)}
+                            </div>
+                            <span class="overview-name">${recipe.name}</span>
+                        </div>
+                    `;
+                });
+            }
+
+            document.getElementById('all-recipes-modal').style.display = 'flex';
+        }
+
+        function openAllSurplusModal() {
+            const recipes = getRecipes(currentKey);
+            const inv = getInventory(currentKey);
+            const ingMap = getIngredientsMap();
+            const listContainer = document.getElementById('all-surplus-list');
+            listContainer.innerHTML = '';
+
+            const filterKey = document.getElementById('all-surplus-search')?.value.trim().toLowerCase() || '';
+
+            let totalDemand = {};
+            recipes.forEach(recipe => {
+                const portions = recipe.portions !== undefined ? Number(recipe.portions) : 1;
+                if (recipe.ingredients && portions > 0) {
+                    for (let [ing, perPortionQty] of Object.entries(recipe.ingredients)) {
+                        totalDemand[ing] = (totalDemand[ing] || 0) + (perPortionQty * portions);
+                    }
+                }
+            });
+
+            let surplusList = [];
+            for (let [item, invQty] of Object.entries(inv)) {
+                if (EXCLUDED_INGS.includes(item)) continue;
+                const demQty = totalDemand[item] || 0;
+                if (invQty > demQty) {
+                    const ingMeta = ingMap[item] || { rank: "一般", icon: "" };
+                    surplusList.push({ name: item, inventory: invQty, demand: demQty, surplus: invQty - demQty, ...ingMeta });
+                }
+            }
+
+            surplusList.sort((a, b) => {
+                const wA = rankWeight[a.rank] !== undefined ? rankWeight[a.rank] : 0;
+                const wB = rankWeight[b.rank] !== undefined ? rankWeight[b.rank] : 0;
+                if (wA !== wB) return wB - wA;
+                let idxA = INGREDIENT_ORDER.indexOf(a.name);
+                let idxB = INGREDIENT_ORDER.indexOf(b.name);
+                if (idxA === -1) idxA = 9999;
+                if (idxB === -1) idxB = 9999;
+                return idxA - idxB;
+            });
+
+            if (filterKey) {
+                surplusList = surplusList.filter(s => s.name.toLowerCase().includes(filterKey));
+            }
+
+            if (surplusList.length === 0) {
+                listContainer.innerHTML = `<p style="color: #ffffff; text-shadow: 1px 1px 0 #000; padding: 10px; grid-column: 1 / -1;">目前沒有可出售食材。</p>`;
+            } else {
+                surplusList.forEach(item => {
+                    const circleRankClass = getCircleRankClass(item.rank || "一般");
+                    listContainer.innerHTML += `
+                        <div class="overview-item" style="cursor: default;" title="${item.name} (${item.rank || '一般'})｜庫存: ${item.inventory} / 需求: ${item.demand} / 可出售: ${item.surplus}">
+                            <div class="overview-circle ${circleRankClass}">
+                                ${renderImgHtml(item.icon, "overview-food-img", defaultIngIconImg, item.name)}
+                            </div>
+                            <span class="overview-name">${item.name}</span>
+                            <span class="overview-subtext">可售 ${item.surplus}</span>
+                        </div>
+                    `;
+                });
+            }
+
+            document.getElementById('all-surplus-modal').style.display = 'flex';
+        }
+
+        function openInventoryEditModal() {
+            const char = gameData[currentKey];
+            const inv = getInventory(currentKey);
+
+            document.getElementById('modal-inv-title').innerText = `📦 修改 ${char.name} 的庫存`;
+            document.getElementById('inv-search').value = '';
+            renderInventoryEditList(inv);
+
+            document.getElementById('edit-inventory-modal').style.display = 'flex';
+        }
+
+        function renderInventoryEditList(inv) {
+            const listContainer = document.getElementById('inventory-edit-list');
+            listContainer.innerHTML = '';
+
+            const ingMap = getIngredientsMap();
+
+            getAllIngredientsList().forEach(item => {
+                const qty = inv[item] || 0;
+                const ingMeta = ingMap[item] || { rank: "一般", icon: "" };
+                const safeItem = item.replace(/'/g, "\\'");
+                const rank = ingMeta.rank || "一般";
+
+                listContainer.innerHTML += `
+                    <div class="ing-grid-card card-rank-${rank}" data-name="${item.toLowerCase()}">
+                        <div class="ing-card-top">
+                            <div class="ing-qty-corner">
+                                <input type="number" class="ing-grid-input inv-input" data-item="${item}" value="${qty}" min="0">
+                                <span class="ing-qty-label">數量</span>
+                            </div>
+                        </div>
+                        ${renderImgHtml(ingMeta.icon, "ing-card-pic", defaultIngIconImg, item)}
+                        <div class="ing-card-name editable-name" onclick="openEditSingleIngredientModal('${safeItem}')" title="點擊編輯食材屬性">${item}</div>
+                    </div>
+                `;
+            });
+        }
+
+        function filterInventoryList() {
+            const filterKey = document.getElementById('inv-search')?.value.trim().toLowerCase() || '';
+            const cards = document.querySelectorAll('#inventory-edit-list .ing-grid-card');
+            cards.forEach(card => {
+                const name = card.getAttribute('data-name') || '';
+                card.style.display = (!filterKey || name.includes(filterKey)) ? 'flex' : 'none';
+            });
+        }
+
+        function openAddIngredientModal(returnTarget = 'inventory', defaultName = '') {
+            addIngReturnTarget = returnTarget;
+            document.getElementById('ing-item-editor-title').innerText = "➕ 新增食材種類";
+            document.getElementById('editing-ing-original-name').value = "";
+            document.getElementById('edit-ing-name').value = defaultName;
+            setTagGroupValue('edit-ing-rank', 'edit-ing-rank-tags', '一般');
+            document.getElementById('edit-ing-icon-base64').value = "";
+            
+            const preview = document.getElementById('edit-ing-icon-preview');
+            preview.removeAttribute('data-loaded');
+            if (defaultName) {
+                preview.setAttribute('data-name', defaultName);
+                preview.setAttribute('data-fallback', defaultIngIconImg);
+                preview.setAttribute('data-attempt', '0');
+                preview.onerror = function() { window.imgErr(this); };
+                preview.src = `${defaultName}.png`;
+            } else {
+                preview.onerror = null;
+                preview.src = defaultIngIconImg;
+            }
+            preview.style.display = "block";
+            
+            document.getElementById('edit-ing-file-input').value = "";
+            document.getElementById('edit-ingredient-item-modal').style.display = 'flex';
+        }
+
+        function openAddIngredientFromRecipe() {
+            const searchVal = document.getElementById('recipe-ing-search')?.value.trim() || '';
+            openAddIngredientModal('recipe', searchVal);
+        }
+
+        function openEditSingleIngredientModal(ingName) {
+            addIngReturnTarget = 'inventory';
+            const ingMap = getIngredientsMap();
+            const meta = ingMap[ingName] || { rank: "一般", icon: "" };
+
+            document.getElementById('ing-item-editor-title').innerText = `✏️ 編輯食材：${ingName}`;
+            document.getElementById('editing-ing-original-name').value = ingName;
+            document.getElementById('edit-ing-name').value = ingName;
+            setTagGroupValue('edit-ing-rank', 'edit-ing-rank-tags', meta.rank || "一般");
+            document.getElementById('edit-ing-icon-base64').value = meta.icon || "";
+            
+            const preview = document.getElementById('edit-ing-icon-preview');
+            preview.removeAttribute('data-loaded');
+            if (meta.icon && meta.icon.startsWith('data:image')) {
+                preview.onerror = null;
+                preview.src = meta.icon;
+            } else {
+                preview.setAttribute('data-name', ingName);
+                preview.setAttribute('data-fallback', defaultIngIconImg);
+                preview.setAttribute('data-attempt', '0');
+                preview.onerror = function() { window.imgErr(this); };
+                preview.src = `${ingName}.png`;
+            }
+            preview.style.display = "block";
+            
+            document.getElementById('edit-ing-file-input').value = "";
+
+            document.getElementById('edit-ingredient-item-modal').style.display = 'flex';
+        }
+
+        function saveSingleIngredientInfo() {
+            const origName = document.getElementById('editing-ing-original-name').value;
+            const newName = document.getElementById('edit-ing-name').value.trim();
+            const newRank = document.getElementById('edit-ing-rank').value;
+            const newIcon = document.getElementById('edit-ing-icon-base64').value;
+
+            if (!newName) {
+                alert('請輸入食材名稱！');
+                return;
+            }
+
+            let ingMap = getIngredientsMap();
+
+            if (origName) {
+                if (origName !== newName && ingMap[newName]) {
+                    alert('已有該食材！');
+                    return;
+                }
+                if (origName !== newName) {
+                    delete ingMap[origName];
+                    ['rabbit', 'artemis'].forEach(key => {
+                        let inv = getInventory(key);
+                        if (inv[origName] !== undefined) {
+                            inv[newName] = inv[origName];
+                            delete inv[origName];
+                            localStorage.setItem(`inv_${key}`, JSON.stringify(inv));
+                        }
+                        let recipes = getRecipes(key);
+                        recipes.forEach(r => {
+                            if (r.ingredients && r.ingredients[origName] !== undefined) {
+                                r.ingredients[newName] = r.ingredients[origName];
+                                delete r.ingredients[origName];
+                            }
+                        });
+                        localStorage.setItem(`recipes_${key}`, JSON.stringify(recipes));
+                    });
+                }
+                ingMap[newName] = { rank: newRank, icon: newIcon };
+            } else {
+                if (ingMap[newName]) {
+                    alert('已有該食材！');
+                    return;
+                }
+                ingMap[newName] = { rank: newRank, icon: newIcon };
+            }
+
+            saveIngredientsMap(ingMap);
+            closeModal('edit-ingredient-item-modal');
+
+            if (addIngReturnTarget === 'recipe') {
+                const currentSelections = {};
+                document.querySelectorAll('#new-recipe-ingredients-list .ing-grid-card').forEach(card => {
+                    const cb = card.querySelector('.ing-checkbox');
+                    const inp = card.querySelector('.new-ing-input');
+                    const item = inp.getAttribute('data-item');
+                    if (cb.checked) {
+                        currentSelections[item] = parseInt(inp.value) || 0;
+                    }
+                });
+                currentSelections[newName] = 1;
+                document.getElementById('recipe-ing-search').value = '';
+                populateRecipeIngredientsGrid(currentSelections);
+            } else {
+                const inv = getInventory(currentKey);
+                document.querySelectorAll('#inventory-edit-list .inv-input').forEach(inp => {
+                    inv[inp.getAttribute('data-item')] = parseInt(inp.value) || 0;
+                });
+                if (inv[newName] === undefined) inv[newName] = 0;
+                renderInventoryEditList(inv);
+                filterInventoryList();
+            }
+            renderUI();
+        }
+
+        function saveInventory() {
+            const inv = getInventory(currentKey);
+            const inputs = document.querySelectorAll('.inv-input');
+
+            inputs.forEach(input => {
+                const item = input.getAttribute('data-item');
+                const val = parseInt(input.value) || 0;
+                inv[item] = val;
+            });
+
+            localStorage.setItem(`inv_${currentKey}`, JSON.stringify(inv));
+            closeModal('edit-inventory-modal');
+            renderUI();
+        }
+
+        function filterRecipeIngList() {
+            const filterKey = document.getElementById('recipe-ing-search').value.trim().toLowerCase();
+            const cards = document.querySelectorAll('#new-recipe-ingredients-list .ing-grid-card');
+            cards.forEach(card => {
+                const name = card.getAttribute('data-name') || '';
+                card.style.display = (!filterKey || name.includes(filterKey)) ? 'flex' : 'none';
+            });
+        }
+
+        function populateRecipeIngredientsGrid(selectedMap = {}) {
+            const listContainer = document.getElementById('new-recipe-ingredients-list');
+            listContainer.innerHTML = '';
+            const ingMap = getIngredientsMap();
+            const allList = getAllIngredientsList();
+
+            allList.forEach((item, index) => {
+                const isSelected = Object.prototype.hasOwnProperty.call(selectedMap, item);
+                const currentQty = isSelected ? selectedMap[item] : 0;
+                const ingMeta = ingMap[item] || { rank: "一般", icon: "" };
+                const rank = ingMeta.rank || "一般";
+
+                listContainer.innerHTML += `
+                    <div class="ing-grid-card card-rank-${rank} ${isSelected ? 'selected-row' : ''}" data-order="${index}" data-name="${item.toLowerCase()}">
+                        <div class="ing-card-top">
+                            <div class="ing-qty-corner">
+                                <input type="number" class="ing-grid-input new-ing-input" data-item="${item}" value="${currentQty}" min="0" oninput="onIngQtyInput(this)">
+                                <span class="ing-qty-label">每份用量</span>
+                            </div>
+                            <input type="checkbox" class="ing-checkbox" data-item="${item}" ${isSelected ? 'checked' : ''} onchange="onIngCheckChange(this)">
+                        </div>
+                        ${renderImgHtml(ingMeta.icon, "ing-card-pic", defaultIngIconImg, item)}
+                        <div class="ing-card-name" title="${item}">${item}</div>
+                    </div>
+                `;
+            });
+
+            sortRecipeIngCards();
+        }
+
+        function openAddRecipeModal() {
+            openedFromAllRecipes = false;
+            document.getElementById('recipe-editor-title').innerText = '➕ 新增食譜';
+            document.getElementById('editing-recipe-index').value = '-1';
+            document.getElementById('new-recipe-name').value = '';
+            document.getElementById('new-recipe-portions').value = '1';
+            
+            setTagGroupValue('new-recipe-rank', 'new-recipe-rank-tags', '稀有');
+            setTagGroupValue('new-recipe-status', 'new-recipe-status-tags', 'true');
+            setTagGroupValue('new-recipe-attr', 'new-recipe-attr-tags', '攻擊');
+            
+            document.getElementById('new-recipe-icon-base64').value = '';
+            
+            const preview = document.getElementById('new-recipe-icon-preview');
+            preview.removeAttribute('data-loaded');
+            preview.onerror = null;
+            preview.src = defaultRecipeIconImg;
+            preview.style.display = 'block';
+            
+            document.getElementById('recipe-file-input').value = '';
+            document.getElementById('recipe-ing-search').value = '';
+
+            populateRecipeIngredientsGrid({});
+
+            document.getElementById('add-recipe-modal').style.display = 'flex';
+        }
+
+        function openEditRecipeModal(recipeIndex) {
+            const recipes = getRecipes(currentKey);
+            const recipe = recipes[recipeIndex];
+
+            if (!recipe) return;
+
+            const portions = recipe.portions !== undefined ? Number(recipe.portions) : 1;
+
+            document.getElementById('recipe-editor-title').innerText = `✏️ 編輯食譜：${recipe.name}`;
+            document.getElementById('editing-recipe-index').value = recipeIndex;
+            document.getElementById('new-recipe-name').value = recipe.name;
+            document.getElementById('new-recipe-portions').value = portions;
+            
+            setTagGroupValue('new-recipe-rank', 'new-recipe-rank-tags', recipe.rank || '稀有');
+            setTagGroupValue('new-recipe-status', 'new-recipe-status-tags', recipe.learned !== false ? 'true' : 'false');
+            setTagGroupValue('new-recipe-attr', 'new-recipe-attr-tags', recipe.attr || '攻擊');
+            
+            document.getElementById('new-recipe-icon-base64').value = recipe.icon || '';
+            
+            const preview = document.getElementById('new-recipe-icon-preview');
+            preview.removeAttribute('data-loaded');
+            if (recipe.icon && recipe.icon.startsWith('data:image')) {
+                preview.onerror = null;
+                preview.src = recipe.icon;
+            } else {
+                preview.setAttribute('data-name', recipe.name);
+                preview.setAttribute('data-fallback', defaultRecipeIconImg);
+                preview.setAttribute('data-attempt', '0');
+                preview.onerror = function() { window.imgErr(this); };
+                preview.src = `${recipe.name}.png`;
+            }
+            preview.style.display = 'block';
+            
+            document.getElementById('recipe-file-input').value = '';
+            document.getElementById('recipe-ing-search').value = '';
+
+            populateRecipeIngredientsGrid(recipe.ingredients || {});
+
+            document.getElementById('add-recipe-modal').style.display = 'flex';
+        }
+
+        function saveRecipe() {
+            const name = document.getElementById('new-recipe-name').value.trim();
+            const rank = document.getElementById('new-recipe-rank').value;
+            const learned = document.getElementById('new-recipe-status').value === 'true';
+            const portions = Math.max(0, parseInt(document.getElementById('new-recipe-portions').value) || 0);
+            const attr = document.getElementById('new-recipe-attr').value;
+            const icon = document.getElementById('new-recipe-icon-base64').value;
+            const editIndex = parseInt(document.getElementById('editing-recipe-index').value);
+
+            if (!name) {
+                alert('請輸入食譜名稱！');
+                return;
+            }
+
+            const recipes = getRecipes(currentKey);
+            const duplicateIdx = recipes.findIndex((r, idx) => r.name === name && idx !== editIndex);
+            if (duplicateIdx !== -1) {
+                alert('已有該食譜！');
+                return;
+            }
+
+            let rawIngredients = {};
+            const cards = document.querySelectorAll('#new-recipe-ingredients-list .ing-grid-card');
+            cards.forEach(card => {
+                const checkbox = card.querySelector('.ing-checkbox');
+                const input = card.querySelector('.new-ing-input');
+                const item = input.getAttribute('data-item');
+                const val = parseInt(input.value) || 0;
+                if (checkbox.checked || val > 0) {
+                    rawIngredients[item] = val;
+                }
+            });
+
+            if (Object.keys(rawIngredients).length === 0) {
+                alert('請至少勾選一項所需食材！');
+                return;
+            }
+
+            let ingredients = {};
+            getSortedRecipeIngredientsEntries(rawIngredients).forEach(([k, v]) => {
+                ingredients[k] = v;
+            });
+
+            const recipeObj = { name, rank, learned, portions, attr, icon, ingredients };
+            const otherKey = currentKey === 'rabbit' ? 'artemis' : 'rabbit';
+            let otherRecipes = getRecipes(otherKey);
+
+            let targetIndex = editIndex;
+
+            if (editIndex >= 0 && editIndex < recipes.length) {
+                const oldName = recipes[editIndex].name;
+                recipes[editIndex] = recipeObj;
+
+                const otherIdx = otherRecipes.findIndex(r => r.name === oldName || r.name === name);
+                if (otherIdx !== -1) {
+                    otherRecipes[otherIdx] = {
+                        ...otherRecipes[otherIdx],
+                        name,
+                        rank,
+                        attr,
+                        icon: icon || otherRecipes[otherIdx].icon,
+                        ingredients: { ...ingredients }
+                    };
+                } else {
+                    otherRecipes.push({
+                        name,
+                        rank,
+                        learned: false,
+                        portions: 0,
+                        attr,
+                        icon,
+                        ingredients: { ...ingredients }
+                    });
+                }
+            } else {
+                recipes.push(recipeObj);
+                targetIndex = recipes.length - 1;
+
+                if (!otherRecipes.some(r => r.name === name)) {
+                    otherRecipes.push({
+                        name,
+                        rank,
+                        learned: false,
+                        portions: 0,
+                        attr,
+                        icon,
+                        ingredients: { ...ingredients }
+                    });
+                }
+            }
+
+            localStorage.setItem(`recipes_${currentKey}`, JSON.stringify(recipes));
+            localStorage.setItem(`recipes_${otherKey}`, JSON.stringify(otherRecipes));
+            closeModal('add-recipe-modal');
+            renderUI();
+
+            if (openedFromAllRecipes) {
+                openAllRecipesModal();
+            } else {
+                openRecipeDetailByIndex(targetIndex, false);
+            }
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function setupSearchInputs() {
+            const bindSearch = (id, callback) => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                let isComposing = false;
+                el.addEventListener('compositionstart', () => { isComposing = true; });
+                el.addEventListener('compositionend', () => {
+                    isComposing = false;
+                    callback();
+                });
+                el.addEventListener('input', () => {
+                    if (!isComposing) callback();
+                });
+            };
+
+            bindSearch('recipe-search', renderUI);
+            bindSearch('surplus-search', renderUI);
+            bindSearch('all-recipes-search', openAllRecipesModal);
+            bindSearch('all-surplus-search', openAllSurplusModal);
+            bindSearch('inv-search', filterInventoryList);
+            bindSearch('recipe-ing-search', filterRecipeIngList);
+        }
+
+        // 初始化執行
+        syncBothCharactersRecipes();
+        setupSearchInputs();
+        renderUI();
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>杖劍傳說 吃飽飽賺錢錢</title>
+    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&display=swap" rel="stylesheet">
+    <style>
+        /* 強制所有元素使用像素字體與字體陰影增加清晰度 */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'DotGothic16', monospace !important;
+            letter-spacing: 1px;
+        }
+
+        /* 背景：全顯示不裁切 (contain)，JS會自動載入背景圖片 */
+        body {
+            background-color: #111827; 
+            background-size: contain;
+            background-position: center top;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            color: #ffffff;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* 主容器：深藍色帶有 85% 不透明度，讓背景微透 */
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+            background-color: rgba(35, 51, 99, 0.85); 
+            border: 4px solid #ffffff;
+            border-radius: 12px;
+            box-shadow: 6px 6px 0px rgba(0,0,0,0.5);
+            padding: 20px;
+        }
+
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #3a4e8c;
+            padding-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #ffcb05;
+            text-shadow: 2px 2px 0px #000000;
+        }
+
+        .header-btns {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* 角色切換標籤 */
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            background-color: #1c284d;
+            color: #ffffff;
+            border: 2px solid #ffffff;
+            border-radius: 6px;
+            padding: 8px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 4px 0px rgba(0,0,0,0.4);
+            transition: all 0.1s;
+            text-shadow: 1px 1px 0px #000000;
+        }
+
+        .tab-btn:active {
+            transform: translateY(4px);
+            box-shadow: 0 0px 0px rgba(0,0,0,0.4);
+        }
+
+        .tab-btn.active {
+            background-color: #3a4e8c;
+            color: #ffcb05;
+            font-weight: bold;
+            border-color: #ffcb05;
+        }
+
+        /* 動作按鈕 */
+        .action-btn {
+            background-color: #1c284d;
+            color: #ffffff;
+            border: 2px solid #ffffff;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            box-shadow: 0 3px 0px rgba(0,0,0,0.4);
+            transition: all 0.1s;
+            text-shadow: 1px 1px 0px #000000;
+            white-space: nowrap;
+        }
+
+        .action-btn:hover { background-color: #3a4e8c; }
+        .action-btn:active { transform: translateY(3px); box-shadow: 0 0px 0px rgba(0,0,0,0.4); }
+
+        .action-btn.add-recipe {
+            background-color: #e74c3c;
+            border-color: #ffffff;
+        }
+        .action-btn.add-recipe:hover { background-color: #c0392b; }
+
+        /* 區塊標題與篩選列 */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            margin: 20px 0 15px 0;
+            border-bottom: 2px dashed #3a4e8c;
+            padding-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            color: #ffcb05;
+            font-weight: bold;
+            white-space: nowrap;
+            margin-right: auto;
+            text-shadow: 1px 1px 0px #000000;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        /* 點選標籤群組樣式 */
+        .tag-group {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+        }
+
+        .filter-tag-group {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 3px;
+            border-radius: 6px;
+            border: 1px solid #3a4e8c;
+        }
+
+        .tag-option {
+            background-color: #1c284d;
+            color: #b3c0e6;
+            border: 2px solid #3a4e8c;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.1s;
+            text-shadow: 1px 1px 0px #000;
+            user-select: none;
+        }
+
+        .tag-option.sm {
+            padding: 3px 8px;
+            font-size: 12px;
+            border-width: 1px;
+        }
+
+        .tag-option:hover {
+            background-color: #2c3e75;
+            color: #ffffff;
+        }
+
+        .tag-option.active {
+            background-color: #3a4e8c;
+            color: #ffcb05;
+            border-color: #ffcb05;
+            font-weight: bold;
+            box-shadow: 0 2px 0px rgba(0,0,0,0.4);
+        }
+
+        /* 搜尋輸入框 */
+        .search-input {
+            background-color: #1c284d;
+            color: #ffffff;
+            border: 2px solid #ffffff;
+            border-radius: 4px;
+            padding: 0 10px;
+            height: 32px;
+            font-size: 13px;
+            box-sizing: border-box;
+            margin: 0;
+            outline: none;
+            vertical-align: middle;
+            text-shadow: 1px 1px 0px #000000;
+            width: 135px;
+            flex-shrink: 0;
+        }
+        .search-input::placeholder { color: #8a9fc4; text-shadow: none; }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 15px;
+            min-height: 80px;
+        }
+
+        /* 卡片樣式 */
+        .recipe-card {
+            background-color: #1c284d;
+            border: 2px solid #ffffff;
+            border-radius: 8px;
+            box-shadow: 3px 3px 0px rgba(0,0,0,0.5);
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.15s;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .recipe-card.unlearned { background-color: #111827; opacity: 0.85; }
+        .recipe-card:hover { background-color: #3a4e8c; transform: translate(-2px, -2px); box-shadow: 5px 5px 0px rgba(0,0,0,0.5); }
+        .recipe-card:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0px rgba(0,0,0,0.5); }
+
         .recipe-header-flex { display: flex; align-items: center; gap: 12px; }
         .ing-info-flex { display: flex; align-items: center; gap: 10px; }
 
