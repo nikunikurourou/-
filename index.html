@@ -15,7 +15,6 @@
             letter-spacing: 1px;
         }
 
-        /* 背景：全顯示不裁切 (contain)，JS會自動載入背景圖片 */
         body {
             background-color: #111827; 
             background-size: contain;
@@ -27,7 +26,6 @@
             min-height: 100vh;
         }
 
-        /* 主容器：深藍色帶有 85% 不透明度，讓背景微透 */
         .container {
             max-width: 950px;
             margin: 0 auto;
@@ -61,7 +59,6 @@
             flex-wrap: wrap;
         }
 
-        /* 角色切換標籤 */
         .tabs {
             display: flex;
             gap: 12px;
@@ -93,7 +90,6 @@
             border-color: #ffcb05;
         }
 
-        /* 動作按鈕 */
         .action-btn {
             background-color: #1c284d;
             color: #ffffff;
@@ -117,7 +113,6 @@
         }
         .action-btn.add-recipe:hover { background-color: #c0392b; }
 
-        /* 區塊標題與篩選列 */
         .section-header {
             display: flex;
             align-items: center;
@@ -146,7 +141,6 @@
             justify-content: flex-end;
         }
 
-        /* 點選標籤群組樣式 */
         .tag-group {
             display: flex;
             gap: 6px;
@@ -196,7 +190,6 @@
             box-shadow: 0 2px 0px rgba(0,0,0,0.4);
         }
 
-        /* 搜尋輸入框 */
         .search-input {
             background-color: #1c284d;
             color: #ffffff;
@@ -222,73 +215,198 @@
             min-height: 80px;
         }
 
-        /* 卡片樣式：確保同列卡片等高且內部對齊 */
         .recipe-card {
             background-color: #1c284d;
             border: 2px solid #ffffff;
-            border-radius: 8px;
-            box-shadow: 3px 3px 0px rgba(0,0,0,0.5);
-            padding: 12px;
+            border-radius: 12px;
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.5);
+            padding: 0;
             cursor: pointer;
             transition: all 0.15s;
             position: relative;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            overflow: hidden;
             height: 100%;
         }
 
-        .recipe-card.unlearned { background-color: #111827; opacity: 0.85; }
-        .recipe-card:hover { background-color: #3a4e8c; transform: translate(-2px, -2px); box-shadow: 5px 5px 0px rgba(0,0,0,0.5); }
+        .recipe-card.unlearned { opacity: 0.82; }
+        .recipe-card:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0px rgba(0,0,0,0.65); border-color: #ffcb05; }
         .recipe-card:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0px rgba(0,0,0,0.5); }
 
-        /* 主頁食譜卡片右上角的食用按鈕：與 ICON 及食譜名稱上方對齊 */
+        .recipe-card-header {
+            padding: 9px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.25);
+            background: linear-gradient(90deg, #2980b9 0%, #1c284d 100%);
+            position: relative;
+        }
+        .recipe-card.card-bg-稀有 .recipe-card-header {
+            background: linear-gradient(90deg, #2980b9 0%, #1c355e 100%);
+        }
+        .recipe-card.card-bg-史詩 .recipe-card-header {
+            background: linear-gradient(90deg, #8e44ad 0%, #311b47 100%);
+        }
+        .recipe-card.card-bg-傳說 .recipe-card-header {
+            background: linear-gradient(90deg, #d35400 0%, #4a210f 100%);
+        }
+        .recipe-card.card-bg-奇蹟 .recipe-card-header {
+            background: linear-gradient(90deg, #f39c12 0%, #594110 100%);
+        }
+
+        .recipe-card-title {
+            font-size: 18px;
+            color: #ffffff;
+            font-weight: bold;
+            line-height: 1.2;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-shadow: 2px 2px 0px #000000;
+            flex: 1;
+            min-width: 0;
+        }
+
         .card-consume-btn {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background-color: #27ae60;
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(180deg, #2ecc71 0%, #27ae60 100%);
             color: #ffffff;
             border: 2px solid #ffffff;
-            border-radius: 4px;
-            padding: 2px 8px;
-            font-size: 12px;
-            line-height: 1.2;
+            border-radius: 6px;
+            padding: 0;
+            font-size: 14px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
             cursor: pointer;
             box-shadow: 0 2px 0px rgba(0,0,0,0.5);
             text-shadow: 1px 1px 0px #000;
             z-index: 5;
             transition: all 0.1s;
+            flex-shrink: 0;
         }
-        .card-consume-btn:hover { background-color: #2ecc71; transform: scale(1.05); }
+        .card-consume-btn:hover { background: linear-gradient(180deg, #40d47e 0%, #2ecc71 100%); transform: scale(1.08); }
         .card-consume-btn:active { transform: translateY(2px); box-shadow: none; }
 
-        /* 修正主頁食譜標題區塊：固定高度、防止食譜名稱換行導致下方框錯位 */
-        .recipe-header-flex {
+        .recipe-card-banner {
+            background: radial-gradient(circle at 75% 50%, #263869 0%, #141e3a 75%);
+            padding: 12px 16px;
             display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            padding-right: 64px;
-            min-height: 40px;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 92px;
+            border-bottom: 2px solid #3a4e8c;
+            position: relative;
         }
-        .recipe-title-box {
+
+        .recipe-demand-block {
             display: flex;
             flex-direction: column;
             gap: 4px;
-            margin-top: -1px;
-            min-width: 0;
-            flex: 1;
-        }
-        .recipe-title-box h3 {
-            font-size: 17px;
-            line-height: 1.15;
-            margin: 0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            z-index: 2;
         }
 
-        .ing-info-flex { display: flex; align-items: center; gap: 10px; }
+        .recipe-demand-label {
+            font-size: 14px;
+            color: #b3c0e6;
+            font-weight: bold;
+            text-shadow: 1px 1px 0px #000000;
+        }
+
+        .recipe-demand-num {
+            font-size: 26px;
+            color: #ffcb05;
+            font-weight: bold;
+            line-height: 1.1;
+            text-shadow: 2px 2px 0px #000000;
+        }
+
+        .recipe-showcase-img {
+            width: 72px;
+            height: 72px;
+            object-fit: contain;
+            image-rendering: pixelated;
+            filter: drop-shadow(3px 4px 4px rgba(0,0,0,0.7));
+            flex-shrink: 0;
+            z-index: 2;
+        }
+
+        .recipe-card-footer {
+            background-color: #1c284d;
+            padding: 10px 12px 12px 12px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .recipe-missing-title {
+            font-size: 13px;
+            color: #b3c0e6;
+            font-weight: bold;
+            text-shadow: 1px 1px 0px #000000;
+        }
+
+        .recipe-missing-well {
+            background-color: rgba(12, 18, 36, 0.65);
+            border: 1px solid #3a4e8c;
+            border-radius: 8px;
+            padding: 10px;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            min-height: 68px;
+        }
+
+        .recipe-ings-flex {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .missing-ing-circle {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 2px solid #8a9fc4;
+            background: radial-gradient(circle, #2b3a67 20%, #151f3d 90%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+            flex-shrink: 0;
+        }
+
+        .missing-ing-circle img {
+            width: 78%;
+            height: 78%;
+            object-fit: contain;
+            image-rendering: pixelated;
+        }
+
+        .missing-qty-badge {
+            position: absolute;
+            bottom: -3px;
+            right: -3px;
+            background-color: rgba(15, 20, 35, 0.92);
+            color: #ff4757;
+            border: 1.5px solid #8a9fc4;
+            border-radius: 4px;
+            padding: 0px 4px;
+            font-size: 12px;
+            font-weight: bold;
+            line-height: 1.15;
+            text-shadow: 1px 1px 0px #000000;
+            z-index: 3;
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+        }
 
         .recipe-icon, .ing-icon {
             width: 44px;
@@ -301,7 +419,6 @@
             image-rendering: pixelated;
         }
 
-        /* 圓形食材 ICON 容器 */
         .ing-circle-icon {
             width: 48px;
             height: 48px;
@@ -319,20 +436,6 @@
 
         .ing-circle-icon img { width: 80%; height: 80%; object-fit: contain; background-color: transparent;}
 
-        /* 主頁與詳情頁共用的圓形食材並列區塊：設定 flex: 1 讓同列卡片內框底部也切齊 */
-        .recipe-ings-flex {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            background-color: rgba(0, 0, 0, 0.35);
-            border: 1px dashed #e74c3c;
-            padding: 8px;
-            border-radius: 6px;
-            flex: 1;
-            align-content: flex-start;
-        }
-
-        /* 嚴格自適應寬度，僅剛好包圍項目且不拉寬留白 */
         .compact-box {
             display: inline-flex;
             gap: 12px 10px;
@@ -347,7 +450,6 @@
         .gathering-box { border: 2px dashed #ffcb05; margin-bottom: 5px; }
         .surplus-box { border: 2px dashed #2ecc71; }
 
-        /* 可出售食材主頁排版：上方緊湊框 + 下方與更多食譜同寬的網格列 */
         .surplus-section-wrap {
             display: flex;
             flex-direction: column;
@@ -356,7 +458,6 @@
             width: 100%;
         }
 
-        /* 讓「更多食譜」與「更多食材」永遠保持完全相同的寬度 */
         .more-btn-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -364,7 +465,6 @@
             width: 100%;
         }
 
-        /* 統一每個圓形食材項目的寬度，確保換行時上下列完美垂直對齊 */
         .gathering-item {
             display: flex;
             flex-direction: column;
@@ -384,7 +484,6 @@
             text-overflow: ellipsis;
         }
 
-        /* 食材下方的售出小按鈕 */
         .sell-item-btn {
             background-color: #d35400;
             color: #ffffff;
@@ -402,7 +501,6 @@
         .sell-item-btn:hover { background-color: #e67e22; transform: scale(1.05); }
         .sell-item-btn:active { transform: translateY(2px); box-shadow: none; }
 
-        /* ==================== 網頁深藍金配色：遊戲交易行與編輯器統一彈窗風格 ==================== */
         .game-trade-modal {
             background-color: #233363;
             border: 4px solid #ffffff;
@@ -418,7 +516,6 @@
             position: relative;
         }
 
-        /* 統一的編輯器寬版彈窗 (用於新增/編輯食譜、編輯食材、修改庫存) */
         .game-trade-modal.editor-modal {
             width: 580px;
         }
@@ -464,7 +561,6 @@
             z-index: 10;
         }
 
-        /* 編輯器表單內容滾動區 (食譜編輯與食材編輯共用) */
         .game-editor-body {
             padding: 18px 20px;
             overflow-y: auto;
@@ -474,7 +570,6 @@
         .game-editor-body::-webkit-scrollbar { width: 8px; }
         .game-editor-body::-webkit-scrollbar-thumb { background: #ffffff; border-radius: 4px; }
 
-        /* 統一的圖示上傳預覽框 */
         .editor-upload-box {
             display: flex;
             align-items: center;
@@ -525,7 +620,6 @@
             text-shadow: 1px 1px 0 #000;
         }
 
-        /* 圓形料理/食材圖示外層容器：讓左上角屬性徽章不被裁切 */
         .game-trade-icon-wrap {
             position: relative;
             width: 84px;
@@ -560,7 +654,6 @@
             image-rendering: pixelated;
         }
 
-        /* 食譜詳情圓形圖示左上角的屬性徽章 */
         .game-trade-attr-corner {
             position: absolute;
             top: 0px;
@@ -586,7 +679,6 @@
             image-rendering: pixelated;
         }
 
-        /* 食譜視窗中間的「料理配方」區塊 */
         .game-trade-recipe-section {
             background-color: #1c284d;
             border-bottom: 2px solid #3a4e8c;
@@ -612,7 +704,6 @@
             min-height: 110px;
         }
 
-        /* 數量控制列：確保文字與所有圓形按鈕、膠囊框在同一水平線完美置中對齊 */
         .game-trade-qty-bar {
             background-color: #182242;
             padding: 12px 20px;
@@ -639,7 +730,6 @@
             gap: 8px;
         }
 
-        /* 圓形符號按鈕：使用 SVG 確保 100% 絕對幾何置中對齊 */
         .game-round-btn {
             width: 32px;
             height: 32px;
@@ -689,7 +779,6 @@
             line-height: 1;
         }
 
-        /* 底部雙膠囊按鈕區 (所有彈窗統一使用) */
         .game-trade-footer {
             background-color: #182242;
             padding: 14px 20px 16px 20px;
@@ -728,14 +817,12 @@
             background: linear-gradient(180deg, #2ecc71 0%, #27ae60 100%);
         }
 
-        /* 手機版面優化：對齊與拉寬 */
         @media (max-width: 600px) {
             body { padding: 10px; }
             .container { padding: 14px; }
             .surplus-section-wrap {
                 align-items: stretch;
             }
-            /* 手機版可出售食材框：固定4欄網格完美對齊 */
             .surplus-box {
                 display: grid;
                 grid-template-columns: repeat(4, 1fr);
@@ -743,7 +830,6 @@
                 width: 100%;
                 justify-items: center;
             }
-            /* 手機版今日採集推薦：3欄網格置中對齊 */
             .gathering-box {
                 display: inline-grid;
                 grid-template-columns: repeat(3, auto);
@@ -756,7 +842,6 @@
             }
         }
 
-        /* 食譜品質等級標題顏色 */
         .rank-rare { color: #5dade2 !important; text-shadow: 1px 1px 0px #000; }
         .rank-epic { color: #c39bd3 !important; text-shadow: 1px 1px 0px #000; }
         .rank-legend { color: #f39c12 !important; text-shadow: 1px 1px 0px #000; }
@@ -767,7 +852,6 @@
         .qty-red { color: #ff4757; font-weight: bold; font-size: 13px; }
         .qty-green { color: #2ecc71; font-weight: bold; font-size: 13px; }
 
-        /* 「+」展開按鈕卡片 */
         .more-card {
             background-color: rgba(255,255,255,0.05);
             border: 3px dashed #ffffff;
@@ -789,7 +873,6 @@
         .more-card .plus-icon { font-size: 32px; color: #ffffff; margin-bottom: 2px; text-shadow: 1px 1px 0 #000;}
         .more-card span { font-size: 14px; color: #ffffff; font-weight: bold; text-shadow: 1px 1px 0 #000;}
 
-        /* 彈窗樣式 */
         .modal {
             display: none;
             position: fixed;
@@ -831,7 +914,6 @@
         .btn-mini:hover { background-color: #3a4e8c; }
         .btn-mini:active { transform: translateY(2px); box-shadow: 0 0px 0px #000; }
 
-        /* 4欄式交易行網格排列 */
         .ing-grid-4 {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -950,7 +1032,6 @@
             cursor: pointer;
         }
 
-        /* 圓形徽章網格 */
         .overview-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -998,7 +1079,7 @@
         .overview-circle.circle-rare { background: radial-gradient(circle, #3b82f6 20%, #1d4ed8 90%); border-color: #60a5fa; }
         .overview-circle.circle-epic { background: radial-gradient(circle, #9333ea 20%, #581c87 90%); border-color: #c084fc; }
         .overview-circle.circle-legend { background: radial-gradient(circle, #ea580c 20%, #7c2d12 90%); border-color: #fb923c; }
-        .overview-circle.circle-miracle { background: radial-gradient(circle, #ca8a04 20%, #713f12 90%); border-color: #fef08a; box-shadow: 0 0 12px rgba(254, 240, 138, 0.7), inset 0 0 10px rgba(0,0,0,0.6); }
+        .overview-circle.circle-miracle { background: radial-gradient(circle, #ca8a04 20%, #713f12 90%); border-color: #fef08a; }
 
         .overview-food-img {
             width: 76%;
@@ -1119,20 +1200,18 @@
 
         <!-- 今日採集推薦區塊 -->
         <div class="section-header" style="margin-top: 0;">
-            <span class="section-title">今日採集推薦</span>
+            <span class="section-title">今日採集推薦 (點擊圖示可修改庫存)</span>
         </div>
         <div id="daily-gathering-container"></div>
 
         <div class="section-header">
             <span class="section-title">食譜</span>
             <div class="filter-group">
-                <!-- 習得狀態點選標籤 -->
                 <div class="filter-tag-group" id="main-learned-tags">
                     <span class="tag-option sm active" onclick="setMainFilter('learned', 'ALL', this)">全部狀態</span>
                     <span class="tag-option sm" onclick="setMainFilter('learned', 'LEARNED', this)">已習得</span>
                     <span class="tag-option sm" onclick="setMainFilter('learned', 'UNLEARNED', this)">未取得</span>
                 </div>
-                <!-- 加成屬性點選標籤 -->
                 <div class="filter-tag-group" id="main-attr-tags">
                     <span class="tag-option sm active" onclick="setMainFilter('attr', 'ALL', this)">全部屬性</span>
                     <span class="tag-option sm" onclick="setMainFilter('attr', '攻擊', this)">攻擊</span>
@@ -1180,7 +1259,6 @@
                     <span id="modal-recipe-demand-val" class="game-trade-val">0</span>
                     <span id="modal-recipe-status-text" class="game-trade-sub" style="color:#2ecc71;">已習得</span>
                 </div>
-                <!-- 圓形食譜圖示與左上角屬性徽章 -->
                 <div class="game-trade-icon-wrap">
                     <div id="modal-recipe-attr-badge" class="game-trade-attr-corner" style="display: none;"></div>
                     <div id="modal-recipe-icon-circle" class="game-trade-icon-circle">
@@ -1261,7 +1339,7 @@
         </div>
     </div>
 
-    <!-- 3. 新增 / 編輯食譜彈跳視窗 (與編輯食材統一風格配置) -->
+    <!-- 3. 新增 / 編輯食譜彈跳視窗 -->
     <div id="add-recipe-modal" class="modal" style="z-index: 130;">
         <div class="game-trade-modal editor-modal">
             <div class="game-trade-header">
@@ -1319,6 +1397,7 @@
 
                 <label>選擇所需食材與每份用量（已勾選的食材會自動置頂）：</label>
                 <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                    <!-- 移除強制英文設定，加入中文輸入法保護 -->
                     <input type="text" id="recipe-ing-search" class="search-input" placeholder="🔍 搜尋食材..." style="flex: 1; height: 34px;">
                     <button type="button" class="action-btn add-recipe" style="padding: 0 12px; height: 34px; font-size: 13px;" onclick="openAddIngredientFromRecipe()">➕ 新增食材</button>
                 </div>
@@ -1332,7 +1411,7 @@
         </div>
     </div>
 
-    <!-- 4. 編輯 / 新增食材彈跳視窗 (與編輯食譜完全統一風格配置) -->
+    <!-- 4. 編輯 / 新增食材彈跳視窗 -->
     <div id="edit-ingredient-item-modal" class="modal" style="z-index: 140;">
         <div class="game-trade-modal editor-modal-sm">
             <div class="game-trade-header">
@@ -1372,7 +1451,7 @@
         </div>
     </div>
 
-    <!-- 5. 修改庫存彈跳視窗 (同步統一外框與底部按鈕風格) -->
+    <!-- 5. 修改庫存彈跳視窗 -->
     <div id="edit-inventory-modal" class="modal" style="z-index: 125;">
         <div class="game-trade-modal editor-modal">
             <div class="game-trade-header">
@@ -1392,6 +1471,29 @@
             <div class="game-trade-footer">
                 <button type="button" class="game-pill-btn game-pill-cancel" onclick="closeModal('edit-inventory-modal')">取消</button>
                 <button type="button" class="game-pill-btn game-pill-confirm" onclick="saveInventory()">儲存庫存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. 快捷修改單一食材庫存彈窗 (點擊今日推薦時開啟) -->
+    <div id="quick-stock-modal" class="modal" style="z-index: 135;">
+        <div class="game-trade-modal" style="width: 360px;">
+            <div class="game-trade-header">
+                <div class="game-trade-title-wrap">
+                    <span id="quick-stock-title" class="game-trade-title">調整庫存</span>
+                </div>
+            </div>
+            <div class="game-editor-body" style="padding: 20px;">
+                <input type="hidden" id="quick-stock-ing-name" value="">
+                <div style="display:flex; align-items:center; gap:12px; margin-bottom:15px; justify-content:center;">
+                    <div id="quick-stock-icon-box" class="ing-circle-icon"></div>
+                </div>
+                <label style="font-size:15px; text-align:center; margin-bottom:10px;">目前庫存數量：</label>
+                <input type="number" id="quick-stock-input" class="text-input" min="0" style="font-size:22px; font-weight:bold; text-align:center; height:46px;">
+            </div>
+            <div class="game-trade-footer">
+                <button type="button" class="game-pill-btn game-pill-cancel" onclick="closeModal('quick-stock-modal')">取消</button>
+                <button type="button" class="game-pill-btn game-pill-confirm" onclick="saveQuickStock()">儲存</button>
             </div>
         </div>
     </div>
@@ -1420,7 +1522,7 @@
         </div>
     </div>
 
-    <!-- 所有可出售食材彈跳視窗 (列出全部符合門檻的可出售食材) -->
+    <!-- 所有可出售食材彈跳視窗 -->
     <div id="all-surplus-modal" class="modal">
         <div class="modal-content" style="padding: 20px;">
             <h2 style="font-size: 20px; color: #ffcb05; margin-bottom: 15px; text-shadow: 2px 2px 0px #000;">所有可出售食材總覽</h2>
@@ -1431,10 +1533,9 @@
     </div>
 
     <script>
-        // 內建您的專屬 Firebase Realtime Database 網址，所有裝置開啟網頁即自動雙向同步
         const DEFAULT_FIREBASE_URL = "https://scepterswordfoodinventory-default-rtdb.firebaseio.com/"; 
 
-        const DATA_VERSION = 'v2026_perfect_restore_v21';
+        const DATA_VERSION = 'v2026_perfect_restore_v23';
         const defaultRecipeIconImg = "食譜預設.png";
         const defaultIngIconImg = "食材預設.png";
 
@@ -1466,7 +1567,7 @@
             "竹筍", "大螯蟹", "蘭香茸", "雲海螺肉", "陽光果"
         ];
 
-        // 昇華一覽表 (可拾取食材 -> 昇華後食材)
+        // 昇華一覽表 (可拾取食材 -> 昇華後食材)[cite: 3]
         const UPGRADE_MAP = {
             "馬鈴薯": "甜馬鈴薯",
             "嘟嘟莓": "多汁嘟嘟莓",
@@ -1485,6 +1586,12 @@
             "陽光果": "黃金陽光果"
         };
 
+        // 昇華食材對應表 (昇華食材 -> 基礎可採集食材)[cite: 3]
+        const REVERSE_UPGRADE_MAP = {};
+        for (let [k, v] of Object.entries(UPGRADE_MAP)) {
+            REVERSE_UPGRADE_MAP[v] = k;
+        }
+
         let currentMainLearnedFilter = 'ALL';
         let currentMainAttrFilter = 'ALL';
         let currentModalLearnedFilter = 'ALL';
@@ -1493,18 +1600,15 @@
         let currentKey = 'rabbit';
         let openedFromAllRecipes = false;
 
-        // 售出彈窗專用狀態變數
         let currentSellStep = 1;
         let currentSellMin = 1;
         let currentSellMax = 1;
         let currentSellQty = 1;
 
-        // 食譜食用專用狀態變數
         let currentRecipeEatMin = 1;
         let currentRecipeEatMax = 1;
         let currentRecipeEatQty = 1;
 
-        // 雲端同步控制變數
         let cloudEventSource = null;
         let lastLocalPushTimestamp = 0;
 
@@ -1520,7 +1624,6 @@
 
         const userProvidedArtemisInv = {"多汁嘟嘟莓":40,"馬鈴薯":0,"甜馬鈴薯":0,"嘟嘟莓":0,"藍鳥蛋":0,"鈷藍鳥蛋":0,"潔白松露":0,"刺刺果":0,"尖刺刺果":0,"甲殼栗":0,"鐵甲殼栗":0,"綠洲之星":0,"綠洲新星":0,"寶藏駝奶":0,"水舞葉":0,"天舞青葉":0,"花瓣魚":0,"鮮花瓣魚":0,"章魚":0,"潮汐八爪魚":0,"紺青龍蝦":0,"麵粉":0,"蜂蜜":0,"百花蜜":0,"蜂王漿":0,"奶油":0,"咸奶油":0,"脫脂奶油":0,"咖哩":0,"濃香咖哩":0,"味噌":0,"辛味噌":0,"乾脆豆子":0,"竹筍":0,"山珍竹筍":0,"辣椒":0,"妖魔辣椒":0,"大螯蟹":0,"星夜蘭香茸":0,"雲海螺肉":0,"陽光果":0,"雷電香油":0,"純淨雷電香油":0,"精肉":0,"青禾":0,"嫩肉":0,"水":0,"胡椒":0,"糖":0,"鹽":0,"蘑菇":0,"芥菜":0,"琥珀凝膠":0,"絕品肉":0,"金盞靈芝":0,"黃金陽光果":0,"女神之淚":0,"生肉":0,"豆子":0,"大螯蟹王":0,"蘭香茸":0,"風飄雲海螺肉":0};
 
-        // ==================== ☁️ 全自動背景雲端同步核心函式 ====================
         function getCloudUrl() {
             let url = DEFAULT_FIREBASE_URL || '';
             return url ? url.trim().replace(/\/+$/, '') : '';
@@ -1694,6 +1797,7 @@
             openAllRecipesModal();
         }
 
+        // 修改：勾選切換時更新樣式與置頂排序
         function onIngCheckChange(checkbox) {
             const card = checkbox.closest('.ing-grid-card');
             const input = card.querySelector('.new-ing-input');
@@ -1707,6 +1811,7 @@
             sortRecipeIngCards();
         }
 
+        // 修改：直接輸入數量時，不即時重排DOM，防止輸入焦點遺失
         function onIngQtyInput(input) {
             const card = input.closest('.ing-grid-card');
             const checkbox = card.querySelector('.ing-checkbox');
@@ -1714,11 +1819,9 @@
             if (val > 0 && !checkbox.checked) {
                 checkbox.checked = true;
                 card.classList.add('selected-row');
-                sortRecipeIngCards();
             } else if (val === 0 && checkbox.checked) {
                 checkbox.checked = false;
                 card.classList.remove('selected-row');
-                sortRecipeIngCards();
             }
         }
 
@@ -2014,14 +2117,12 @@
             return scoredRecipes;
         }
 
-        // 依食材品質取得「最低可售出門檻（1份倍數）」：一般為5、稀有為3、史詩與傳說為1
         function getMinSellThreshold(rank) {
             if (rank === "一般") return 5;
             if (rank === "稀有") return 3;
             return 1;
         }
 
-        // 計算所有達到最低售出門檻的可出售食材清單（顯示所有可出售數量，不用強制倍數）
         function getValidSurplusList(recipes, inv, ingMap) {
             let totalDemand = {};
             recipes.forEach(recipe => {
@@ -2057,6 +2158,10 @@
             return surplusList;
         }
 
+        // ==================== 升級版：今日推薦食材判定演算法 ====================
+        // 規則 1：可完成食譜的食材優先 (食譜差越少項越優先；單一食譜需求量越少越優先)
+        // 規則 2：可採集食材優先大於昇華食材
+        // 規則 3：食譜若含有非採集且非昇華的食材(如嫩肉/精肉等)，該食譜食材優先順序降低
         function renderDailyGathering() {
             const container = document.getElementById('daily-gathering-container');
             if (!container) return;
@@ -2066,60 +2171,81 @@
             const inv = getInventory(currentKey);
             const ingMap = getIngredientsMap();
 
-            // 1. 計算所有食譜的全局總需求量
-            let totalDemand = {};
+            let candidates = {};
+            GATHERABLE_INGS.forEach(g => {
+                const tier = (ingMap[g] && ingMap[g].rank) ? ingMap[g].rank : "一般";
+                candidates[g] = {
+                    name: g,
+                    tier: tier,
+                    bestRecipeMissingCount: 999, // 食譜差幾項完成 (越小越優先)
+                    minSingleDeficit: 999999,    // 單一食譜的最小缺少量 (越小越優先)
+                    hasDirectDeficit: false,     // 是否直接缺少該可採集食材 (優先於昇華)
+                    pureGatherableRecipe: false, // 是否存在純採集/昇華的食譜
+                    hasAnyDeficit: false
+                };
+            });
+
             recipes.forEach(recipe => {
                 const portions = recipe.portions !== undefined ? Number(recipe.portions) : 1;
-                if (recipe.ingredients && portions > 0) {
-                    for (let [ing, perPortionQty] of Object.entries(recipe.ingredients)) {
-                        if (EXCLUDED_INGS.includes(ing)) continue;
-                        totalDemand[ing] = (totalDemand[ing] || 0) + (perPortionQty * portions);
+                if (!recipe.ingredients || portions <= 0) return;
+
+                let recipeMissingItems = [];
+                let hasUnobtainableIng = false;
+
+                for (let [ing, perPortion] of Object.entries(recipe.ingredients)) {
+                    if (EXCLUDED_INGS.includes(ing)) continue;
+                    const req = perPortion * portions;
+                    const cur = inv[ing] || 0;
+                    const diff = Math.max(0, req - cur);
+                    if (diff > 0) {
+                        recipeMissingItems.push({ ing, diff });
                     }
+                    // 檢查是否為非採集且非昇華的食材 (例如嫩肉、精肉、青禾等)
+                    const isGatherable = GATHERABLE_INGS.includes(ing);
+                    const isUpgraded = Object.prototype.hasOwnProperty.call(REVERSE_UPGRADE_MAP, ing);
+                    if (!isGatherable && !isUpgraded) {
+                        hasUnobtainableIng = true;
+                    }
+                }
+
+                const missingCount = recipeMissingItems.length;
+                if (missingCount > 0) {
+                    recipeMissingItems.forEach(item => {
+                        let targetBase = null;
+                        let isDirect = false;
+
+                        if (GATHERABLE_INGS.includes(item.ing)) {
+                            targetBase = item.ing;
+                            isDirect = true;
+                        } else if (REVERSE_UPGRADE_MAP[item.ing]) {
+                            targetBase = REVERSE_UPGRADE_MAP[item.ing];
+                            isDirect = false;
+                        }
+
+                        if (targetBase && candidates[targetBase]) {
+                            const c = candidates[targetBase];
+                            c.hasAnyDeficit = true;
+                            if (isDirect) c.hasDirectDeficit = true;
+                            if (!hasUnobtainableIng) c.pureGatherableRecipe = true;
+
+                            if (missingCount < c.bestRecipeMissingCount) {
+                                c.bestRecipeMissingCount = missingCount;
+                            }
+                            if (item.diff < c.minSingleDeficit) {
+                                c.minSingleDeficit = item.diff;
+                            }
+                        }
+                    });
                 }
             });
 
-            // 2. 計算每種食材的實際全局缺口 (總需求 - 當前庫存)
-            let actualDeficit = {};
-            for (let [ing, reqQty] of Object.entries(totalDemand)) {
-                const curInv = inv[ing] || 0;
-                const diff = Math.max(0, reqQty - curInv);
-                if (diff > 0) {
-                    actualDeficit[ing] = diff;
-                }
-            }
-
-            // 3. 檢查 15 個可拾取食材本身及其昇華食材的缺口，並依可拾取食材的品質分類
-            let candidatesByTier = {
-                "一般": [],
-                "稀有": [],
-                "史詩": []
-            };
-
-            GATHERABLE_INGS.forEach((gathIng, orderIdx) => {
-                const upgradedIng = UPGRADE_MAP[gathIng];
-                const dSelf = actualDeficit[gathIng] || 0;
-                const dUp = upgradedIng ? (actualDeficit[upgradedIng] || 0) : 0;
-
-                let activeDeficits = [];
-                if (dSelf > 0) activeDeficits.push(dSelf);
-                if (dUp > 0) activeDeficits.push(dUp);
-
-                if (activeDeficits.length > 0) {
-                    const minDeficit = Math.min(...activeDeficits);
-                    const sumDeficit = dSelf + dUp;
-                    const tier = (ingMap[gathIng] && ingMap[gathIng].rank) ? ingMap[gathIng].rank : "一般";
-                    if (candidatesByTier[tier]) {
-                        candidatesByTier[tier].push({
-                            name: gathIng,
-                            minDeficit: minDeficit,
-                            sumDeficit: sumDeficit,
-                            orderIdx: orderIdx
-                        });
-                    }
+            let candidatesByTier = { "一般": [], "稀有": [], "史詩": [] };
+            Object.values(candidates).forEach(c => {
+                if (c.hasAnyDeficit && candidatesByTier[c.tier]) {
+                    candidatesByTier[c.tier].push(c);
                 }
             });
 
-            // 4. 在一般、稀有、史詩中各挑選缺口最少的第 1 名
             const tiers = ["一般", "稀有", "史詩"];
             container.className = "compact-box gathering-box";
 
@@ -2127,14 +2253,30 @@
                 let list = candidatesByTier[tier];
                 if (list && list.length > 0) {
                     list.sort((a, b) => {
-                        if (a.minDeficit !== b.minDeficit) return a.minDeficit - b.minDeficit;
-                        if (a.sumDeficit !== b.sumDeficit) return a.sumDeficit - b.sumDeficit;
-                        return a.orderIdx - b.orderIdx;
+                        // 1. 食譜缺少的食材種類數越少越優先 (例如差1項食譜優先於差2項)
+                        if (a.bestRecipeMissingCount !== b.bestRecipeMissingCount) {
+                            return a.bestRecipeMissingCount - b.bestRecipeMissingCount;
+                        }
+                        // 2. 食譜是否為純採集食材 (無不可採集食材者優先)
+                        if (a.pureGatherableRecipe !== b.pureGatherableRecipe) {
+                            return a.pureGatherableRecipe ? -1 : 1;
+                        }
+                        // 3. 可直接採集優先於昇華食材
+                        if (a.hasDirectDeficit !== b.hasDirectDeficit) {
+                            return a.hasDirectDeficit ? -1 : 1;
+                        }
+                        // 4. 單一食譜缺少數量最少者優先
+                        if (a.minSingleDeficit !== b.minSingleDeficit) {
+                            return a.minSingleDeficit - b.minSingleDeficit;
+                        }
+                        return 0;
                     });
+
                     const chosen = list[0];
                     const ingMeta = ingMap[chosen.name] || { icon: "" };
+                    const safeName = chosen.name.replace(/'/g, "\\'");
                     container.innerHTML += `
-                        <div class="gathering-item">
+                        <div class="gathering-item" onclick="openQuickStockModal('${safeName}')" style="cursor: pointer;" title="點擊直接修改 ${chosen.name} 庫存">
                             <div class="ing-circle-icon">
                                 ${renderImgHtml(ingMeta.icon, "", defaultIngIconImg, chosen.name)}
                             </div>
@@ -2149,24 +2291,55 @@
             }
         }
 
+        // 點擊今日推薦食材：直接開啟快速庫存修改彈窗
+        function openQuickStockModal(ingName) {
+            const inv = getInventory(currentKey);
+            const ingMap = getIngredientsMap();
+            const currentStock = inv[ingName] || 0;
+            const ingMeta = ingMap[ingName] || { icon: "" };
+
+            document.getElementById('quick-stock-ing-name').value = ingName;
+            document.getElementById('quick-stock-title').innerText = `調整：${ingName}`;
+            document.getElementById('quick-stock-icon-box').innerHTML = renderImgHtml(ingMeta.icon, "", defaultIngIconImg, ingName);
+            document.getElementById('quick-stock-input').value = currentStock;
+
+            document.getElementById('quick-stock-modal').style.display = 'flex';
+            setTimeout(() => {
+                const inp = document.getElementById('quick-stock-input');
+                inp.focus();
+                inp.select();
+            }, 50);
+        }
+
+        function saveQuickStock() {
+            const ingName = document.getElementById('quick-stock-ing-name').value;
+            const newQty = Math.max(0, parseInt(document.getElementById('quick-stock-input').value) || 0);
+            if (!ingName) return;
+
+            const inv = getInventory(currentKey);
+            inv[ingName] = newQty;
+            localStorage.setItem(`inv_${currentKey}`, JSON.stringify(inv));
+            pushToCloud();
+
+            closeModal('quick-stock-modal');
+            renderUI();
+        }
+
         function buildMainPageMissingHtml(recipe, ingMap) {
             if (recipe.portions === 0) {
-                return `<div style="font-size:12px; color:#9ca3af; padding:4px 0;">所需份數：0 份</div>`;
+                return `<div style="font-size:13px; color:#9ca3af; width:100%; text-align:center; text-shadow:1px 1px 0 #000;">無需求份數</div>`;
             }
             const displayMissing = recipe.missingItems.filter(item => !EXCLUDED_INGS.includes(item.name));
             if (displayMissing.length === 0) {
-                return `<div style="font-size:13px; color:#2ecc71; font-weight:bold; background:rgba(46,204,113,0.1); padding:4px 6px; border:1px solid #2ecc71; border-radius: 4px; text-shadow: 1px 1px 0px #000;">主要食材充足 ✓</div>`;
+                return `<div style="font-size:14px; color:#2ecc71; font-weight:bold; width:100%; text-align:center; text-shadow: 1px 1px 0px #000;">主要食材充足 ✓</div>`;
             }
 
             const itemsHtml = displayMissing.map(item => {
                 const iconSrc = ingMap[item.name] ? ingMap[item.name].icon : "";
                 return `
-                    <div class="gathering-item">
-                        <div class="ing-circle-icon">
-                            ${renderImgHtml(iconSrc, "", defaultIngIconImg, item.name)}
-                        </div>
-                        <span class="gathering-item-name" title="${item.name}">${item.name}</span>
-                        <span class="qty-red" style="font-size:13px; text-shadow: 1px 1px 0 #000;">缺 ${item.diff}</span>
+                    <div class="missing-ing-circle" title="${item.name}：缺 ${item.diff}">
+                        ${renderImgHtml(iconSrc, "", defaultIngIconImg, item.name)}
+                        <span class="missing-qty-badge">${item.diff}</span>
                     </div>
                 `;
             }).join('');
@@ -2174,7 +2347,6 @@
             return `<div class="recipe-ings-flex">${itemsHtml}</div>`;
         }
 
-        // ==================== 圖一風格：售出食材彈窗控制邏輯 ====================
         function openSellModal(ingName, surplusQty, evt) {
             if (evt) evt.stopPropagation();
             const inv = getInventory(currentKey);
@@ -2183,13 +2355,11 @@
             const ingMeta = ingMap[ingName] || { rank: "一般", icon: "" };
             const rank = ingMeta.rank || "一般";
 
-            // 一般食材5的倍數、稀有食材3的倍數、史詩及傳說1的倍數
             currentSellStep = getMinSellThreshold(rank);
             currentSellMin = currentSellStep;
             currentSellMax = Math.floor(surplusQty / currentSellStep) * currentSellStep;
             if (currentSellMax < currentSellMin) currentSellMax = currentSellMin;
 
-            // 預設開啟時顯示最高可售出數量
             currentSellQty = currentSellMax;
 
             document.getElementById('sell-ingredient-name').value = ingName;
@@ -2252,7 +2422,6 @@
             }
         }
 
-        // ==================== 圖一風格：食譜詳情與食用視窗控制邏輯 ====================
         function openConsumeModal(recipeIndex, evt) {
             if (evt) evt.stopPropagation();
             openRecipeDetailByIndex(recipeIndex, false);
@@ -2274,7 +2443,6 @@
             titleEl.innerText = recipe.name;
             titleEl.className = `game-trade-title ${getRankClass(recipe.rank || "稀有")}`;
 
-            // 將屬性圖示設置在右側圓形食譜 ICON 左上角
             const attrBadgeEl = document.getElementById('modal-recipe-attr-badge');
             const attrBaseName = attrIconMap[recipe.attr];
             if (attrBaseName) {
@@ -2335,7 +2503,6 @@
                 }
             }
 
-            // 設定食用數量預設為 1，最高為需求數量（若需求為0則最高可調至99）
             currentRecipeEatMin = 1;
             currentRecipeEatMax = portions > 0 ? portions : 99;
             currentRecipeEatQty = 1;
@@ -2483,20 +2650,28 @@
                 if (top3Recipes.length > 0) {
                     top3Recipes.forEach(recipe => {
                         const ingListHtml = buildMainPageMissingHtml(recipe, ingMap);
-                        const rankClass = getRankClass(recipe.rank || "稀有");
+                        const rank = recipe.rank || "稀有";
                         const unlearnedClass = recipe.learned === false ? 'unlearned' : '';
 
                         recipeContainer.innerHTML += `
-                            <div class="recipe-card ${unlearnedClass}" onclick="openRecipeDetailByIndex(${recipe.originalIndex}, false)">
-                                <button class="card-consume-btn" onclick="openConsumeModal(${recipe.originalIndex}, event)" title="開啟食譜並食用">🍴 食用</button>
-                                <div class="recipe-header-flex">
-                                    ${renderImgHtml(recipe.icon, "recipe-icon", defaultRecipeIconImg, recipe.name)}
-                                    <div class="recipe-title-box">
-                                        <h3 class="${rankClass}" title="${recipe.name}">${recipe.name}</h3>
-                                        <span style="font-size:12px; color:#b3c0e6;">目標：${recipe.portions} 份</span>
+                            <div class="recipe-card card-bg-${rank} ${unlearnedClass}" onclick="openRecipeDetailByIndex(${recipe.originalIndex}, false)">
+                                <div class="recipe-card-header">
+                                    <h3 class="recipe-card-title" title="${recipe.name}">${recipe.name}</h3>
+                                    <button class="card-consume-btn" onclick="openConsumeModal(${recipe.originalIndex}, event)" title="食用料理">🍴</button>
+                                </div>
+                                <div class="recipe-card-banner">
+                                    <div class="recipe-demand-block">
+                                        <span class="recipe-demand-label">需求數量</span>
+                                        <span class="recipe-demand-num">${recipe.portions}</span>
+                                    </div>
+                                    ${renderImgHtml(recipe.icon, "recipe-showcase-img", defaultRecipeIconImg, recipe.name)}
+                                </div>
+                                <div class="recipe-card-footer">
+                                    <div class="recipe-missing-title">缺少食材</div>
+                                    <div class="recipe-missing-well">
+                                        ${ingListHtml}
                                     </div>
                                 </div>
-                                ${ingListHtml}
                             </div>
                         `;
                     });
@@ -2504,7 +2679,6 @@
                     recipeContainer.innerHTML = `<p style="color: #ffffff; text-shadow: 1px 1px 0 #000; padding: 10px;">找不到符合篩選條件的食譜。</p>`;
                 }
 
-                // 取得符合門檻（一般>=5、稀有>=3、史詩傳說>=1）的可出售食材清單，並顯示全部可出售數量
                 let surplusList = getValidSurplusList(recipes, inv, ingMap);
                 surplusList.sort((a, b) => b.surplus - a.surplus);
 
@@ -2512,7 +2686,6 @@
                     surplusList = surplusList.filter(s => s.name.toLowerCase().includes(surplusSearchKey));
                 }
 
-                // 主頁顯示至多 8 個可出售食材，下方「更多食材」與上方「更多食譜」保持完全同寬
                 const top8Surplus = surplusList.slice(0, 8);
                 if (top8Surplus.length > 0) {
                     let surplusItemsHtml = '';
@@ -2635,7 +2808,6 @@
             document.getElementById('all-recipes-modal').style.display = 'flex';
         }
 
-        // 所有可出售食材總覽 (列出全部符合門檻的可出售食材，並附帶售出按鈕)
         function openAllSurplusModal() {
             const recipes = getRecipes(currentKey);
             const inv = getInventory(currentKey);
@@ -2908,7 +3080,7 @@
                     <div class="ing-grid-card card-rank-${rank} ${isSelected ? 'selected-row' : ''}" data-order="${index}" data-name="${item.toLowerCase()}">
                         <div class="ing-card-top">
                             <div class="ing-qty-corner">
-                                <input type="number" class="ing-grid-input new-ing-input" data-item="${item}" value="${currentQty}" min="0" oninput="onIngQtyInput(this)">
+                                <input type="number" class="ing-grid-input new-ing-input" data-item="${item}" value="${currentQty}" min="0" oninput="onIngQtyInput(this)" onblur="sortRecipeIngCards()">
                                 <span class="ing-qty-label">每份用量</span>
                             </div>
                             <input type="checkbox" class="ing-checkbox" data-item="${item}" ${isSelected ? 'checked' : ''} onchange="onIngCheckChange(this)">
@@ -3121,7 +3293,6 @@
             bindSearch('recipe-ing-search', filterRecipeIngList);
         }
 
-        // 初始化執行
         syncBothCharactersRecipes();
         setupSearchInputs();
         renderUI();
