@@ -370,7 +370,7 @@
             align-items: flex-start;
         }
 
-        /* 主頁缺少食材項目容器 (圓形圖示 + 右下角紅字 + 底部食材名稱) */
+        /* 主頁與詳情視窗共用的缺少食材項目容器 (圓形圖示 + 右下角紅字 + 底部食材名稱) */
         .missing-ing-item {
             display: flex;
             flex-direction: column;
@@ -410,6 +410,23 @@
             border-radius: 4px;
             padding: 0px 4px;
             font-size: 12px;
+            font-weight: bold;
+            line-height: 1.15;
+            text-shadow: 1px 1px 0px #000000;
+            z-index: 3;
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+        }
+
+        .sufficient-qty-badge {
+            position: absolute;
+            bottom: -3px;
+            right: -3px;
+            background-color: rgba(15, 20, 35, 0.95);
+            color: #2ecc71;
+            border: 1.5px solid #2ecc71;
+            border-radius: 4px;
+            padding: 0px 4px;
+            font-size: 11px;
             font-weight: bold;
             line-height: 1.15;
             text-shadow: 1px 1px 0px #000000;
@@ -718,11 +735,11 @@
         .game-trade-ings-box {
             padding: 14px 20px;
             display: flex;
-            gap: 16px;
+            gap: 14px 12px;
             flex-wrap: wrap;
             justify-content: flex-start;
-            align-items: center;
-            min-height: 110px;
+            align-items: flex-start;
+            min-height: 100px;
         }
 
         .game-trade-qty-bar {
@@ -1289,7 +1306,7 @@
             </div>
 
             <div class="game-trade-recipe-section">
-                <div class="game-trade-section-bar">料理配方</div>
+                <div class="game-trade-section-bar">料理配方 (右下角為缺少數量)</div>
                 <div id="modal-recipe-ingredients-flex" class="game-trade-ings-box"></div>
             </div>
 
@@ -1566,7 +1583,15 @@
 
         const attrIconMap = { "攻擊": "攻擊", "防禦": "防禦", "生命": "生命", "速度": "速度" };
         const rankWeight = { "奇蹟": 4, "傳說": 3, "史詩": 2, "稀有": 1, "一般": 0 };
+
+        // 商店可購買的基礎食材 (不顯示於主頁缺少清單、不列入計算)
         const EXCLUDED_INGS = ["水", "胡椒", "糖", "鹽", "蘑菇", "青禾", "芥菜", "琥珀凝膠"];
+
+        // 肉類食材 (不列入食譜排序與推薦判斷計算)
+        const MEAT_INGS = ["生肉", "嫩肉", "精肉", "絕品肉"];
+
+        // 合計所有不列入排序判斷計算的食材
+        const IGNORED_FOR_CALC_INGS = [...EXCLUDED_INGS, ...MEAT_INGS];
 
         const INGREDIENT_ORDER = [
             "水", "胡椒", "糖", "鹽", "蘑菇", "青禾", "芥菜", "琥珀凝膠",
@@ -2081,18 +2106,21 @@
             return "circle-rare";
         }
 
-        // ==================== 升級版：食譜缺口計算與 1/2/3 分類統計 ====================
+        // ==================== 食譜缺口計算與 1/2/3 分類統計 ====================
+        // 忽略清單：水、胡椒、糖、鹽、蘑菇、青禾、芥菜、琥珀凝膠 + 生肉、嫩肉、精肉、絕品肉
         // 1: 可採集食材 (GATHERABLE_INGS)
         // 2: 昇華食材 (REVERSE_UPGRADE_MAP)
-        // 3: 非前兩項食材 (排除商店購買的 EXCLUDED_INGS)
+        // 3: 非前兩項食材 (如百花蜜、濃香咖哩、辛味噌等)
         function calculateRecipeShortage(recipe, inv) {
             const portions = recipe.portions !== undefined ? Number(recipe.portions) : 1;
             let missingItems = [];
             let allItems = [];
-            let totalMissing = 0;       // 1 + 2 + 3 總缺口數量 (不含商店調料)
-            let missing12Total = 0;     // 1 + 2 (可採集 + 昇華) 缺口數量
-            let missing3Total = 0;      // 3 (非前兩項食材) 缺口數量
-            let hasType3Missing = false;// 是否缺少第 3 類食材
+            let totalMissing = 0;        // 1 + 2 + 3 納入計算的總缺口 (不含商店與肉類)
+            let displayMissingTotal = 0; // 不含商店調料的所有缺口 (用於總覽燈號顯示)
+            let missing12Total = 0;      // 1 + 2 (可採集 + 昇華) 缺口數量加總
+            let missing3Total = 0;       // 3 (非前兩項食材) 缺口數量加總
+            let hasType12Missing = false;// 是否含有可拾取或昇華食材缺口
+            let hasType3Missing = false; // 是否含有第 3 類食材缺口
             let rawTotalMissing = 0;
 
             if (recipe && recipe.ingredients) {
@@ -2104,11 +2132,16 @@
                     if (diff > 0) {
                         rawTotalMissing += diff;
                         if (!EXCLUDED_INGS.includes(ing)) {
+                            displayMissingTotal += diff;
+                        }
+                        // 排除商店調料與肉類食材後，進行 1/2/3 分類計算
+                        if (!IGNORED_FOR_CALC_INGS.includes(ing)) {
                             totalMissing += diff;
                             const isType1 = GATHERABLE_INGS.includes(ing);
                             const isType2 = Object.prototype.hasOwnProperty.call(REVERSE_UPGRADE_MAP, ing);
                             if (isType1 || isType2) {
                                 missing12Total += diff;
+                                hasType12Missing = true;
                             } else {
                                 missing3Total += diff;
                                 hasType3Missing = true;
@@ -2122,8 +2155,10 @@
             return {
                 portions,
                 totalMissing,
+                displayMissingTotal,
                 missing12Total,
                 missing3Total,
+                hasType12Missing,
                 hasType3Missing,
                 rawTotalMissing,
                 missingItems,
@@ -2131,12 +2166,12 @@
             };
         }
 
-        // ==================== 升級版：主頁食譜排序規則 ====================
-        // 1. 優先顯示有缺食材的食譜 (再顯示食材已充足但份數>0、最後為份數=0)
-        // 2. 在有缺食材的食譜中：
-        //    - 無缺少第 3 類食材者優先 (例如 B 只有 1、2，優先於有 1、2、3 的 A、C)
-        //    - 接著比較 1 + 2 (可採集 + 昇華) 哪個缺比較少
-        //    - 最後才依據 1 + 2 + 3 的總缺口數排序
+        // ==================== 主頁食譜排序規則 ====================
+        // 1. 優先顯示有缺計算食材的食譜 (totalMissing > 0)，再顯示僅缺肉類的食譜，接著是食材已充足(portions > 0)，最後為份數=0
+        // 2. 在有缺計算食材的食譜中：
+        //    - 優先顯示「含有可拾取食材(1)或昇華食材(2)缺口」的食譜；僅缺非可拾取/昇華食材(3)的食譜(如黃金散蛋只缺百花蜜)排在後面
+        //    - 若皆含有 1 或 2 缺口，依據「1 + 2 的加總缺少數量 (missing12Total)」由小到大排序 (如：身披金甲(1) -> 咖哩什錦燉菜(20) -> 解厄刺身(52))
+        //    - 若 1 + 2 數量相同，則沒有第 3 類缺口者優先，最後比較 1 + 2 + 3 總缺口數 (missingTotal)
         function sortRecipesByMissing(recipes, inv) {
             let scoredRecipes = recipes.map((recipe, index) => {
                 const shortage = calculateRecipeShortage(recipe, inv);
@@ -2145,8 +2180,10 @@
                     originalIndex: index,
                     portions: shortage.portions,
                     missingTotal: shortage.totalMissing,
+                    displayMissingTotal: shortage.displayMissingTotal,
                     missing12Total: shortage.missing12Total,
                     missing3Total: shortage.missing3Total,
+                    hasType12Missing: shortage.hasType12Missing,
                     hasType3Missing: shortage.hasType3Missing,
                     rawTotalMissing: shortage.rawTotalMissing,
                     missingItems: shortage.missingItems,
@@ -2155,22 +2192,39 @@
             });
 
             scoredRecipes.sort((a, b) => {
-                const aGroup = a.missingTotal > 0 ? 0 : (a.portions > 0 ? 1 : 2);
-                const bGroup = b.missingTotal > 0 ? 0 : (b.portions > 0 ? 1 : 2);
+                // 分組：0=有1/2/3類缺口, 1=僅缺肉類, 2=食材充足且目標份數>0, 3=目標份數0
+                const getGroup = (r) => {
+                    if (r.missingTotal > 0) return 0;
+                    if (r.displayMissingTotal > 0) return 1;
+                    if (r.portions > 0) return 2;
+                    return 3;
+                };
+                const aGroup = getGroup(a);
+                const bGroup = getGroup(b);
                 if (aGroup !== bGroup) return aGroup - bGroup;
 
                 if (aGroup === 0) {
-                    // 1. 如有非前兩項食材 (第 3 類)，順序降低 (只有 1、2 的食譜優先)
-                    if (a.hasType3Missing !== b.hasType3Missing) {
-                        return a.hasType3Missing ? 1 : -1;
+                    // 規則 A：含有可拾取(1)或昇華(2)缺口的食譜，優先於「僅有非可拾取/昇華食材(3)」的食譜
+                    if (a.hasType12Missing !== b.hasType12Missing) {
+                        return a.hasType12Missing ? -1 : 1;
                     }
-                    // 2. 比較 1 + 2 (可採集 + 昇華) 哪個比較少
-                    if (a.missing12Total !== b.missing12Total) {
-                        return a.missing12Total - b.missing12Total;
+                    // 規則 B：若兩者皆含有可拾取(1)或昇華(2)缺口，先比較 1 + 2 加總數量哪個比較少
+                    if (a.hasType12Missing && b.hasType12Missing) {
+                        if (a.missing12Total !== b.missing12Total) {
+                            return a.missing12Total - b.missing12Total;
+                        }
+                        // 若 1 + 2 缺口數量相同，無第 3 類食材缺口者優先
+                        if (a.hasType3Missing !== b.hasType3Missing) {
+                            return a.hasType3Missing ? 1 : -1;
+                        }
                     }
-                    // 3. 最後依據 1 + 2 + 3 的總數
+                    // 規則 C：最後依據 1 + 2 + 3 的總缺口數量由小到大排序
                     if (a.missingTotal !== b.missingTotal) {
                         return a.missingTotal - b.missingTotal;
+                    }
+                } else if (aGroup === 1) {
+                    if (a.displayMissingTotal !== b.displayMissingTotal) {
+                        return a.displayMissingTotal - b.displayMissingTotal;
                     }
                 }
                 return (rankWeight[b.rank] || 1) - (rankWeight[a.rank] || 1);
@@ -2252,7 +2306,8 @@
                 let hasUnobtainableIng = false;
 
                 for (let [ing, perPortion] of Object.entries(recipe.ingredients)) {
-                    if (EXCLUDED_INGS.includes(ing)) continue;
+                    // 商店食材與肉類食材均不列入推薦計算與降權判定
+                    if (IGNORED_FOR_CALC_INGS.includes(ing)) continue;
 
                     const req = perPortion * portions;
                     const cur = inv[ing] || 0;
@@ -2486,6 +2541,7 @@
             openRecipeDetailByIndex(recipeIndex, false);
         }
 
+        // 點進食譜詳情視窗：食材改為顯示「缺少數量」(右下角紅字徽章，若充足則顯示綠色勾勾)
         function openRecipeDetailByIndex(recipeIndex, fromAllRecipes = false) {
             openedFromAllRecipes = fromAllRecipes;
             const recipes = getRecipes(currentKey);
@@ -2546,17 +2602,17 @@
                     const diff = Math.max(0, requiredQty - invQty);
                     const ingMeta = ingMap[ing] || { icon: "" };
 
-                    const stockDisplay = diff > 0
-                        ? `<span class="qty-red" style="font-size:14px; text-shadow: 1px 1px 0 #000;">${invQty}/${perPortionQty}</span>`
-                        : `<span class="qty-green" style="font-size:14px; text-shadow: 1px 1px 0 #000;">${invQty}/${perPortionQty}</span>`;
+                    const badgeHtml = diff > 0
+                        ? `<span class="missing-qty-badge">${diff}</span>`
+                        : `<span class="sufficient-qty-badge">✓</span>`;
 
                     flexContainer.innerHTML += `
-                        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
-                            <div class="ing-circle-icon">
+                        <div class="missing-ing-item" title="${ing}｜庫存: ${invQty} / 總需求: ${requiredQty} (每份 ${perPortionQty})">
+                            <div class="missing-ing-circle">
                                 ${renderImgHtml(ingMeta.icon, "", defaultIngIconImg, ing)}
+                                ${badgeHtml}
                             </div>
-                            <span style="font-size:13px; color:#ffffff; text-shadow: 1px 1px 0 #000;">${ing}</span>
-                            ${stockDisplay}
+                            <span class="missing-ing-name">${ing}</span>
                         </div>
                     `;
                 }
@@ -2805,7 +2861,7 @@
                     ...recipe,
                     originalIndex: index,
                     portions: shortage.portions,
-                    missingTotal: shortage.totalMissing,
+                    missingTotal: shortage.displayMissingTotal,
                     rawTotalMissing: shortage.rawTotalMissing
                 };
             });
