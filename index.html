@@ -356,18 +356,27 @@
             background-color: rgba(12, 18, 36, 0.65);
             border: 1px solid #3a4e8c;
             border-radius: 8px;
-            padding: 10px;
+            padding: 10px 8px;
             flex: 1;
             display: flex;
             align-items: center;
-            min-height: 68px;
+            min-height: 82px;
         }
 
         .recipe-ings-flex {
             display: flex;
-            gap: 10px;
+            gap: 10px 8px;
             flex-wrap: wrap;
+            align-items: flex-start;
+        }
+
+        /* 主頁缺少食材項目容器 (圓形圖示 + 右下角紅字 + 底部食材名稱) */
+        .missing-ing-item {
+            display: flex;
+            flex-direction: column;
             align-items: center;
+            gap: 4px;
+            width: 62px;
         }
 
         .missing-ing-circle {
@@ -395,7 +404,7 @@
             position: absolute;
             bottom: -3px;
             right: -3px;
-            background-color: rgba(15, 20, 35, 0.92);
+            background-color: rgba(15, 20, 35, 0.95);
             color: #ff4757;
             border: 1.5px solid #8a9fc4;
             border-radius: 4px;
@@ -406,6 +415,18 @@
             text-shadow: 1px 1px 0px #000000;
             z-index: 3;
             box-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+        }
+
+        .missing-ing-name {
+            font-size: 12px;
+            color: #ffffff;
+            text-shadow: 1px 1px 0px #000000;
+            text-align: center;
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.1;
         }
 
         .recipe-icon, .ing-icon {
@@ -1397,7 +1418,6 @@
 
                 <label>選擇所需食材與每份用量（已勾選的食材會自動置頂）：</label>
                 <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-                    <!-- 移除強制英文設定，加入中文輸入法保護 -->
                     <input type="text" id="recipe-ing-search" class="search-input" placeholder="🔍 搜尋食材..." style="flex: 1; height: 34px;">
                     <button type="button" class="action-btn add-recipe" style="padding: 0 12px; height: 34px; font-size: 13px;" onclick="openAddIngredientFromRecipe()">➕ 新增食材</button>
                 </div>
@@ -1560,14 +1580,12 @@
             "蘭香茸", "星夜蘭香茸", "雲海螺肉", "風飄雲海螺肉", "陽光果", "黃金陽光果", "女神之淚"
         ];
 
-        // 僅有的 15 個可拾取基礎食材清單
         const GATHERABLE_INGS = [
             "馬鈴薯", "嘟嘟莓", "藍鳥蛋", "刺刺果", "甲殼栗", 
             "綠洲之星", "水舞葉", "花瓣魚", "章魚", "豆子", 
             "竹筍", "大螯蟹", "蘭香茸", "雲海螺肉", "陽光果"
         ];
 
-        // 昇華一覽表 (可拾取食材 -> 昇華後食材)[cite: 3]
         const UPGRADE_MAP = {
             "馬鈴薯": "甜馬鈴薯",
             "嘟嘟莓": "多汁嘟嘟莓",
@@ -1586,7 +1604,6 @@
             "陽光果": "黃金陽光果"
         };
 
-        // 昇華食材對應表 (昇華食材 -> 基礎可採集食材)[cite: 3]
         const REVERSE_UPGRADE_MAP = {};
         for (let [k, v] of Object.entries(UPGRADE_MAP)) {
             REVERSE_UPGRADE_MAP[v] = k;
@@ -1797,7 +1814,6 @@
             openAllRecipesModal();
         }
 
-        // 修改：勾選切換時更新樣式與置頂排序
         function onIngCheckChange(checkbox) {
             const card = checkbox.closest('.ing-grid-card');
             const input = card.querySelector('.new-ing-input');
@@ -1811,7 +1827,6 @@
             sortRecipeIngCards();
         }
 
-        // 修改：直接輸入數量時，不即時重排DOM，防止輸入焦點遺失
         function onIngQtyInput(input) {
             const card = input.closest('.ing-grid-card');
             const checkbox = card.querySelector('.ing-checkbox');
@@ -2066,12 +2081,19 @@
             return "circle-rare";
         }
 
+        // ==================== 升級版：食譜缺口計算與 1/2/3 分類統計 ====================
+        // 1: 可採集食材 (GATHERABLE_INGS)
+        // 2: 昇華食材 (REVERSE_UPGRADE_MAP)
+        // 3: 非前兩項食材 (排除商店購買的 EXCLUDED_INGS)
         function calculateRecipeShortage(recipe, inv) {
             const portions = recipe.portions !== undefined ? Number(recipe.portions) : 1;
             let missingItems = [];
             let allItems = [];
-            let totalMissing = 0;      
-            let rawTotalMissing = 0;   
+            let totalMissing = 0;       // 1 + 2 + 3 總缺口數量 (不含商店調料)
+            let missing12Total = 0;     // 1 + 2 (可採集 + 昇華) 缺口數量
+            let missing3Total = 0;      // 3 (非前兩項食材) 缺口數量
+            let hasType3Missing = false;// 是否缺少第 3 類食材
+            let rawTotalMissing = 0;
 
             if (recipe && recipe.ingredients) {
                 const sortedEntries = getSortedRecipeIngredientsEntries(recipe.ingredients);
@@ -2083,15 +2105,38 @@
                         rawTotalMissing += diff;
                         if (!EXCLUDED_INGS.includes(ing)) {
                             totalMissing += diff;
+                            const isType1 = GATHERABLE_INGS.includes(ing);
+                            const isType2 = Object.prototype.hasOwnProperty.call(REVERSE_UPGRADE_MAP, ing);
+                            if (isType1 || isType2) {
+                                missing12Total += diff;
+                            } else {
+                                missing3Total += diff;
+                                hasType3Missing = true;
+                            }
                         }
                         missingItems.push({ name: ing, perPortionQty, requiredQty, invQty, diff });
                     }
                     allItems.push({ name: ing, perPortionQty, requiredQty, invQty, diff });
                 }
             }
-            return { portions, totalMissing, rawTotalMissing, missingItems, allItems };
+            return {
+                portions,
+                totalMissing,
+                missing12Total,
+                missing3Total,
+                hasType3Missing,
+                rawTotalMissing,
+                missingItems,
+                allItems
+            };
         }
 
+        // ==================== 升級版：主頁食譜排序規則 ====================
+        // 1. 優先顯示有缺食材的食譜 (再顯示食材已充足但份數>0、最後為份數=0)
+        // 2. 在有缺食材的食譜中：
+        //    - 無缺少第 3 類食材者優先 (例如 B 只有 1、2，優先於有 1、2、3 的 A、C)
+        //    - 接著比較 1 + 2 (可採集 + 昇華) 哪個缺比較少
+        //    - 最後才依據 1 + 2 + 3 的總缺口數排序
         function sortRecipesByMissing(recipes, inv) {
             let scoredRecipes = recipes.map((recipe, index) => {
                 const shortage = calculateRecipeShortage(recipe, inv);
@@ -2100,6 +2145,9 @@
                     originalIndex: index,
                     portions: shortage.portions,
                     missingTotal: shortage.totalMissing,
+                    missing12Total: shortage.missing12Total,
+                    missing3Total: shortage.missing3Total,
+                    hasType3Missing: shortage.hasType3Missing,
                     rawTotalMissing: shortage.rawTotalMissing,
                     missingItems: shortage.missingItems,
                     allItems: shortage.allItems
@@ -2110,7 +2158,21 @@
                 const aGroup = a.missingTotal > 0 ? 0 : (a.portions > 0 ? 1 : 2);
                 const bGroup = b.missingTotal > 0 ? 0 : (b.portions > 0 ? 1 : 2);
                 if (aGroup !== bGroup) return aGroup - bGroup;
-                if (aGroup === 0) return a.missingTotal - b.missingTotal;
+
+                if (aGroup === 0) {
+                    // 1. 如有非前兩項食材 (第 3 類)，順序降低 (只有 1、2 的食譜優先)
+                    if (a.hasType3Missing !== b.hasType3Missing) {
+                        return a.hasType3Missing ? 1 : -1;
+                    }
+                    // 2. 比較 1 + 2 (可採集 + 昇華) 哪個比較少
+                    if (a.missing12Total !== b.missing12Total) {
+                        return a.missing12Total - b.missing12Total;
+                    }
+                    // 3. 最後依據 1 + 2 + 3 的總數
+                    if (a.missingTotal !== b.missingTotal) {
+                        return a.missingTotal - b.missingTotal;
+                    }
+                }
                 return (rankWeight[b.rank] || 1) - (rankWeight[a.rank] || 1);
             });
 
@@ -2158,10 +2220,7 @@
             return surplusList;
         }
 
-        // ==================== 升級版：今日推薦食材判定演算法 ====================
-        // 規則 1：可完成食譜的食材優先 (食譜差越少項越優先；單一食譜需求量越少越優先)
-        // 規則 2：可採集食材優先大於昇華食材
-        // 規則 3：食譜若含有非採集且非昇華的食材(如嫩肉/精肉等)，該食譜食材優先順序降低
+        // ==================== 今日推薦食材判定演算法 ====================
         function renderDailyGathering() {
             const container = document.getElementById('daily-gathering-container');
             if (!container) return;
@@ -2177,10 +2236,10 @@
                 candidates[g] = {
                     name: g,
                     tier: tier,
-                    bestRecipeMissingCount: 999, // 食譜差幾項完成 (越小越優先)
-                    minSingleDeficit: 999999,    // 單一食譜的最小缺少量 (越小越優先)
-                    hasDirectDeficit: false,     // 是否直接缺少該可採集食材 (優先於昇華)
-                    pureGatherableRecipe: false, // 是否存在純採集/昇華的食譜
+                    bestRecipeMissingCount: 999,
+                    minSingleDeficit: 999999,
+                    hasDirectDeficit: false,
+                    pureGatherableRecipe: false,
                     hasAnyDeficit: false
                 };
             });
@@ -2194,13 +2253,14 @@
 
                 for (let [ing, perPortion] of Object.entries(recipe.ingredients)) {
                     if (EXCLUDED_INGS.includes(ing)) continue;
+
                     const req = perPortion * portions;
                     const cur = inv[ing] || 0;
                     const diff = Math.max(0, req - cur);
                     if (diff > 0) {
                         recipeMissingItems.push({ ing, diff });
                     }
-                    // 檢查是否為非採集且非昇華的食材 (例如嫩肉、精肉、青禾等)
+
                     const isGatherable = GATHERABLE_INGS.includes(ing);
                     const isUpgraded = Object.prototype.hasOwnProperty.call(REVERSE_UPGRADE_MAP, ing);
                     if (!isGatherable && !isUpgraded) {
@@ -2253,19 +2313,15 @@
                 let list = candidatesByTier[tier];
                 if (list && list.length > 0) {
                     list.sort((a, b) => {
-                        // 1. 食譜缺少的食材種類數越少越優先 (例如差1項食譜優先於差2項)
                         if (a.bestRecipeMissingCount !== b.bestRecipeMissingCount) {
                             return a.bestRecipeMissingCount - b.bestRecipeMissingCount;
                         }
-                        // 2. 食譜是否為純採集食材 (無不可採集食材者優先)
                         if (a.pureGatherableRecipe !== b.pureGatherableRecipe) {
                             return a.pureGatherableRecipe ? -1 : 1;
                         }
-                        // 3. 可直接採集優先於昇華食材
                         if (a.hasDirectDeficit !== b.hasDirectDeficit) {
                             return a.hasDirectDeficit ? -1 : 1;
                         }
-                        // 4. 單一食譜缺少數量最少者優先
                         if (a.minSingleDeficit !== b.minSingleDeficit) {
                             return a.minSingleDeficit - b.minSingleDeficit;
                         }
@@ -2291,7 +2347,6 @@
             }
         }
 
-        // 點擊今日推薦食材：直接開啟快速庫存修改彈窗
         function openQuickStockModal(ingName) {
             const inv = getInventory(currentKey);
             const ingMap = getIngredientsMap();
@@ -2325,6 +2380,7 @@
             renderUI();
         }
 
+        // 主頁食譜卡片的「缺少食材」區塊：圓形圖示 + 右下角紅色缺口數字 + 圖示下方食材名稱
         function buildMainPageMissingHtml(recipe, ingMap) {
             if (recipe.portions === 0) {
                 return `<div style="font-size:13px; color:#9ca3af; width:100%; text-align:center; text-shadow:1px 1px 0 #000;">無需求份數</div>`;
@@ -2337,9 +2393,12 @@
             const itemsHtml = displayMissing.map(item => {
                 const iconSrc = ingMap[item.name] ? ingMap[item.name].icon : "";
                 return `
-                    <div class="missing-ing-circle" title="${item.name}：缺 ${item.diff}">
-                        ${renderImgHtml(iconSrc, "", defaultIngIconImg, item.name)}
-                        <span class="missing-qty-badge">${item.diff}</span>
+                    <div class="missing-ing-item" title="${item.name}：缺 ${item.diff}">
+                        <div class="missing-ing-circle">
+                            ${renderImgHtml(iconSrc, "", defaultIngIconImg, item.name)}
+                            <span class="missing-qty-badge">${item.diff}</span>
+                        </div>
+                        <span class="missing-ing-name">${item.name}</span>
                     </div>
                 `;
             }).join('');
