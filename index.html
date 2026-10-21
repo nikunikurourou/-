@@ -49,15 +49,40 @@
             gap: 10px;
         }
 
+        .title-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
         h1 {
             font-size: 24px;
             color: #ffcb05;
             text-shadow: 2px 2px 0px #000000;
         }
 
+        /* 雲端同步狀態燈號 */
+        .sync-badge {
+            font-size: 12px;
+            padding: 3px 8px;
+            border-radius: 20px;
+            background-color: rgba(0, 0, 0, 0.4);
+            border: 1px solid #8a9fc4;
+            color: #b3c0e6;
+            cursor: pointer;
+            text-shadow: 1px 1px 0 #000;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .sync-badge:hover { border-color: #ffcb05; color: #fff; }
+        .sync-badge.online { border-color: #2ecc71; color: #2ecc71; background-color: rgba(46, 204, 113, 0.15); }
+        .sync-badge.syncing { border-color: #ffcb05; color: #ffcb05; }
+        .sync-badge.error { border-color: #ff4757; color: #ff4757; }
+
         .header-btns {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
         }
 
@@ -116,6 +141,12 @@
             border-color: #ffffff;
         }
         .action-btn.add-recipe:hover { background-color: #c0392b; }
+
+        .action-btn.cloud-btn {
+            background-color: #27ae60;
+            border-color: #ffffff;
+        }
+        .action-btn.cloud-btn:hover { background-color: #2ecc71; }
 
         /* 區塊標題與篩選列 */
         .section-header {
@@ -807,18 +838,6 @@
         
         .close-btn:active, .save-btn:active { transform: translateY(4px); box-shadow: 0 0px 0px rgba(0,0,0,0.5); }
 
-        .badge-sell {
-            background-color: transparent;
-            color: #ffcb05;
-            padding: 4px 8px;
-            font-size: 13px;
-            border: 1px solid #ffcb05;
-            border-radius: 4px;
-            display: inline-block;
-            margin-top: 8px;
-            text-shadow: 1px 1px 0px #000;
-        }
-
         .text-input {
             width: 100%;
             background-color: #1c284d;
@@ -843,11 +862,16 @@
 
     <div class="container">
         <div class="header-bar">
-            <h1>⚔️ 杖劍傳說 吃飽飽賺錢錢 🗡️</h1>
+            <div class="title-group">
+                <h1>⚔️ 杖劍傳說 吃飽飽賺錢錢 🗡️</h1>
+                <span id="cloud-status-badge" class="sync-badge" onclick="openCloudSetupModal()" title="點擊設定自動雲端同步">⚪ 未綁定雲端</span>
+            </div>
             <div class="header-btns">
                 <button class="action-btn add-recipe" onclick="openAddRecipeModal()">➕ 新增食譜</button>
                 <button class="action-btn" onclick="openInventoryEditModal()">📦 修改庫存</button>
-                <button class="action-btn" onclick="exportCurrentData()" title="複製目前網頁上的最新資料">📋 匯出資料</button>
+                <button class="action-btn cloud-btn" onclick="openCloudSetupModal()" title="設定手機與電腦自動雲端同步">☁️ 雲端設定</button>
+                <button class="action-btn" onclick="exportCurrentData()" title="複製目前網頁上的最新資料">📋 匯出</button>
+                <button class="action-btn" onclick="importCurrentData()" title="貼上資料碼手動覆蓋同步">📥 匯入</button>
             </div>
         </div>
 
@@ -891,6 +915,33 @@
             </div>
         </div>
         <div id="surplus-container"></div>
+    </div>
+
+    <!-- ☁️ 雲端自動同步設定視窗 -->
+    <div id="cloud-setup-modal" class="modal" style="z-index: 150;">
+        <div class="modal-content" style="padding: 20px; width: 480px;">
+            <h2 style="font-size: 20px; color: #ffcb05; margin-bottom: 12px; text-shadow: 2px 2px 0px #000;">☁️ 自動雲端同步設定</h2>
+            <p style="font-size: 13px; color: #b3c0e6; line-height: 1.5; margin-bottom: 12px; text-shadow: 1px 1px 0 #000;">
+                綁定免費的 <b>Firebase Realtime Database</b> 網址後，手機與電腦只要修改庫存、食用或售出，就會<b>全自動雙向即時同步</b>！
+            </p>
+            
+            <label>Firebase 資料庫網址 (Database URL)：</label>
+            <input type="text" id="cloud-db-url-input" class="text-input" placeholder="https://你的專案名稱.firebaseio.com/">
+            
+            <div style="background: rgba(0,0,0,0.3); border: 1px dashed #3a4e8c; padding: 10px; border-radius: 6px; font-size: 12px; color: #cbd5e1; line-height: 1.6; margin-bottom: 12px;">
+                💡 <b>首次設定提示：</b><br>
+                1. 在資料最新的一端（如手機）貼上網址，點<b>「儲存並上傳本機資料至雲端」</b>。<br>
+                2. 在另一端（如電腦）貼上同一個網址，點<b>「僅綁定並從雲端下載覆蓋」</b>。<br>
+                3. 之後兩邊就會全自動即時同步了！
+            </div>
+
+            <button class="save-btn" onclick="saveCloudConfig(true)">🔗 儲存並上傳本機資料至雲端</button>
+            <button class="action-btn" style="width: 100%; margin-top: 10px; padding: 10px; font-size: 15px; background-color: #2980b9;" onclick="saveCloudConfig(false)">📥 僅綁定並從雲端下載覆蓋本機</button>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+                <button class="action-btn" style="flex: 1; padding: 8px; background-color: #7f8c8d;" onclick="disconnectCloud()">🔌 解除雲端綁定</button>
+                <button class="close-btn" style="flex: 1; margin-top: 0; padding: 8px;" onclick="closeModal('cloud-setup-modal')">關閉</button>
+            </div>
+        </div>
     </div>
 
     <!-- 食譜詳情彈跳視窗 -->
@@ -1118,6 +1169,9 @@
     </div>
 
     <script>
+        // 若您不想每次在新瀏覽器輸入網址，也可直接將您的 Firebase 網址貼在下方的引號內：
+        const DEFAULT_FIREBASE_URL = ""; 
+
         const DATA_VERSION = 'v2026_perfect_restore_v17';
         const defaultRecipeIconImg = "食譜預設.png";
         const defaultIngIconImg = "食材預設.png";
@@ -1178,6 +1232,10 @@
         let openedFromAllRecipes = false;
         let currentMaxSurplusQty = 0;
 
+        // 雲端同步控制變數
+        let cloudEventSource = null;
+        let lastLocalPushTimestamp = 0;
+
         const userProvidedIngredientsMap = {"水":{"rank":"一般","icon":""},"胡椒":{"rank":"一般","icon":""},"糖":{"rank":"一般","icon":""},"鹽":{"rank":"一般","icon":""},"蘑菇":{"rank":"一般","icon":""},"青禾":{"rank":"一般","icon":""},"芥菜":{"rank":"一般","icon":""},"琥珀凝膠":{"rank":"一般","icon":""},"生肉":{"rank":"一般","icon":""},"嫩肉":{"rank":"稀有","icon":""},"精肉":{"rank":"史詩","icon":""},"絕品肉":{"rank":"傳說","icon":""},"麵粉":{"rank":"一般","icon":""},"蜂蜜":{"rank":"稀有","icon":""},"百花蜜":{"rank":"史詩","icon":""},"蜂王漿":{"rank":"傳說","icon":""},"馬鈴薯":{"rank":"一般","icon":""},"甜馬鈴薯":{"rank":"稀有","icon":""},"嘟嘟莓":{"rank":"稀有","icon":""},"多汁嘟嘟莓":{"rank":"史詩","icon":""},"藍鳥蛋":{"rank":"史詩","icon":""},"鈷藍鳥蛋":{"rank":"傳說","icon":""},"潔白松露":{"rank":"傳說","icon":""},"奶油":{"rank":"稀有","icon":""},"咸奶油":{"rank":"史詩","icon":""},"脫脂奶油":{"rank":"傳說","icon":""},"咖哩":{"rank":"稀有","icon":""},"濃香咖哩":{"rank":"史詩","icon":""},"刺刺果":{"rank":"一般","icon":""},"尖刺刺果":{"rank":"稀有","icon":""},"甲殼栗":{"rank":"稀有","icon":""},"鐵甲殼栗":{"rank":"史詩","icon":""},"綠洲之星":{"rank":"史詩","icon":""},"綠洲新星":{"rank":"傳說","icon":""},"寶藏駝奶":{"rank":"史詩","icon":""},"味噌":{"rank":"稀有","icon":""},"辛味噌":{"rank":"史詩","icon":""},"水舞葉":{"rank":"一般","icon":""},"天舞青葉":{"rank":"稀有","icon":""},"花瓣魚":{"rank":"稀有","icon":""},"鮮花瓣魚":{"rank":"史詩","icon":""},"章魚":{"rank":"史詩","icon":""},"潮汐八爪魚":{"rank":"傳說","icon":""},"紺青龍蝦":{"rank":"傳說","icon":""},"辣椒":{"rank":"稀有","icon":""},"妖魔辣椒":{"rank":"史詩","icon":""},"豆子":{"rank":"一般","icon":""},"乾脆豆子":{"rank":"稀有","icon":""},"竹筍":{"rank":"稀有","icon":""},"山珍竹筍":{"rank":"史詩","icon":""},"大螯蟹":{"rank":"史詩","icon":""},"大螯蟹王":{"rank":"傳說","icon":""},"金盞靈芝":{"rank":"傳說","icon":""},"雷電香油":{"rank":"稀有","icon":""},"純淨雷電香油":{"rank":"史詩","icon":""},"蘭香茸":{"rank":"一般","icon":""},"星夜蘭香茸":{"rank":"稀有","icon":""},"雲海螺肉":{"rank":"稀有","icon":""},"風飄雲海螺肉":{"rank":"史詩","icon":""},"陽光果":{"rank":"史詩","icon":""},"黃金陽光果":{"rank":"傳說","icon":""},"女神之淚":{"rank":"傳說","icon":""}};
 
         const defaultIngredientsMap = userProvidedIngredientsMap;
@@ -1190,6 +1248,179 @@
 
         const userProvidedArtemisInv = {"多汁嘟嘟莓":40,"馬鈴薯":0,"甜馬鈴薯":0,"嘟嘟莓":0,"藍鳥蛋":0,"鈷藍鳥蛋":0,"潔白松露":0,"刺刺果":0,"尖刺刺果":0,"甲殼栗":0,"鐵甲殼栗":0,"綠洲之星":0,"綠洲新星":0,"寶藏駝奶":0,"水舞葉":0,"天舞青葉":0,"花瓣魚":0,"鮮花瓣魚":0,"章魚":0,"潮汐八爪魚":0,"紺青龍蝦":0,"麵粉":0,"蜂蜜":0,"百花蜜":0,"蜂王漿":0,"奶油":0,"咸奶油":0,"脫脂奶油":0,"咖哩":0,"濃香咖哩":0,"味噌":0,"辛味噌":0,"乾脆豆子":0,"竹筍":0,"山珍竹筍":0,"辣椒":0,"妖魔辣椒":0,"大螯蟹":0,"星夜蘭香茸":0,"雲海螺肉":0,"陽光果":0,"雷電香油":0,"純淨雷電香油":0,"精肉":0,"青禾":0,"嫩肉":0,"水":0,"胡椒":0,"糖":0,"鹽":0,"蘑菇":0,"芥菜":0,"琥珀凝膠":0,"絕品肉":0,"金盞靈芝":0,"黃金陽光果":0,"女神之淚":0,"生肉":0,"豆子":0,"大螯蟹王":0,"蘭香茸":0,"風飄雲海螺肉":0};
 
+        // ==================== ☁️ 雲端自動同步核心函式 ====================
+        function getCloudUrl() {
+            let url = localStorage.getItem('firebase_db_url') || DEFAULT_FIREBASE_URL;
+            return url ? url.trim().replace(/\/+$/, '') : '';
+        }
+
+        function getCloudJsonEndpoint() {
+            const base = getCloudUrl();
+            if (!base) return '';
+            return base.endsWith('.json') ? base : `${base}/杖劍傳說資料.json`;
+        }
+
+        function updateCloudBadge(status, text) {
+            const badge = document.getElementById('cloud-status-badge');
+            if (!badge) return;
+            badge.className = 'sync-badge ' + (status || '');
+            badge.innerText = text;
+        }
+
+        function applyFullDataObject(dataObj) {
+            if (!dataObj || typeof dataObj !== 'object') return false;
+            if (dataObj.ingredientsMap) localStorage.setItem('global_ingredients_map', JSON.stringify(dataObj.ingredientsMap));
+            if (dataObj.rabbitRecipes) localStorage.setItem('recipes_rabbit', JSON.stringify(dataObj.rabbitRecipes.map(migrateRecipeFormat)));
+            if (dataObj.artemisRecipes) localStorage.setItem('recipes_artemis', JSON.stringify(dataObj.artemisRecipes.map(migrateRecipeFormat)));
+            if (dataObj.rabbitInv) localStorage.setItem('inv_rabbit', JSON.stringify(dataObj.rabbitInv));
+            if (dataObj.artemisInv) localStorage.setItem('inv_artemis', JSON.stringify(dataObj.artemisInv));
+            renderUI();
+            return true;
+        }
+
+        async function pushToCloud() {
+            const endpoint = getCloudJsonEndpoint();
+            if (!endpoint) return;
+
+            updateCloudBadge('syncing', '🟡 同步上傳中...');
+            lastLocalPushTimestamp = Date.now();
+
+            const payload = {
+                updatedAt: lastLocalPushTimestamp,
+                ingredientsMap: getIngredientsMap(),
+                rabbitRecipes: getRecipes('rabbit'),
+                artemisRecipes: getRecipes('artemis'),
+                rabbitInv: getInventory('rabbit'),
+                artemisInv: getInventory('artemis')
+            };
+
+            try {
+                const res = await fetch(endpoint, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (res.ok) {
+                    updateCloudBadge('online', '🟢 雲端已同步');
+                } else {
+                    updateCloudBadge('error', '🔴 雲端權限或網址錯誤');
+                }
+            } catch (e) {
+                updateCloudBadge('error', '🔴 網路連線失敗');
+            }
+        }
+
+        async function pullFromCloud(silent = false) {
+            const endpoint = getCloudJsonEndpoint();
+            if (!endpoint) return false;
+
+            if (!silent) updateCloudBadge('syncing', '🟡 讀取雲端中...');
+            try {
+                const res = await fetch(endpoint);
+                if (!res.ok) {
+                    updateCloudBadge('error', '🔴 雲端讀取失敗');
+                    return false;
+                }
+                const data = await res.json();
+                if (data && (data.rabbitInv || data.rabbitRecipes)) {
+                    applyFullDataObject(data);
+                    updateCloudBadge('online', '🟢 雲端已同步');
+                    return true;
+                } else {
+                    // 若雲端還是空的，主動把本機資料推上去初始化
+                    await pushToCloud();
+                    return true;
+                }
+            } catch (e) {
+                updateCloudBadge('error', '🔴 無法連接雲端');
+                return false;
+            }
+        }
+
+        function startCloudRealtimeStream() {
+            if (cloudEventSource) {
+                cloudEventSource.close();
+                cloudEventSource = null;
+            }
+            const endpoint = getCloudJsonEndpoint();
+            if (!endpoint) {
+                updateCloudBadge('', '⚪ 未綁定雲端');
+                return;
+            }
+
+            // 初次啟動先拉取一次最新雲端資料
+            pullFromCloud(true);
+
+            // 利用 Firebase 原生 Server-Sent Events (SSE) 實作即時推播監聽
+            try {
+                cloudEventSource = new EventSource(endpoint);
+                cloudEventSource.addEventListener('put', (e) => {
+                    try {
+                        const packet = JSON.parse(e.data);
+                        if (!packet || !packet.data) return;
+                        // 避免自己剛推上去的資料重複觸發閃爍
+                        if (packet.path === '/' && packet.data.updatedAt && Math.abs(packet.data.updatedAt - lastLocalPushTimestamp) < 2500) {
+                            return;
+                        }
+                        if (packet.path === '/' && (packet.data.rabbitInv || packet.data.rabbitRecipes)) {
+                            applyFullDataObject(packet.data);
+                            updateCloudBadge('online', '🟢 雲端即時更新');
+                        } else {
+                            pullFromCloud(true);
+                        }
+                    } catch (err) {}
+                });
+            } catch (err) {}
+        }
+
+        // 當從手機切回電腦分頁時，自動向雲端拉取最新狀態
+        window.addEventListener('focus', () => {
+            if (getCloudUrl()) pullFromCloud(true);
+        });
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && getCloudUrl()) {
+                pullFromCloud(true);
+            }
+        });
+
+        function openCloudSetupModal() {
+            document.getElementById('cloud-db-url-input').value = getCloudUrl();
+            document.getElementById('cloud-setup-modal').style.display = 'flex';
+        }
+
+        async function saveCloudConfig(uploadLocalFirst) {
+            let rawUrl = document.getElementById('cloud-db-url-input').value.trim();
+            if (!rawUrl || !rawUrl.startsWith('https://')) {
+                alert('請輸入正確的 https:// 開頭 Firebase Realtime Database 網址！');
+                return;
+            }
+            rawUrl = rawUrl.replace(/\/+$/, '');
+            localStorage.setItem('firebase_db_url', rawUrl);
+            closeModal('cloud-setup-modal');
+
+            if (uploadLocalFirst) {
+                await pushToCloud();
+                startCloudRealtimeStream();
+                alert('✅ 已將本機最新資料上傳至雲端，並啟動自動同步！');
+            } else {
+                const ok = await pullFromCloud(false);
+                startCloudRealtimeStream();
+                if (ok) alert('✅ 已成功從雲端下載最新資料覆蓋本機，並啟動自動同步！');
+            }
+        }
+
+        function disconnectCloud() {
+            if (!confirm('確定要解除這台裝置的雲端同步綁定嗎？（本機資料仍會保留）')) return;
+            localStorage.removeItem('firebase_db_url');
+            if (cloudEventSource) {
+                cloudEventSource.close();
+                cloudEventSource = null;
+            }
+            updateCloudBadge('', '⚪ 未綁定雲端');
+            closeModal('cloud-setup-modal');
+        }
+
+        // ==================== 手動匯出與匯入 ====================
         function exportCurrentData() {
             const dataObj = {
                 ingredientsMap: getIngredientsMap(),
@@ -1201,12 +1432,26 @@
             const jsonStr = JSON.stringify(dataObj);
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(jsonStr).then(() => {
-                    alert('✅ 最新資料已成功複製到剪貼簿！\n您可以直接貼到對話框中讓我幫您更新程式碼。');
+                    alert('✅ 最新資料碼已複製到剪貼簿！\n可在另一台裝置點擊「📥 匯入」貼上同步。');
                 }).catch(() => {
                     prompt('請手動全選並複製以下資料碼：', jsonStr);
                 });
             } else {
                 prompt('請手動全選並複製以下資料碼：', jsonStr);
+            }
+        }
+
+        function importCurrentData() {
+            const jsonStr = prompt('請貼上從另一台裝置「📋 匯出」複製的資料碼：');
+            if (!jsonStr) return;
+            try {
+                const dataObj = JSON.parse(jsonStr);
+                if (applyFullDataObject(dataObj)) {
+                    pushToCloud();
+                    alert('✅ 資料匯入成功！畫面已同步為最新狀態。');
+                }
+            } catch (e) {
+                alert('❌ 資料格式錯誤，請確認是否完整複製了匯出的資料碼！');
             }
         }
 
@@ -1618,11 +1863,6 @@
             return scoredRecipes;
         }
 
-        // 嚴格計算並渲染「今日採集推薦」：
-        // 1. 先加總所有食譜對各食材的全局總需求，再扣除當前庫存，得出每項食材真正的總缺口
-        // 2. 針對每個可拾取食材，檢查「自身缺口」與「其昇華後食材缺口」
-        // 3. 若兩者皆有缺口，取最小的正缺口作為排序依據；並按可拾取食材自身的品質分為一般、稀有、史詩三類
-        // 4. 各品質類別中挑選出缺口最少(>0)的第 1 名推薦
         function renderDailyGathering() {
             const container = document.getElementById('daily-gathering-container');
             if (!container) return;
@@ -1800,6 +2040,7 @@
 
             inv[ingName] = Math.max(0, currentStock - sellQty);
             localStorage.setItem(`inv_${currentKey}`, JSON.stringify(inv));
+            pushToCloud();
 
             closeModal('sell-ingredient-modal');
             renderUI();
@@ -2103,6 +2344,7 @@
 
             localStorage.setItem(`inv_${currentKey}`, JSON.stringify(inv));
             localStorage.setItem(`recipes_${currentKey}`, JSON.stringify(recipes));
+            pushToCloud();
 
             closeModal('consume-recipe-modal');
             renderUI();
@@ -2136,6 +2378,7 @@
             let otherRecipes = getRecipes(otherKey);
             otherRecipes = otherRecipes.filter(r => r.name !== targetName);
             localStorage.setItem(`recipes_${otherKey}`, JSON.stringify(otherRecipes));
+            pushToCloud();
 
             closeModal('recipe-modal');
             renderUI();
@@ -2443,6 +2686,7 @@
             }
 
             saveIngredientsMap(ingMap);
+            pushToCloud();
             closeModal('edit-ingredient-item-modal');
 
             if (addIngReturnTarget === 'recipe') {
@@ -2481,6 +2725,7 @@
             });
 
             localStorage.setItem(`inv_${currentKey}`, JSON.stringify(inv));
+            pushToCloud();
             closeModal('edit-inventory-modal');
             renderUI();
         }
@@ -2685,6 +2930,7 @@
 
             localStorage.setItem(`recipes_${currentKey}`, JSON.stringify(recipes));
             localStorage.setItem(`recipes_${otherKey}`, JSON.stringify(otherRecipes));
+            pushToCloud();
             closeModal('add-recipe-modal');
             renderUI();
 
@@ -2726,6 +2972,7 @@
         syncBothCharactersRecipes();
         setupSearchInputs();
         renderUI();
+        startCloudRealtimeStream();
     </script>
 </body>
 </html>
