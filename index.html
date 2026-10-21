@@ -329,7 +329,7 @@
         /* 主頁與詳情頁共用的圓形食材並列區塊 */
         .recipe-ings-flex {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             flex-wrap: wrap;
             background-color: rgba(0, 0, 0, 0.35);
             border: 1px dashed #e74c3c;
@@ -340,10 +340,10 @@
         /* 嚴格自適應寬度，僅剛好包圍項目且不拉寬留白 */
         .compact-box {
             display: inline-flex;
-            gap: 14px;
+            gap: 12px 10px;
             flex-wrap: wrap;
             background-color: rgba(0, 0, 0, 0.35);
-            padding: 10px 14px;
+            padding: 10px 12px;
             border-radius: 8px;
             align-items: flex-start;
             width: fit-content;
@@ -360,11 +360,76 @@
             flex-wrap: wrap;
         }
 
+        /* 統一每個圓形食材項目的寬度，確保換行時上下列完美垂直對齊 */
         .gathering-item {
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 3px;
+            width: 68px;
+        }
+
+        .gathering-item-name {
+            font-size: 12px;
+            color: #ffffff;
+            text-shadow: 1px 1px 0 #000;
+            text-align: center;
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* 食材下方的售出小按鈕 */
+        .sell-item-btn {
+            background-color: #d35400;
+            color: #ffffff;
+            border: 1.5px solid #ffffff;
+            border-radius: 4px;
+            padding: 1px 8px;
+            font-size: 11px;
+            cursor: pointer;
+            box-shadow: 0 2px 0px rgba(0,0,0,0.5);
+            text-shadow: 1px 1px 0px #000;
+            margin-top: 2px;
+            transition: all 0.1s;
+            white-space: nowrap;
+        }
+        .sell-item-btn:hover { background-color: #e67e22; transform: scale(1.05); }
+        .sell-item-btn:active { transform: translateY(2px); box-shadow: none; }
+
+        /* 手機版面優化：對齊與拉寬 */
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            .container { padding: 14px; }
+            .surplus-section-wrap {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            /* 手機版可出售食材框：固定4欄網格完美對齊 */
+            .surplus-box {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 12px 6px;
+                width: 100%;
+                justify-items: center;
+            }
+            /* 手機版今日採集推薦：3欄網格置中對齊 */
+            .gathering-box {
+                display: inline-grid;
+                grid-template-columns: repeat(3, auto);
+                gap: 10px 14px;
+                justify-items: center;
+            }
+            .gathering-item {
+                width: 100%;
+                max-width: 72px;
+            }
+            /* 手機版更多可出售與顯示更多食譜一樣拉寬100% */
+            .surplus-section-wrap .more-card {
+                width: 100%;
+                min-height: 100px;
+            }
         }
 
         /* 食譜品質等級標題顏色 */
@@ -396,7 +461,7 @@
             cursor: pointer;
             box-shadow: none;
             transition: all 0.15s;
-            min-height: 96px;
+            min-height: 100px;
             min-width: 140px;
             padding: 10px 18px;
             border-radius: 8px;
@@ -880,6 +945,35 @@
         </div>
     </div>
 
+    <!-- 售出食材彈跳視窗 -->
+    <div id="sell-ingredient-modal" class="modal" style="z-index: 125;">
+        <div class="modal-content" style="padding: 20px; width: 380px;">
+            <h2 id="sell-modal-title" style="font-size: 20px; color: #ffcb05; margin-bottom: 12px; text-shadow: 2px 2px 0px #000;">💰 售出食材</h2>
+            <input type="hidden" id="sell-ingredient-name" value="">
+            
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; background: rgba(0,0,0,0.25); padding: 10px 14px; border-radius: 6px; border: 1px dashed #3a4e8c;">
+                <div class="ing-circle-icon" id="sell-modal-icon-box"></div>
+                <div style="display: flex; flex-direction: column; gap: 3px;">
+                    <div id="sell-modal-info-stock" style="font-size: 13px; color: #b3c0e6;">目前庫存：0</div>
+                    <div id="sell-modal-info-surplus" style="font-size: 14px; color: #ffcb05; font-weight: bold;">建議可售：0</div>
+                </div>
+            </div>
+
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; background: rgba(0,0,0,0.25); padding: 10px 14px; border-radius: 6px; border: 1px solid #3a4e8c;">
+                <label style="margin: 0; font-size: 15px;">輸入售出數量：</label>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <input type="number" id="sell-qty-input" class="text-input" value="1" min="1" style="width: 80px; height: 36px; text-align: center; font-size: 16px; font-weight: bold; margin: 0;" oninput="updateSellPreview()">
+                    <button type="button" class="btn-mini" onclick="setMaxSellQty()" style="height: 36px; padding: 0 8px;">最大可售</button>
+                </div>
+            </div>
+
+            <div id="sell-preview-text" style="font-size: 13px; color: #2ecc71; text-align: right; margin-bottom: 10px; text-shadow: 1px 1px 0 #000;">售出後剩餘庫存：0</div>
+
+            <button class="save-btn" onclick="confirmSellIngredient()">✅ 確認售出 (扣除庫存)</button>
+            <button class="close-btn" onclick="closeModal('sell-ingredient-modal')">取消</button>
+        </div>
+    </div>
+
     <!-- 所有食譜清單彈跳視窗 -->
     <div id="all-recipes-modal" class="modal">
         <div class="modal-content" style="padding: 20px;">
@@ -953,7 +1047,7 @@
             <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; background: rgba(0,0,0,0.3); padding: 10px; border: 2px dashed #3a4e8c; border-radius: 6px;">
                 <img id="edit-ing-icon-preview" class="recipe-icon" src="" alt="預覽">
                 <input type="file" id="edit-ing-file-input" accept="image/*" onchange="handleFileUpload(event, 'edit-ing-icon-base64', 'edit-ing-icon-preview')" style="font-family: 'DotGothic16'; color: #fff;">
-                <button class="action-btn add-recipe" onclick="removeUploadedFile('edit-ing-icon-base64', 'new-ing-icon-preview', 'edit-ing-file-input')" style="margin-left:auto;">❌ 移除圖示</button>
+                <button class="action-btn add-recipe" onclick="removeUploadedFile('edit-ing-icon-base64', 'edit-ing-icon-preview', 'edit-ing-file-input')" style="margin-left:auto;">❌ 移除圖示</button>
             </div>
 
             <button class="save-btn" onclick="saveSingleIngredientInfo()">💾 儲存食材資訊</button>
@@ -1024,7 +1118,7 @@
     </div>
 
     <script>
-        const DATA_VERSION = 'v2026_perfect_restore_v16';
+        const DATA_VERSION = 'v2026_perfect_restore_v17';
         const defaultRecipeIconImg = "食譜預設.png";
         const defaultIngIconImg = "食材預設.png";
 
@@ -1082,6 +1176,7 @@
         let addIngReturnTarget = 'inventory';
         let currentKey = 'rabbit';
         let openedFromAllRecipes = false;
+        let currentMaxSurplusQty = 0;
 
         const userProvidedIngredientsMap = {"水":{"rank":"一般","icon":""},"胡椒":{"rank":"一般","icon":""},"糖":{"rank":"一般","icon":""},"鹽":{"rank":"一般","icon":""},"蘑菇":{"rank":"一般","icon":""},"青禾":{"rank":"一般","icon":""},"芥菜":{"rank":"一般","icon":""},"琥珀凝膠":{"rank":"一般","icon":""},"生肉":{"rank":"一般","icon":""},"嫩肉":{"rank":"稀有","icon":""},"精肉":{"rank":"史詩","icon":""},"絕品肉":{"rank":"傳說","icon":""},"麵粉":{"rank":"一般","icon":""},"蜂蜜":{"rank":"稀有","icon":""},"百花蜜":{"rank":"史詩","icon":""},"蜂王漿":{"rank":"傳說","icon":""},"馬鈴薯":{"rank":"一般","icon":""},"甜馬鈴薯":{"rank":"稀有","icon":""},"嘟嘟莓":{"rank":"稀有","icon":""},"多汁嘟嘟莓":{"rank":"史詩","icon":""},"藍鳥蛋":{"rank":"史詩","icon":""},"鈷藍鳥蛋":{"rank":"傳說","icon":""},"潔白松露":{"rank":"傳說","icon":""},"奶油":{"rank":"稀有","icon":""},"咸奶油":{"rank":"史詩","icon":""},"脫脂奶油":{"rank":"傳說","icon":""},"咖哩":{"rank":"稀有","icon":""},"濃香咖哩":{"rank":"史詩","icon":""},"刺刺果":{"rank":"一般","icon":""},"尖刺刺果":{"rank":"稀有","icon":""},"甲殼栗":{"rank":"稀有","icon":""},"鐵甲殼栗":{"rank":"史詩","icon":""},"綠洲之星":{"rank":"史詩","icon":""},"綠洲新星":{"rank":"傳說","icon":""},"寶藏駝奶":{"rank":"史詩","icon":""},"味噌":{"rank":"稀有","icon":""},"辛味噌":{"rank":"史詩","icon":""},"水舞葉":{"rank":"一般","icon":""},"天舞青葉":{"rank":"稀有","icon":""},"花瓣魚":{"rank":"稀有","icon":""},"鮮花瓣魚":{"rank":"史詩","icon":""},"章魚":{"rank":"史詩","icon":""},"潮汐八爪魚":{"rank":"傳說","icon":""},"紺青龍蝦":{"rank":"傳說","icon":""},"辣椒":{"rank":"稀有","icon":""},"妖魔辣椒":{"rank":"史詩","icon":""},"豆子":{"rank":"一般","icon":""},"乾脆豆子":{"rank":"稀有","icon":""},"竹筍":{"rank":"稀有","icon":""},"山珍竹筍":{"rank":"史詩","icon":""},"大螯蟹":{"rank":"史詩","icon":""},"大螯蟹王":{"rank":"傳說","icon":""},"金盞靈芝":{"rank":"傳說","icon":""},"雷電香油":{"rank":"稀有","icon":""},"純淨雷電香油":{"rank":"史詩","icon":""},"蘭香茸":{"rank":"一般","icon":""},"星夜蘭香茸":{"rank":"稀有","icon":""},"雲海螺肉":{"rank":"稀有","icon":""},"風飄雲海螺肉":{"rank":"史詩","icon":""},"陽光果":{"rank":"史詩","icon":""},"黃金陽光果":{"rank":"傳說","icon":""},"女神之淚":{"rank":"傳說","icon":""}};
 
@@ -1576,10 +1671,8 @@
                 if (dUp > 0) activeDeficits.push(dUp);
 
                 if (activeDeficits.length > 0) {
-                    // 取最小缺口作為比較基準，同時記錄總缺口做同分比序
                     const minDeficit = Math.min(...activeDeficits);
                     const sumDeficit = dSelf + dUp;
-                    // 依據可拾取食材本身的品質歸類 (支援使用者於庫存修改品質)
                     const tier = (ingMap[gathIng] && ingMap[gathIng].rank) ? ingMap[gathIng].rank : "一般";
                     if (candidatesByTier[tier]) {
                         candidatesByTier[tier].push({
@@ -1611,7 +1704,7 @@
                             <div class="ing-circle-icon">
                                 ${renderImgHtml(ingMeta.icon, "", defaultIngIconImg, chosen.name)}
                             </div>
-                            <span style="font-size:12px; color:#ffffff; text-shadow: 1px 1px 0 #000;">${chosen.name}</span>
+                            <span class="gathering-item-name" title="${chosen.name}">${chosen.name}</span>
                         </div>
                     `;
                 }
@@ -1634,17 +1727,86 @@
             const itemsHtml = displayMissing.map(item => {
                 const iconSrc = ingMap[item.name] ? ingMap[item.name].icon : "";
                 return `
-                    <div style="display: flex; flex-direction: column; align-items: center; gap: 3px;">
+                    <div class="gathering-item">
                         <div class="ing-circle-icon">
                             ${renderImgHtml(iconSrc, "", defaultIngIconImg, item.name)}
                         </div>
-                        <span style="font-size:12px; color:#ffffff; text-shadow: 1px 1px 0 #000;">${item.name}</span>
+                        <span class="gathering-item-name" title="${item.name}">${item.name}</span>
                         <span class="qty-red" style="font-size:13px; text-shadow: 1px 1px 0 #000;">缺 ${item.diff}</span>
                     </div>
                 `;
             }).join('');
 
             return `<div class="recipe-ings-flex">${itemsHtml}</div>`;
+        }
+
+        // 開啟售出食材彈窗
+        function openSellModal(ingName, surplusQty, evt) {
+            if (evt) evt.stopPropagation();
+            const inv = getInventory(currentKey);
+            const ingMap = getIngredientsMap();
+            const currentStock = inv[ingName] || 0;
+            const ingMeta = ingMap[ingName] || { icon: "" };
+
+            currentMaxSurplusQty = surplusQty;
+
+            document.getElementById('sell-ingredient-name').value = ingName;
+            document.getElementById('sell-modal-title').innerText = `💰 售出：${ingName}`;
+            document.getElementById('sell-modal-icon-box').innerHTML = renderImgHtml(ingMeta.icon, "", defaultIngIconImg, ingName);
+            document.getElementById('sell-modal-info-stock').innerText = `目前庫存：${currentStock}`;
+            document.getElementById('sell-modal-info-surplus').innerText = `建議可售：${surplusQty}`;
+
+            const qtyInput = document.getElementById('sell-qty-input');
+            qtyInput.value = surplusQty > 0 ? surplusQty : 1;
+            qtyInput.max = currentStock;
+
+            updateSellPreview();
+            document.getElementById('sell-ingredient-modal').style.display = 'flex';
+        }
+
+        function setMaxSellQty() {
+            const qtyInput = document.getElementById('sell-qty-input');
+            qtyInput.value = currentMaxSurplusQty;
+            updateSellPreview();
+        }
+
+        function updateSellPreview() {
+            const ingName = document.getElementById('sell-ingredient-name').value;
+            const inv = getInventory(currentKey);
+            const currentStock = inv[ingName] || 0;
+            const sellQty = Math.max(0, parseInt(document.getElementById('sell-qty-input').value) || 0);
+            const remain = Math.max(0, currentStock - sellQty);
+            const previewEl = document.getElementById('sell-preview-text');
+            previewEl.innerText = `售出後剩餘庫存：${remain}`;
+            previewEl.style.color = sellQty > currentStock ? '#ff4757' : '#2ecc71';
+        }
+
+        function confirmSellIngredient() {
+            const ingName = document.getElementById('sell-ingredient-name').value;
+            const sellQty = parseInt(document.getElementById('sell-qty-input').value) || 0;
+
+            if (!ingName || sellQty <= 0) {
+                alert('請輸入大於 0 的售出數量！');
+                return;
+            }
+
+            const inv = getInventory(currentKey);
+            const currentStock = inv[ingName] || 0;
+
+            if (sellQty > currentStock) {
+                alert(`售出數量 (${sellQty}) 不能超過目前庫存 (${currentStock})！`);
+                return;
+            }
+
+            inv[ingName] = Math.max(0, currentStock - sellQty);
+            localStorage.setItem(`inv_${currentKey}`, JSON.stringify(inv));
+
+            closeModal('sell-ingredient-modal');
+            renderUI();
+
+            if (document.getElementById('all-surplus-modal').style.display === 'flex') {
+                openAllSurplusModal();
+            }
         }
 
         function renderUI() {
@@ -1739,19 +1901,21 @@
                     surplusList = surplusList.filter(s => s.name.toLowerCase().includes(surplusSearchKey));
                 }
 
-                // 主頁顯示至多 8 個可出售食材，綠色虛線框緊湊包圍食材
+                // 主頁顯示至多 8 個可出售食材，並附帶售出按鈕
                 const top8Surplus = surplusList.slice(0, 8);
                 if (top8Surplus.length > 0) {
                     let surplusItemsHtml = '';
                     top8Surplus.forEach(item => {
                         const ingMeta = ingMap[item.name] || { icon: "" };
+                        const safeItemName = item.name.replace(/'/g, "\\'");
                         surplusItemsHtml += `
                             <div class="gathering-item" title="${item.name}｜庫存: ${item.inventory} / 需求: ${item.demand} / 可售: ${item.surplus}">
                                 <div class="ing-circle-icon">
                                     ${renderImgHtml(ingMeta.icon, "", defaultIngIconImg, item.name)}
                                 </div>
-                                <span style="font-size:12px; color:#ffffff; text-shadow: 1px 1px 0 #000;">${item.name}</span>
+                                <span class="gathering-item-name">${item.name}</span>
                                 <span style="font-size:11px; color:#ffcb05; font-weight:bold; text-shadow: 1px 1px 0 #000;">可售 ${item.surplus}</span>
+                                <button class="sell-item-btn" onclick="openSellModal('${safeItemName}', ${item.surplus}, event)">售出</button>
                             </div>
                         `;
                     });
@@ -2057,7 +2221,7 @@
             document.getElementById('all-recipes-modal').style.display = 'flex';
         }
 
-        // 所有可出售食材總覽 (列出全部可出售)
+        // 所有可出售食材總覽 (列出全部可出售，並附帶售出按鈕)
         function openAllSurplusModal() {
             const recipes = getRecipes(currentKey);
             const inv = getInventory(currentKey);
@@ -2107,6 +2271,7 @@
             } else {
                 surplusList.forEach(item => {
                     const circleRankClass = getCircleRankClass(item.rank || "一般");
+                    const safeItemName = item.name.replace(/'/g, "\\'");
                     listContainer.innerHTML += `
                         <div class="overview-item" style="cursor: default;" title="${item.name} (${item.rank || '一般'})｜庫存: ${item.inventory} / 需求: ${item.demand} / 可出售: ${item.surplus}">
                             <div class="overview-circle ${circleRankClass}">
@@ -2114,6 +2279,7 @@
                             </div>
                             <span class="overview-name">${item.name}</span>
                             <span class="overview-subtext">可售 ${item.surplus}</span>
+                            <button class="sell-item-btn" onclick="openSellModal('${safeItemName}', ${item.surplus}, event)">售出</button>
                         </div>
                     `;
                 });
