@@ -291,12 +291,12 @@
         .ing-info-flex { display: flex; align-items: center; gap: 10px; }
 
         .recipe-icon, .ing-icon {
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             object-fit: contain;
             border: 2px solid #ffffff;
-            border-radius: 4px;
-            background-color: transparent;
+            border-radius: 6px;
+            background-color: rgba(0, 0, 0, 0.35);
             flex-shrink: 0;
             image-rendering: pixelated;
         }
@@ -402,17 +402,28 @@
         .sell-item-btn:hover { background-color: #e67e22; transform: scale(1.05); }
         .sell-item-btn:active { transform: translateY(2px); box-shadow: none; }
 
-        /* ==================== 網頁深藍金配色：遊戲交易行風格彈窗 (售出 & 食譜共用) ==================== */
+        /* ==================== 網頁深藍金配色：遊戲交易行與編輯器統一彈窗風格 ==================== */
         .game-trade-modal {
             background-color: #233363;
             border: 4px solid #ffffff;
             border-radius: 14px;
             width: 420px;
             max-width: 95%;
+            max-height: 92vh;
+            display: flex;
+            flex-direction: column;
             overflow: hidden;
             box-shadow: 8px 8px 0px rgba(0, 0, 0, 0.85);
             color: #ffffff;
             position: relative;
+        }
+
+        /* 統一的編輯器寬版彈窗 (用於新增/編輯食譜、編輯食材、修改庫存) */
+        .game-trade-modal.editor-modal {
+            width: 580px;
+        }
+        .game-trade-modal.editor-modal-sm {
+            width: 480px;
         }
 
         .game-trade-header {
@@ -424,6 +435,7 @@
             border-bottom: 2px solid #3a4e8c;
             position: relative;
             min-height: 52px;
+            flex-shrink: 0;
         }
 
         .game-trade-title-wrap {
@@ -452,6 +464,29 @@
             z-index: 10;
         }
 
+        /* 編輯器表單內容滾動區 (食譜編輯與食材編輯共用) */
+        .game-editor-body {
+            padding: 18px 20px;
+            overflow-y: auto;
+            flex: 1;
+            background-color: #233363;
+        }
+        .game-editor-body::-webkit-scrollbar { width: 8px; }
+        .game-editor-body::-webkit-scrollbar-thumb { background: #ffffff; border-radius: 4px; }
+
+        /* 統一的圖示上傳預覽框 */
+        .editor-upload-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px 12px;
+            border: 2px dashed #3a4e8c;
+            border-radius: 8px;
+            flex-wrap: wrap;
+        }
+
         .game-trade-banner {
             background: radial-gradient(circle at 30% 50%, #2c3e75 0%, #1c284d 70%, #141d38 100%);
             padding: 18px 24px;
@@ -460,6 +495,7 @@
             align-items: center;
             border-bottom: 2px dashed #3a4e8c;
             min-height: 120px;
+            flex-shrink: 0;
         }
 
         .game-trade-info {
@@ -524,7 +560,7 @@
             image-rendering: pixelated;
         }
 
-        /* 食譜詳情圓形圖示左上角的屬性徽章（如圖位置） */
+        /* 食譜詳情圓形圖示左上角的屬性徽章 */
         .game-trade-attr-corner {
             position: absolute;
             top: 0px;
@@ -585,6 +621,7 @@
             justify-content: space-between;
             gap: 10px;
             border-bottom: 2px solid #3a4e8c;
+            flex-shrink: 0;
         }
 
         .game-trade-qty-label {
@@ -652,13 +689,15 @@
             line-height: 1;
         }
 
-        /* 底部雙膠囊按鈕區 */
+        /* 底部雙膠囊按鈕區 (所有彈窗統一使用) */
         .game-trade-footer {
-            background-color: #233363;
-            padding: 16px 20px 18px 20px;
+            background-color: #182242;
+            padding: 14px 20px 16px 20px;
             display: flex;
             gap: 14px;
             justify-content: space-between;
+            border-top: 2px solid #3a4e8c;
+            flex-shrink: 0;
         }
 
         .game-pill-btn {
@@ -797,7 +836,7 @@
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 10px;
-            max-height: 360px;
+            max-height: 320px;
             overflow-y: auto;
             padding: 8px;
             background: rgba(0, 0, 0, 0.3);
@@ -1042,10 +1081,15 @@
             background-color: #1c284d;
             color: #ffffff;
             border: 2px solid #ffffff;
-            border-radius: 4px;
+            border-radius: 6px;
             padding: 8px 10px;
             margin-bottom: 12px;
             outline: none;
+            font-size: 14px;
+            text-shadow: 1px 1px 0 #000;
+        }
+        .text-input:focus {
+            border-color: #ffcb05;
         }
 
         label {
@@ -1116,7 +1160,7 @@
         <div id="surplus-container"></div>
     </div>
 
-    <!-- 圖一交易行風格（深藍金配色）：食譜詳情與食用視窗 -->
+    <!-- 1. 食譜詳情與食用視窗 -->
     <div id="recipe-modal" class="modal" style="z-index: 120;">
         <div class="game-trade-modal">
             <input type="hidden" id="modal-recipe-index" value="-1">
@@ -1176,7 +1220,7 @@
         </div>
     </div>
 
-    <!-- 圖一交易行風格（深藍金配色）：售出食材彈跳視窗 -->
+    <!-- 2. 售出食材彈跳視窗 -->
     <div id="sell-ingredient-modal" class="modal" style="z-index: 125;">
         <div class="game-trade-modal">
             <input type="hidden" id="sell-ingredient-name" value="">
@@ -1217,6 +1261,141 @@
         </div>
     </div>
 
+    <!-- 3. 新增 / 編輯食譜彈跳視窗 (與編輯食材統一風格配置) -->
+    <div id="add-recipe-modal" class="modal" style="z-index: 130;">
+        <div class="game-trade-modal editor-modal">
+            <div class="game-trade-header">
+                <div class="game-trade-title-wrap">
+                    <span id="recipe-editor-title" class="game-trade-title">新增食譜</span>
+                </div>
+            </div>
+
+            <div class="game-editor-body">
+                <input type="hidden" id="editing-recipe-index" value="-1">
+                <input type="hidden" id="new-recipe-icon-base64" value="">
+                
+                <label>食譜名稱：</label>
+                <input type="text" id="new-recipe-name" class="text-input" placeholder="例如：豪華海鮮丼">
+                
+                <label>食譜品質：</label>
+                <input type="hidden" id="new-recipe-rank" value="稀有">
+                <div class="tag-group" id="new-recipe-rank-tags">
+                    <span class="tag-option active" data-val="稀有" onclick="selectFormTag('new-recipe-rank', '稀有', this)">稀有 (藍)</span>
+                    <span class="tag-option" data-val="史詩" onclick="selectFormTag('new-recipe-rank', '史詩', this)">史詩 (紫)</span>
+                    <span class="tag-option" data-val="傳說" onclick="selectFormTag('new-recipe-rank', '傳說', this)">傳說 (橘)</span>
+                    <span class="tag-option" data-val="奇蹟" onclick="selectFormTag('new-recipe-rank', '奇蹟', this)">奇蹟 (金)</span>
+                </div>
+
+                <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                    <div>
+                        <label>習得狀態：</label>
+                        <input type="hidden" id="new-recipe-status" value="true">
+                        <div class="tag-group" id="new-recipe-status-tags">
+                            <span class="tag-option active" data-val="true" onclick="selectFormTag('new-recipe-status', 'true', this)">已習得</span>
+                            <span class="tag-option" data-val="false" onclick="selectFormTag('new-recipe-status', 'false', this)">未取得</span>
+                        </div>
+                    </div>
+                    <div style="width: 110px;">
+                        <label>需求數量：</label>
+                        <input type="number" id="new-recipe-portions" class="text-input" value="1" min="0" style="width: 90px; height: 36px; text-align: center; font-size: 16px; font-weight: bold;">
+                    </div>
+                </div>
+
+                <label>加成屬性：</label>
+                <input type="hidden" id="new-recipe-attr" value="攻擊">
+                <div class="tag-group" id="new-recipe-attr-tags">
+                    <span class="tag-option active" data-val="攻擊" onclick="selectFormTag('new-recipe-attr', '攻擊', this)">攻擊</span>
+                    <span class="tag-option" data-val="速度" onclick="selectFormTag('new-recipe-attr', '速度', this)">速度</span>
+                    <span class="tag-option" data-val="生命" onclick="selectFormTag('new-recipe-attr', '生命', this)">生命</span>
+                    <span class="tag-option" data-val="防禦" onclick="selectFormTag('new-recipe-attr', '防禦', this)">防禦</span>
+                </div>
+
+                <label>食譜圖示：</label>
+                <div class="editor-upload-box">
+                    <img id="new-recipe-icon-preview" class="recipe-icon" src="" alt="預覽">
+                    <input type="file" id="recipe-file-input" accept="image/*" onchange="handleFileUpload(event, 'new-recipe-icon-base64', 'new-recipe-icon-preview')" style="color: #fff; font-size: 13px; max-width: 220px;">
+                    <button type="button" class="action-btn add-recipe" onclick="removeUploadedFile('new-recipe-icon-base64', 'new-recipe-icon-preview', 'recipe-file-input')" style="margin-left:auto; padding: 4px 10px; font-size: 12px;">❌ 移除圖示</button>
+                </div>
+
+                <label>選擇所需食材與每份用量（已勾選的食材會自動置頂）：</label>
+                <div style="display: flex; gap: 8px; margin-bottom: 10px;">
+                    <input type="text" id="recipe-ing-search" class="search-input" placeholder="🔍 搜尋食材..." style="flex: 1; height: 34px;">
+                    <button type="button" class="action-btn add-recipe" style="padding: 0 12px; height: 34px; font-size: 13px;" onclick="openAddIngredientFromRecipe()">➕ 新增食材</button>
+                </div>
+                <div id="new-recipe-ingredients-list" class="ing-grid-4"></div>
+            </div>
+
+            <div class="game-trade-footer">
+                <button type="button" class="game-pill-btn game-pill-cancel" onclick="cancelEditRecipeModal()">取消</button>
+                <button type="button" class="game-pill-btn game-pill-confirm" onclick="saveRecipe()">儲存食譜</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. 編輯 / 新增食材彈跳視窗 (與編輯食譜完全統一風格配置) -->
+    <div id="edit-ingredient-item-modal" class="modal" style="z-index: 140;">
+        <div class="game-trade-modal editor-modal-sm">
+            <div class="game-trade-header">
+                <div class="game-trade-title-wrap">
+                    <span id="ing-item-editor-title" class="game-trade-title">編輯食材</span>
+                </div>
+            </div>
+
+            <div class="game-editor-body">
+                <input type="hidden" id="editing-ing-original-name" value="">
+                <input type="hidden" id="edit-ing-icon-base64" value="">
+                
+                <label>食材名稱：</label>
+                <input type="text" id="edit-ing-name" class="text-input" placeholder="例如：甜馬鈴薯">
+                
+                <label>食材品質：</label>
+                <input type="hidden" id="edit-ing-rank" value="一般">
+                <div class="tag-group" id="edit-ing-rank-tags">
+                    <span class="tag-option active" data-val="一般" onclick="selectFormTag('edit-ing-rank', '一般', this)">一般 (灰)</span>
+                    <span class="tag-option" data-val="稀有" onclick="selectFormTag('edit-ing-rank', '稀有', this)">稀有 (藍)</span>
+                    <span class="tag-option" data-val="史詩" onclick="selectFormTag('edit-ing-rank', '史詩', this)">史詩 (紫)</span>
+                    <span class="tag-option" data-val="傳說" onclick="selectFormTag('edit-ing-rank', '傳說', this)">傳說 (橘)</span>
+                </div>
+
+                <label>食材圖示：</label>
+                <div class="editor-upload-box" style="margin-bottom: 4px;">
+                    <img id="edit-ing-icon-preview" class="recipe-icon" src="" alt="預覽">
+                    <input type="file" id="edit-ing-file-input" accept="image/*" onchange="handleFileUpload(event, 'edit-ing-icon-base64', 'edit-ing-icon-preview')" style="color: #fff; font-size: 13px; max-width: 200px;">
+                    <button type="button" class="action-btn add-recipe" onclick="removeUploadedFile('edit-ing-icon-base64', 'edit-ing-icon-preview', 'edit-ing-file-input')" style="margin-left:auto; padding: 4px 10px; font-size: 12px;">❌ 移除圖示</button>
+                </div>
+            </div>
+
+            <div class="game-trade-footer">
+                <button type="button" class="game-pill-btn game-pill-cancel" onclick="closeModal('edit-ingredient-item-modal')">取消</button>
+                <button type="button" class="game-pill-btn game-pill-confirm" onclick="saveSingleIngredientInfo()">儲存食材</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. 修改庫存彈跳視窗 (同步統一外框與底部按鈕風格) -->
+    <div id="edit-inventory-modal" class="modal" style="z-index: 125;">
+        <div class="game-trade-modal editor-modal">
+            <div class="game-trade-header">
+                <div class="game-trade-title-wrap">
+                    <span id="modal-inv-title" class="game-trade-title">修改庫存</span>
+                </div>
+                <div class="game-trade-top-actions">
+                    <button class="action-btn add-recipe" style="padding: 4px 10px; font-size: 12px;" onclick="openAddIngredientModal('inventory')">➕ 新增食材</button>
+                </div>
+            </div>
+
+            <div class="game-editor-body">
+                <input type="text" id="inv-search" class="search-input" placeholder="🔍 搜尋庫存食材 (點擊食材名稱可編輯該食材)..." style="width: 100%; margin-bottom: 12px; height: 36px;">
+                <div id="inventory-edit-list" class="ing-grid-4" style="max-height: 50vh;"></div>
+            </div>
+
+            <div class="game-trade-footer">
+                <button type="button" class="game-pill-btn game-pill-cancel" onclick="closeModal('edit-inventory-modal')">取消</button>
+                <button type="button" class="game-pill-btn game-pill-confirm" onclick="saveInventory()">儲存庫存</button>
+            </div>
+        </div>
+    </div>
+
     <!-- 所有食譜清單彈跳視窗 -->
     <div id="all-recipes-modal" class="modal">
         <div class="modal-content" style="padding: 20px;">
@@ -1248,115 +1427,6 @@
             <input type="text" id="all-surplus-search" class="search-input" placeholder="🔍 搜尋可出售食材..." style="width: 100%; margin-bottom: 15px; height: 34px;">
             <div id="all-surplus-list" class="overview-grid"></div>
             <button class="close-btn" onclick="closeModal('all-surplus-modal')">關閉視窗</button>
-        </div>
-    </div>
-
-    <!-- 修改庫存彈跳視窗 -->
-    <div id="edit-inventory-modal" class="modal">
-        <div class="modal-content" style="padding: 20px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 3px dashed #3a4e8c; padding-bottom: 10px;">
-                <h2 id="modal-inv-title" style="margin:0; font-size:20px; color:#ffcb05; text-shadow: 2px 2px 0px #000;">📦 修改庫存</h2>
-                <button class="action-btn add-recipe" style="padding: 6px 12px; font-size: 13px;" onclick="openAddIngredientModal('inventory')">➕ 新增食材</button>
-            </div>
-
-            <input type="text" id="inv-search" class="search-input" placeholder="🔍 搜尋庫存食材 (點擊名稱可改屬性)..." style="width: 100%; margin-bottom: 12px; height: 34px;">
-
-            <div id="inventory-edit-list" class="ing-grid-4"></div>
-            <button class="save-btn" onclick="saveInventory()">💾 儲存庫存變更</button>
-            <button class="close-btn" onclick="closeModal('edit-inventory-modal')">取消</button>
-        </div>
-    </div>
-
-    <!-- 食材屬性編輯 / 新增彈窗 -->
-    <div id="edit-ingredient-item-modal" class="modal" style="z-index: 110;">
-        <div class="modal-content" style="padding: 20px;">
-            <h2 id="ing-item-editor-title" style="font-size: 20px; margin-bottom: 15px; color:#ffcb05; text-shadow: 2px 2px 0px #000;">✏️ 編輯食材屬性</h2>
-            <input type="hidden" id="editing-ing-original-name" value="">
-            <input type="hidden" id="edit-ing-icon-base64" value="">
-            
-            <label>食材名稱：</label>
-            <input type="text" id="edit-ing-name" class="text-input">
-            
-            <label>食材品質：</label>
-            <input type="hidden" id="edit-ing-rank" value="一般">
-            <div class="tag-group" id="edit-ing-rank-tags">
-                <span class="tag-option active" data-val="一般" onclick="selectFormTag('edit-ing-rank', '一般', this)">一般</span>
-                <span class="tag-option" data-val="稀有" onclick="selectFormTag('edit-ing-rank', '稀有', this)">稀有</span>
-                <span class="tag-option" data-val="史詩" onclick="selectFormTag('edit-ing-rank', '史詩', this)">史詩</span>
-                <span class="tag-option" data-val="傳說" onclick="selectFormTag('edit-ing-rank', '傳說', this)">傳說</span>
-            </div>
-
-            <label>圖示：</label>
-            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; background: rgba(0,0,0,0.3); padding: 10px; border: 2px dashed #3a4e8c; border-radius: 6px;">
-                <img id="edit-ing-icon-preview" class="recipe-icon" src="" alt="預覽">
-                <input type="file" id="edit-ing-file-input" accept="image/*" onchange="handleFileUpload(event, 'edit-ing-icon-base64', 'edit-ing-icon-preview')" style="font-family: 'DotGothic16'; color: #fff;">
-                <button class="action-btn add-recipe" onclick="removeUploadedFile('edit-ing-icon-base64', 'edit-ing-icon-preview', 'edit-ing-file-input')" style="margin-left:auto;">❌ 移除圖示</button>
-            </div>
-
-            <button class="save-btn" onclick="saveSingleIngredientInfo()">💾 儲存食材資訊</button>
-            <button class="close-btn" onclick="closeModal('edit-ingredient-item-modal')">取消</button>
-        </div>
-    </div>
-
-    <!-- 新增 / 編輯食譜彈跳視窗 -->
-    <div id="add-recipe-modal" class="modal">
-        <div class="modal-content" style="padding: 20px;">
-            <h2 id="recipe-editor-title" style="font-size: 20px; margin-bottom: 15px; color:#ffcb05; text-shadow: 2px 2px 0px #000;">➕ 新增食譜</h2>
-            <input type="hidden" id="editing-recipe-index" value="-1">
-            <input type="hidden" id="new-recipe-icon-base64" value="">
-            
-            <label>食譜名稱：</label>
-            <input type="text" id="new-recipe-name" class="text-input" placeholder="例如：豪華海鮮丼">
-            
-            <label>食譜品質：</label>
-            <input type="hidden" id="new-recipe-rank" value="稀有">
-            <div class="tag-group" id="new-recipe-rank-tags">
-                <span class="tag-option active" data-val="稀有" onclick="selectFormTag('new-recipe-rank', '稀有', this)">稀有 (藍)</span>
-                <span class="tag-option" data-val="史詩" onclick="selectFormTag('new-recipe-rank', '史詩', this)">史詩 (紫)</span>
-                <span class="tag-option" data-val="傳說" onclick="selectFormTag('new-recipe-rank', '傳說', this)">傳說 (橘)</span>
-                <span class="tag-option" data-val="奇蹟" onclick="selectFormTag('new-recipe-rank', '奇蹟', this)">奇蹟 (金)</span>
-            </div>
-
-            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-                <div>
-                    <label>習得狀態：</label>
-                    <input type="hidden" id="new-recipe-status" value="true">
-                    <div class="tag-group" id="new-recipe-status-tags">
-                        <span class="tag-option active" data-val="true" onclick="selectFormTag('new-recipe-status', 'true', this)">已習得</span>
-                        <span class="tag-option" data-val="false" onclick="selectFormTag('new-recipe-status', 'false', this)">未取得</span>
-                    </div>
-                </div>
-                <div style="width: 100px;">
-                    <label>所需份數：</label>
-                    <input type="number" id="new-recipe-portions" class="text-input" value="1" min="0" style="width: 80px; height: 38px; text-align: center; font-size: 16px; font-weight: bold;">
-                </div>
-            </div>
-
-            <label>加成屬性：</label>
-            <input type="hidden" id="new-recipe-attr" value="攻擊">
-            <div class="tag-group" id="new-recipe-attr-tags">
-                <span class="tag-option active" data-val="攻擊" onclick="selectFormTag('new-recipe-attr', '攻擊', this)">攻擊</span>
-                <span class="tag-option" data-val="速度" onclick="selectFormTag('new-recipe-attr', '速度', this)">速度</span>
-                <span class="tag-option" data-val="生命" onclick="selectFormTag('new-recipe-attr', '生命', this)">生命</span>
-                <span class="tag-option" data-val="防禦" onclick="selectFormTag('new-recipe-attr', '防禦', this)">防禦</span>
-            </div>
-
-            <label>圖示：</label>
-            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; background: rgba(0,0,0,0.3); padding: 10px; border: 2px dashed #3a4e8c; border-radius: 6px;">
-                <img id="new-recipe-icon-preview" class="recipe-icon" src="" alt="預覽">
-                <input type="file" id="recipe-file-input" accept="image/*" onchange="handleFileUpload(event, 'new-recipe-icon-base64', 'new-recipe-icon-preview')" style="font-family: 'DotGothic16'; color: #fff;">
-                <button class="action-btn add-recipe" onclick="removeUploadedFile('new-recipe-icon-base64', 'new-recipe-icon-preview', 'recipe-file-input')" style="margin-left:auto;">❌ 移除圖示</button>
-            </div>
-
-            <label>選擇所需食材與每份所需量（已勾選的食材會自動置頂）：</label>
-            <div style="display: flex; gap: 8px; margin-bottom: 10px;">
-                <input type="text" id="recipe-ing-search" class="search-input" placeholder="🔍 搜尋食材..." style="flex: 1; height: 34px;">
-                <button type="button" class="action-btn add-recipe" style="padding: 0 12px; height: 34px; font-size: 13px;" onclick="openAddIngredientFromRecipe()">➕ 新增食材</button>
-            </div>
-            <div id="new-recipe-ingredients-list" class="ing-grid-4"></div>
-
-            <button class="save-btn" onclick="saveRecipe()">💾 儲存食譜變更</button>
-            <button class="close-btn" onclick="cancelEditRecipeModal()">取消</button>
         </div>
     </div>
 
@@ -2618,7 +2688,7 @@
             const char = gameData[currentKey];
             const inv = getInventory(currentKey);
 
-            document.getElementById('modal-inv-title').innerText = `📦 修改 ${char.name} 的庫存`;
+            document.getElementById('modal-inv-title').innerText = `修改 ${char.name} 的庫存`;
             document.getElementById('inv-search').value = '';
             renderInventoryEditList(inv);
 
@@ -2663,7 +2733,7 @@
 
         function openAddIngredientModal(returnTarget = 'inventory', defaultName = '') {
             addIngReturnTarget = returnTarget;
-            document.getElementById('ing-item-editor-title').innerText = "➕ 新增食材種類";
+            document.getElementById('ing-item-editor-title').innerText = "新增食材";
             document.getElementById('editing-ing-original-name').value = "";
             document.getElementById('edit-ing-name').value = defaultName;
             setTagGroupValue('edit-ing-rank', 'edit-ing-rank-tags', '一般');
@@ -2697,7 +2767,7 @@
             const ingMap = getIngredientsMap();
             const meta = ingMap[ingName] || { rank: "一般", icon: "" };
 
-            document.getElementById('ing-item-editor-title').innerText = `✏️ 編輯食材：${ingName}`;
+            document.getElementById('ing-item-editor-title').innerText = `編輯食材：${ingName}`;
             document.getElementById('editing-ing-original-name').value = ingName;
             document.getElementById('edit-ing-name').value = ingName;
             setTagGroupValue('edit-ing-rank', 'edit-ing-rank-tags', meta.rank || "一般");
@@ -2854,7 +2924,7 @@
 
         function openAddRecipeModal() {
             openedFromAllRecipes = false;
-            document.getElementById('recipe-editor-title').innerText = '➕ 新增食譜';
+            document.getElementById('recipe-editor-title').innerText = '新增食譜';
             document.getElementById('editing-recipe-index').value = '-1';
             document.getElementById('new-recipe-name').value = '';
             document.getElementById('new-recipe-portions').value = '1';
@@ -2887,7 +2957,7 @@
 
             const portions = recipe.portions !== undefined ? Number(recipe.portions) : 1;
 
-            document.getElementById('recipe-editor-title').innerText = `✏️ 編輯食譜：${recipe.name}`;
+            document.getElementById('recipe-editor-title').innerText = `編輯食譜：${recipe.name}`;
             document.getElementById('editing-recipe-index').value = recipeIndex;
             document.getElementById('new-recipe-name').value = recipe.name;
             document.getElementById('new-recipe-portions').value = portions;
