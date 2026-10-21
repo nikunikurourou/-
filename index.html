@@ -49,36 +49,11 @@
             gap: 10px;
         }
 
-        .title-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
         h1 {
             font-size: 24px;
             color: #ffcb05;
             text-shadow: 2px 2px 0px #000000;
         }
-
-        /* 雲端同步狀態燈號 */
-        .sync-badge {
-            font-size: 12px;
-            padding: 3px 8px;
-            border-radius: 20px;
-            background-color: rgba(0, 0, 0, 0.4);
-            border: 1px solid #8a9fc4;
-            color: #b3c0e6;
-            cursor: pointer;
-            text-shadow: 1px 1px 0 #000;
-            transition: all 0.2s;
-            white-space: nowrap;
-        }
-        .sync-badge:hover { border-color: #ffcb05; color: #fff; }
-        .sync-badge.online { border-color: #2ecc71; color: #2ecc71; background-color: rgba(46, 204, 113, 0.15); }
-        .sync-badge.syncing { border-color: #ffcb05; color: #ffcb05; }
-        .sync-badge.error { border-color: #ff4757; color: #ff4757; }
 
         .header-btns {
             display: flex;
@@ -141,12 +116,6 @@
             border-color: #ffffff;
         }
         .action-btn.add-recipe:hover { background-color: #c0392b; }
-
-        .action-btn.cloud-btn {
-            background-color: #27ae60;
-            border-color: #ffffff;
-        }
-        .action-btn.cloud-btn:hover { background-color: #2ecc71; }
 
         /* 區塊標題與篩選列 */
         .section-header {
@@ -248,12 +217,12 @@
 
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
             gap: 15px;
             min-height: 80px;
         }
 
-        /* 卡片樣式 */
+        /* 卡片樣式：確保同列卡片等高且內部對齊 */
         .recipe-card {
             background-color: #1c284d;
             border: 2px solid #ffffff;
@@ -266,6 +235,7 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
+            height: 100%;
         }
 
         .recipe-card.unlearned { background-color: #111827; opacity: 0.85; }
@@ -293,23 +263,29 @@
         .card-consume-btn:hover { background-color: #2ecc71; transform: scale(1.05); }
         .card-consume-btn:active { transform: translateY(2px); box-shadow: none; }
 
-        /* 修正主頁食譜標題區塊：頂部切齊 */
+        /* 修正主頁食譜標題區塊：固定高度、防止食譜名稱換行導致下方框錯位 */
         .recipe-header-flex {
             display: flex;
             align-items: flex-start;
-            gap: 12px;
-            padding-right: 68px;
+            gap: 10px;
+            padding-right: 64px;
+            min-height: 40px;
         }
         .recipe-title-box {
             display: flex;
             flex-direction: column;
             gap: 4px;
             margin-top: -1px;
+            min-width: 0;
+            flex: 1;
         }
         .recipe-title-box h3 {
-            font-size: 18px;
-            line-height: 1.1;
+            font-size: 17px;
+            line-height: 1.15;
             margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .ing-info-flex { display: flex; align-items: center; gap: 10px; }
@@ -357,7 +333,7 @@
 
         .ing-circle-icon img { width: 80%; height: 80%; object-fit: contain; background-color: transparent;}
 
-        /* 主頁與詳情頁共用的圓形食材並列區塊 */
+        /* 主頁與詳情頁共用的圓形食材並列區塊：設定 flex: 1 讓同列卡片內框底部也切齊 */
         .recipe-ings-flex {
             display: flex;
             gap: 10px;
@@ -366,6 +342,8 @@
             border: 1px dashed #e74c3c;
             padding: 8px;
             border-radius: 6px;
+            flex: 1;
+            align-content: flex-start;
         }
 
         /* 嚴格自適應寬度，僅剛好包圍項目且不拉寬留白 */
@@ -383,12 +361,21 @@
         .gathering-box { border: 2px dashed #ffcb05; margin-bottom: 5px; }
         .surplus-box { border: 2px dashed #2ecc71; }
 
-        /* 可出售食材主頁排版：緊湊框 + 更多按鈕 */
+        /* 可出售食材主頁排版：上方緊湊框 + 下方與更多食譜同寬的網格列 */
         .surplus-section-wrap {
             display: flex;
-            align-items: stretch;
+            flex-direction: column;
+            align-items: flex-start;
             gap: 15px;
-            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        /* 讓「更多食譜」與「更多食材」永遠保持完全相同的寬度 */
+        .more-btn-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 15px;
+            width: 100%;
         }
 
         /* 統一每個圓形食材項目的寬度，確保換行時上下列完美垂直對齊 */
@@ -434,7 +421,6 @@
             body { padding: 10px; }
             .container { padding: 14px; }
             .surplus-section-wrap {
-                flex-direction: column;
                 align-items: stretch;
             }
             /* 手機版可出售食材框：固定4欄網格完美對齊 */
@@ -455,11 +441,6 @@
             .gathering-item {
                 width: 100%;
                 max-width: 72px;
-            }
-            /* 手機版更多可出售與顯示更多食譜一樣拉寬100% */
-            .surplus-section-wrap .more-card {
-                width: 100%;
-                min-height: 100px;
             }
         }
 
@@ -493,7 +474,7 @@
             box-shadow: none;
             transition: all 0.15s;
             min-height: 100px;
-            min-width: 140px;
+            width: 100%;
             padding: 10px 18px;
             border-radius: 8px;
         }
@@ -862,14 +843,10 @@
 
     <div class="container">
         <div class="header-bar">
-            <div class="title-group">
-                <h1>⚔️ 杖劍傳說 吃飽飽賺錢錢 🗡️</h1>
-                <span id="cloud-status-badge" class="sync-badge" onclick="openCloudSetupModal()" title="點擊設定自動雲端同步">⚪ 未綁定雲端</span>
-            </div>
+            <h1>⚔️ 杖劍傳說 吃飽飽賺錢錢 🗡️</h1>
             <div class="header-btns">
                 <button class="action-btn add-recipe" onclick="openAddRecipeModal()">➕ 新增食譜</button>
                 <button class="action-btn" onclick="openInventoryEditModal()">📦 修改庫存</button>
-                <button class="action-btn cloud-btn" onclick="openCloudSetupModal()" title="設定手機與電腦自動雲端同步">☁️ 雲端設定</button>
                 <button class="action-btn" onclick="exportCurrentData()" title="複製目前網頁上的最新資料">📋 匯出</button>
                 <button class="action-btn" onclick="importCurrentData()" title="貼上資料碼手動覆蓋同步">📥 匯入</button>
             </div>
@@ -907,6 +884,12 @@
             </div>
         </div>
         <div id="recipe-container" class="grid-container"></div>
+        <div class="more-btn-grid" style="margin-top: 15px;">
+            <div class="more-card" onclick="openAllRecipesModal()">
+                <div class="plus-icon">+</div>
+                <span>更多食譜</span>
+            </div>
+        </div>
 
         <div class="section-header">
             <span class="section-title">可出售食材</span>
@@ -915,33 +898,6 @@
             </div>
         </div>
         <div id="surplus-container"></div>
-    </div>
-
-    <!-- ☁️ 雲端自動同步設定視窗 -->
-    <div id="cloud-setup-modal" class="modal" style="z-index: 150;">
-        <div class="modal-content" style="padding: 20px; width: 480px;">
-            <h2 style="font-size: 20px; color: #ffcb05; margin-bottom: 12px; text-shadow: 2px 2px 0px #000;">☁️ 自動雲端同步設定</h2>
-            <p style="font-size: 13px; color: #b3c0e6; line-height: 1.5; margin-bottom: 12px; text-shadow: 1px 1px 0 #000;">
-                綁定免費的 <b>Firebase Realtime Database</b> 網址後，手機與電腦只要修改庫存、食用或售出，就會<b>全自動雙向即時同步</b>！
-            </p>
-            
-            <label>Firebase 資料庫網址 (Database URL)：</label>
-            <input type="text" id="cloud-db-url-input" class="text-input" placeholder="https://你的專案名稱.firebaseio.com/">
-            
-            <div style="background: rgba(0,0,0,0.3); border: 1px dashed #3a4e8c; padding: 10px; border-radius: 6px; font-size: 12px; color: #cbd5e1; line-height: 1.6; margin-bottom: 12px;">
-                💡 <b>首次設定提示：</b><br>
-                1. 在資料最新的一端（如手機）貼上網址，點<b>「儲存並上傳本機資料至雲端」</b>。<br>
-                2. 在另一端（如電腦）貼上同一個網址，點<b>「僅綁定並從雲端下載覆蓋」</b>。<br>
-                3. 之後兩邊就會全自動即時同步了！
-            </div>
-
-            <button class="save-btn" onclick="saveCloudConfig(true)">🔗 儲存並上傳本機資料至雲端</button>
-            <button class="action-btn" style="width: 100%; margin-top: 10px; padding: 10px; font-size: 15px; background-color: #2980b9;" onclick="saveCloudConfig(false)">📥 僅綁定並從雲端下載覆蓋本機</button>
-            <div style="display: flex; gap: 10px; margin-top: 10px;">
-                <button class="action-btn" style="flex: 1; padding: 8px; background-color: #7f8c8d;" onclick="disconnectCloud()">🔌 解除雲端綁定</button>
-                <button class="close-btn" style="flex: 1; margin-top: 0; padding: 8px;" onclick="closeModal('cloud-setup-modal')">關閉</button>
-            </div>
-        </div>
     </div>
 
     <!-- 食譜詳情彈跳視窗 -->
@@ -1169,10 +1125,10 @@
     </div>
 
     <script>
-        // 若您不想每次在新瀏覽器輸入網址，也可直接將您的 Firebase 網址貼在下方的引號內：
+        // 請將您的 Firebase Realtime Database 網址直接貼在下方的引號內，即可全自動跨裝置同步：
         const DEFAULT_FIREBASE_URL = "https://scepterswordfoodinventory-default-rtdb.firebaseio.com/"; 
 
-        const DATA_VERSION = 'v2026_perfect_restore_v17';
+        const DATA_VERSION = 'v2026_perfect_restore_v18';
         const defaultRecipeIconImg = "食譜預設.png";
         const defaultIngIconImg = "食材預設.png";
 
@@ -1248,9 +1204,9 @@
 
         const userProvidedArtemisInv = {"多汁嘟嘟莓":40,"馬鈴薯":0,"甜馬鈴薯":0,"嘟嘟莓":0,"藍鳥蛋":0,"鈷藍鳥蛋":0,"潔白松露":0,"刺刺果":0,"尖刺刺果":0,"甲殼栗":0,"鐵甲殼栗":0,"綠洲之星":0,"綠洲新星":0,"寶藏駝奶":0,"水舞葉":0,"天舞青葉":0,"花瓣魚":0,"鮮花瓣魚":0,"章魚":0,"潮汐八爪魚":0,"紺青龍蝦":0,"麵粉":0,"蜂蜜":0,"百花蜜":0,"蜂王漿":0,"奶油":0,"咸奶油":0,"脫脂奶油":0,"咖哩":0,"濃香咖哩":0,"味噌":0,"辛味噌":0,"乾脆豆子":0,"竹筍":0,"山珍竹筍":0,"辣椒":0,"妖魔辣椒":0,"大螯蟹":0,"星夜蘭香茸":0,"雲海螺肉":0,"陽光果":0,"雷電香油":0,"純淨雷電香油":0,"精肉":0,"青禾":0,"嫩肉":0,"水":0,"胡椒":0,"糖":0,"鹽":0,"蘑菇":0,"芥菜":0,"琥珀凝膠":0,"絕品肉":0,"金盞靈芝":0,"黃金陽光果":0,"女神之淚":0,"生肉":0,"豆子":0,"大螯蟹王":0,"蘭香茸":0,"風飄雲海螺肉":0};
 
-        // ==================== ☁️ 雲端自動同步核心函式 ====================
+        // ==================== ☁️ 全自動背景雲端同步核心函式 ====================
         function getCloudUrl() {
-            let url = localStorage.getItem('firebase_db_url') || DEFAULT_FIREBASE_URL;
+            let url = DEFAULT_FIREBASE_URL || localStorage.getItem('firebase_db_url') || '';
             return url ? url.trim().replace(/\/+$/, '') : '';
         }
 
@@ -1258,13 +1214,6 @@
             const base = getCloudUrl();
             if (!base) return '';
             return base.endsWith('.json') ? base : `${base}/杖劍傳說資料.json`;
-        }
-
-        function updateCloudBadge(status, text) {
-            const badge = document.getElementById('cloud-status-badge');
-            if (!badge) return;
-            badge.className = 'sync-badge ' + (status || '');
-            badge.innerText = text;
         }
 
         function applyFullDataObject(dataObj) {
@@ -1282,9 +1231,7 @@
             const endpoint = getCloudJsonEndpoint();
             if (!endpoint) return;
 
-            updateCloudBadge('syncing', '🟡 同步上傳中...');
             lastLocalPushTimestamp = Date.now();
-
             const payload = {
                 updatedAt: lastLocalPushTimestamp,
                 ingredientsMap: getIngredientsMap(),
@@ -1295,44 +1242,30 @@
             };
 
             try {
-                const res = await fetch(endpoint, {
+                await fetch(endpoint, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-                if (res.ok) {
-                    updateCloudBadge('online', '🟢 雲端已同步');
-                } else {
-                    updateCloudBadge('error', '🔴 雲端權限或網址錯誤');
-                }
-            } catch (e) {
-                updateCloudBadge('error', '🔴 網路連線失敗');
-            }
+            } catch (e) {}
         }
 
-        async function pullFromCloud(silent = false) {
+        async function pullFromCloud() {
             const endpoint = getCloudJsonEndpoint();
             if (!endpoint) return false;
 
-            if (!silent) updateCloudBadge('syncing', '🟡 讀取雲端中...');
             try {
                 const res = await fetch(endpoint);
-                if (!res.ok) {
-                    updateCloudBadge('error', '🔴 雲端讀取失敗');
-                    return false;
-                }
+                if (!res.ok) return false;
                 const data = await res.json();
                 if (data && (data.rabbitInv || data.rabbitRecipes)) {
                     applyFullDataObject(data);
-                    updateCloudBadge('online', '🟢 雲端已同步');
                     return true;
                 } else {
-                    // 若雲端還是空的，主動把本機資料推上去初始化
                     await pushToCloud();
                     return true;
                 }
             } catch (e) {
-                updateCloudBadge('error', '🔴 無法連接雲端');
                 return false;
             }
         }
@@ -1343,82 +1276,37 @@
                 cloudEventSource = null;
             }
             const endpoint = getCloudJsonEndpoint();
-            if (!endpoint) {
-                updateCloudBadge('', '⚪ 未綁定雲端');
-                return;
-            }
+            if (!endpoint) return;
 
-            // 初次啟動先拉取一次最新雲端資料
-            pullFromCloud(true);
+            pullFromCloud();
 
-            // 利用 Firebase 原生 Server-Sent Events (SSE) 實作即時推播監聽
             try {
                 cloudEventSource = new EventSource(endpoint);
                 cloudEventSource.addEventListener('put', (e) => {
                     try {
                         const packet = JSON.parse(e.data);
                         if (!packet || !packet.data) return;
-                        // 避免自己剛推上去的資料重複觸發閃爍
                         if (packet.path === '/' && packet.data.updatedAt && Math.abs(packet.data.updatedAt - lastLocalPushTimestamp) < 2500) {
                             return;
                         }
                         if (packet.path === '/' && (packet.data.rabbitInv || packet.data.rabbitRecipes)) {
                             applyFullDataObject(packet.data);
-                            updateCloudBadge('online', '🟢 雲端即時更新');
                         } else {
-                            pullFromCloud(true);
+                            pullFromCloud();
                         }
                     } catch (err) {}
                 });
             } catch (err) {}
         }
 
-        // 當從手機切回電腦分頁時，自動向雲端拉取最新狀態
         window.addEventListener('focus', () => {
-            if (getCloudUrl()) pullFromCloud(true);
+            if (getCloudUrl()) pullFromCloud();
         });
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible' && getCloudUrl()) {
-                pullFromCloud(true);
+                pullFromCloud();
             }
         });
-
-        function openCloudSetupModal() {
-            document.getElementById('cloud-db-url-input').value = getCloudUrl();
-            document.getElementById('cloud-setup-modal').style.display = 'flex';
-        }
-
-        async function saveCloudConfig(uploadLocalFirst) {
-            let rawUrl = document.getElementById('cloud-db-url-input').value.trim();
-            if (!rawUrl || !rawUrl.startsWith('https://')) {
-                alert('請輸入正確的 https:// 開頭 Firebase Realtime Database 網址！');
-                return;
-            }
-            rawUrl = rawUrl.replace(/\/+$/, '');
-            localStorage.setItem('firebase_db_url', rawUrl);
-            closeModal('cloud-setup-modal');
-
-            if (uploadLocalFirst) {
-                await pushToCloud();
-                startCloudRealtimeStream();
-                alert('✅ 已將本機最新資料上傳至雲端，並啟動自動同步！');
-            } else {
-                const ok = await pullFromCloud(false);
-                startCloudRealtimeStream();
-                if (ok) alert('✅ 已成功從雲端下載最新資料覆蓋本機，並啟動自動同步！');
-            }
-        }
-
-        function disconnectCloud() {
-            if (!confirm('確定要解除這台裝置的雲端同步綁定嗎？（本機資料仍會保留）')) return;
-            localStorage.removeItem('firebase_db_url');
-            if (cloudEventSource) {
-                cloudEventSource.close();
-                cloudEventSource = null;
-            }
-            updateCloudBadge('', '⚪ 未綁定雲端');
-            closeModal('cloud-setup-modal');
-        }
 
         // ==================== 手動匯出與匯入 ====================
         function exportCurrentData() {
@@ -2098,7 +1986,7 @@
                                 <div class="recipe-header-flex">
                                     ${renderImgHtml(recipe.icon, "recipe-icon", defaultRecipeIconImg, recipe.name)}
                                     <div class="recipe-title-box">
-                                        <h3 class="${rankClass}">${recipe.name}</h3>
+                                        <h3 class="${rankClass}" title="${recipe.name}">${recipe.name}</h3>
                                         <span style="font-size:12px; color:#b3c0e6;">目標：${recipe.portions} 份</span>
                                     </div>
                                 </div>
@@ -2109,13 +1997,6 @@
                 } else {
                     recipeContainer.innerHTML = `<p style="color: #ffffff; text-shadow: 1px 1px 0 #000; padding: 10px;">找不到符合篩選條件的食譜。</p>`;
                 }
-
-                recipeContainer.innerHTML += `
-                    <div class="more-card" onclick="openAllRecipesModal()">
-                        <div class="plus-icon">+</div>
-                        <span>顯示更多食譜</span>
-                    </div>
-                `;
 
                 let totalDemand = {};
                 recipes.forEach(recipe => {
@@ -2142,7 +2023,7 @@
                     surplusList = surplusList.filter(s => s.name.toLowerCase().includes(surplusSearchKey));
                 }
 
-                // 主頁顯示至多 8 個可出售食材，並附帶售出按鈕
+                // 主頁顯示至多 8 個可出售食材，下方「更多食材」與上方「更多食譜」保持完全同寬
                 const top8Surplus = surplusList.slice(0, 8);
                 if (top8Surplus.length > 0) {
                     let surplusItemsHtml = '';
@@ -2163,9 +2044,11 @@
                     surplusContainer.innerHTML = `
                         <div class="surplus-section-wrap">
                             <div class="compact-box surplus-box">${surplusItemsHtml}</div>
-                            <div class="more-card" onclick="openAllSurplusModal()">
-                                <div class="plus-icon">+</div>
-                                <span>更多可出售</span>
+                            <div class="more-btn-grid">
+                                <div class="more-card" onclick="openAllSurplusModal()">
+                                    <div class="plus-icon">+</div>
+                                    <span>更多食材</span>
+                                </div>
                             </div>
                         </div>
                     `;
@@ -2173,9 +2056,11 @@
                     surplusContainer.innerHTML = `
                         <div class="surplus-section-wrap">
                             <p style="color: #718096; font-style: italic; padding: 10px;">目前沒有可出售食材。</p>
-                            <div class="more-card" onclick="openAllSurplusModal()">
-                                <div class="plus-icon">+</div>
-                                <span>更多可出售</span>
+                            <div class="more-btn-grid">
+                                <div class="more-card" onclick="openAllSurplusModal()">
+                                    <div class="plus-icon">+</div>
+                                    <span>更多食材</span>
+                                </div>
                             </div>
                         </div>
                     `;
