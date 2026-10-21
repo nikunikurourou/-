@@ -416,6 +416,259 @@
         .sell-item-btn:hover { background-color: #e67e22; transform: scale(1.05); }
         .sell-item-btn:active { transform: translateY(2px); box-shadow: none; }
 
+        /* ==================== 網頁深藍金配色：遊戲交易行風格彈窗 (售出 & 食譜共用) ==================== */
+        .game-trade-modal {
+            background-color: #233363;
+            border: 4px solid #ffffff;
+            border-radius: 14px;
+            width: 420px;
+            max-width: 95%;
+            overflow: hidden;
+            box-shadow: 8px 8px 0px rgba(0, 0, 0, 0.85);
+            color: #ffffff;
+            position: relative;
+        }
+
+        .game-trade-header {
+            background-color: #151f3d;
+            padding: 14px 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-bottom: 2px solid #3a4e8c;
+            position: relative;
+            min-height: 52px;
+        }
+
+        .game-trade-title-wrap {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .game-trade-title {
+            font-size: 21px;
+            color: #ffcb05;
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 0px #000;
+            line-height: 1.1;
+        }
+
+        .game-trade-top-actions {
+            position: absolute;
+            top: 50%;
+            right: 12px;
+            transform: translateY(-50%);
+            display: flex;
+            gap: 6px;
+            z-index: 10;
+        }
+
+        .game-trade-banner {
+            background: radial-gradient(circle at 30% 50%, #2c3e75 0%, #1c284d 70%, #141d38 100%);
+            padding: 18px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px dashed #3a4e8c;
+            min-height: 120px;
+        }
+
+        .game-trade-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .game-trade-label {
+            font-size: 14px;
+            color: #b3c0e6;
+            text-shadow: 1px 1px 0 #000;
+        }
+
+        .game-trade-val {
+            font-size: 28px;
+            color: #ffcb05;
+            font-weight: bold;
+            line-height: 1.1;
+            text-shadow: 2px 2px 0 #000;
+        }
+
+        .game-trade-sub {
+            font-size: 13px;
+            font-weight: bold;
+            margin-top: 2px;
+            text-shadow: 1px 1px 0 #000;
+        }
+
+        .game-trade-icon-circle {
+            width: 84px;
+            height: 84px;
+            border-radius: 50%;
+            border: 4px solid #ffffff;
+            background: radial-gradient(circle, #3b82f6 20%, #1d4ed8 90%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6), inset 0 0 8px rgba(0, 0, 0, 0.6);
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .game-trade-icon-circle.circle-normal { background: radial-gradient(circle, #64748b 20%, #334155 90%); border-color: #94a3b8; }
+        .game-trade-icon-circle.circle-rare { background: radial-gradient(circle, #3b82f6 20%, #1d4ed8 90%); border-color: #60a5fa; }
+        .game-trade-icon-circle.circle-epic { background: radial-gradient(circle, #9333ea 20%, #581c87 90%); border-color: #c084fc; }
+        .game-trade-icon-circle.circle-legend { background: radial-gradient(circle, #ea580c 20%, #7c2d12 90%); border-color: #fb923c; }
+        .game-trade-icon-circle.circle-miracle { background: radial-gradient(circle, #ca8a04 20%, #713f12 90%); border-color: #fef08a; }
+
+        .game-trade-icon-circle img {
+            width: 78%;
+            height: 78%;
+            object-fit: contain;
+            image-rendering: pixelated;
+        }
+
+        /* 食譜視窗中間的「料理配方」區塊 */
+        .game-trade-recipe-section {
+            background-color: #1c284d;
+            border-bottom: 2px solid #3a4e8c;
+        }
+
+        .game-trade-section-bar {
+            background-color: rgba(0, 0, 0, 0.25);
+            padding: 8px 20px;
+            font-size: 14px;
+            color: #ffcb05;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-shadow: 1px 1px 0 #000;
+        }
+
+        .game-trade-ings-box {
+            padding: 14px 20px;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            align-items: center;
+            min-height: 110px;
+        }
+
+        /* 數量控制列：確保文字與所有圓形按鈕、膠囊框在同一水平線完美置中對齊 */
+        .game-trade-qty-bar {
+            background-color: #182242;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            border-bottom: 2px solid #3a4e8c;
+        }
+
+        .game-trade-qty-label {
+            font-size: 15px;
+            color: #b3c0e6;
+            font-weight: bold;
+            text-shadow: 1px 1px 0 #000;
+            white-space: nowrap;
+        }
+
+        .game-trade-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        /* 圓形符號按鈕：使用 SVG 確保 100% 絕對幾何置中對齊 */
+        .game-round-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(180deg, #ffdd40 0%, #f39c12 100%);
+            border: 2px solid #ffffff;
+            color: #1c284d;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 2px 0px rgba(0, 0, 0, 0.6);
+            user-select: none;
+            transition: transform 0.1s, filter 0.1s;
+            padding: 0;
+            margin: 0;
+            flex-shrink: 0;
+        }
+        .game-round-btn:hover { filter: brightness(1.08); }
+        .game-round-btn:active { transform: translateY(2px); box-shadow: none; }
+
+        .game-round-btn svg {
+            width: 16px;
+            height: 16px;
+            stroke: #1c284d;
+            stroke-width: 2.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+            display: block;
+        }
+
+        .game-qty-pill {
+            background-color: #111827;
+            border: 2px solid #3a4e8c;
+            border-radius: 18px;
+            width: 118px;
+            height: 34px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 19px;
+            color: #ffcb05;
+            font-weight: bold;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
+            text-shadow: 1px 1px 0 #000;
+            line-height: 1;
+        }
+
+        /* 底部雙膠囊按鈕區 */
+        .game-trade-footer {
+            background-color: #233363;
+            padding: 16px 20px 18px 20px;
+            display: flex;
+            gap: 14px;
+            justify-content: space-between;
+        }
+
+        .game-pill-btn {
+            flex: 1;
+            height: 44px;
+            border-radius: 24px;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.1s, filter 0.1s;
+            letter-spacing: 2px;
+            color: #ffffff;
+            border: 2px solid #ffffff;
+            text-shadow: 1px 1px 0 #000;
+            box-shadow: 0 4px 0px rgba(0, 0, 0, 0.5);
+        }
+        .game-pill-btn:hover { filter: brightness(1.08); }
+        .game-pill-btn:active { transform: translateY(3px); box-shadow: 0 1px 0px rgba(0, 0, 0, 0.5); }
+
+        .game-pill-cancel {
+            background: linear-gradient(180deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        .game-pill-confirm {
+            background: linear-gradient(180deg, #2ecc71 0%, #27ae60 100%);
+        }
+
         /* 手機版面優化：對齊與拉寬 */
         @media (max-width: 600px) {
             body { padding: 10px; }
@@ -449,12 +702,6 @@
         .rank-epic { color: #c39bd3 !important; text-shadow: 1px 1px 0px #000; }
         .rank-legend { color: #f39c12 !important; text-shadow: 1px 1px 0px #000; }
         .rank-miracle { color: #f1c40f !important; text-shadow: 1px 1px 0px #d35400; }
-
-        /* 食譜品質漸層背景 */
-        .bg-rank-rare { background: linear-gradient(135deg, #2980b9, #1c284d); }
-        .bg-rank-epic { background: linear-gradient(135deg, #8e44ad, #1c284d); }
-        .bg-rank-legend { background: linear-gradient(135deg, #d35400, #1c284d); }
-        .bg-rank-miracle { background: linear-gradient(135deg, #f39c12, #1c284d); }
 
         .recipe-card p { font-size: 13px; color: #b3c0e6; margin: 0; text-shadow: 1px 1px 0px #000; }
 
@@ -511,62 +758,13 @@
         .modal-content::-webkit-scrollbar { width: 8px; }
         .modal-content::-webkit-scrollbar-thumb { background: #ffffff; border-radius: 4px; }
 
-        .game-recipe-header {
-            padding: 18px 20px;
-            position: relative;
-            border-bottom: 2px dashed #3a4e8c;
-        }
-
-        .game-recipe-header-title {
-            font-size: 22px;
-            height: 28px;
-            line-height: 28px;
-            font-weight: bold;
-            display: inline-flex;
-            align-items: center;
-            vertical-align: middle;
-            text-shadow: 2px 2px 0px #000;
-        }
-
-        .game-recipe-body {
-            background-color: rgba(0,0,0,0.2);
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .game-recipe-body-info { display: flex; flex-direction: column; gap: 6px; }
-
-        .game-recipe-icon-large {
-            width: 80px;
-            height: 80px;
-            object-fit: contain;
-            border: 3px solid #ffffff;
-            border-radius: 8px;
-            background-color: transparent;
-            image-rendering: pixelated;
-            box-shadow: 3px 3px 0px rgba(0,0,0,0.5);
-        }
-
-        .game-recipe-content { padding: 20px; }
-
-        .recipe-top-actions {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            display: flex;
-            gap: 6px;
-            z-index: 10;
-        }
-
         .btn-mini {
             background-color: #1c284d;
             color: #ffffff;
             border: 2px solid #ffffff;
             border-radius: 4px;
-            padding: 4px 10px;
-            font-size: 13px;
+            padding: 3px 8px;
+            font-size: 12px;
             cursor: pointer;
             box-shadow: 0 2px 0px rgba(0,0,0,0.5);
             text-shadow: 1px 1px 0px #000;
@@ -847,8 +1045,6 @@
             <div class="header-btns">
                 <button class="action-btn add-recipe" onclick="openAddRecipeModal()">➕ 新增食譜</button>
                 <button class="action-btn" onclick="openInventoryEditModal()">📦 修改庫存</button>
-                <button class="action-btn" onclick="exportCurrentData()" title="複製目前網頁上的最新資料">📋 匯出</button>
-                <button class="action-btn" onclick="importCurrentData()" title="貼上資料碼手動覆蓋同步">📥 匯入</button>
             </div>
         </div>
 
@@ -900,84 +1096,101 @@
         <div id="surplus-container"></div>
     </div>
 
-    <!-- 食譜詳情彈跳視窗 -->
-    <div id="recipe-modal" class="modal">
-        <div class="modal-content">
-            <div id="modal-recipe-header-bg" class="game-recipe-header bg-rank-rare">
-                <div class="recipe-top-actions">
-                    <button id="modal-consume-btn" class="btn-mini" style="background-color:#27ae60;">🍴 食用</button>
-                    <button id="modal-edit-btn" class="btn-mini">✏️ 編輯</button>
-                    <button id="modal-delete-btn" class="btn-mini" style="background-color:#e74c3c;">🗑️ 刪除</button>
+    <!-- 圖一交易行風格（深藍金配色）：食譜詳情與食用視窗 -->
+    <div id="recipe-modal" class="modal" style="z-index: 120;">
+        <div class="game-trade-modal">
+            <input type="hidden" id="modal-recipe-index" value="-1">
+            <div class="game-trade-header">
+                <div class="game-trade-title-wrap">
+                    <span id="modal-recipe-name" class="game-trade-title">食譜名稱</span>
+                    <span id="modal-recipe-attr-badge" style="display: inline-flex; align-items: center;"></span>
                 </div>
-                
-                <div style="display: flex; align-items: center; gap: 8px; min-height: 28px; padding-right: 175px;">
-                    <div class="game-recipe-header-title" id="modal-recipe-name">食譜名稱</div>
-                    <div id="modal-recipe-attr-badge" style="display: inline-flex; align-items: center; vertical-align: middle;"></div>
+                <div class="game-trade-top-actions">
+                    <button id="modal-edit-btn" class="btn-mini" title="編輯食譜">✏️</button>
+                    <button id="modal-delete-btn" class="btn-mini" style="background-color:#e74c3c;" title="刪除食譜">🗑️</button>
                 </div>
-            </div>
-            
-            <div class="game-recipe-body">
-                <div class="game-recipe-body-info">
-                    <div style="font-size:14px; color:#b3c0e6;">料理配方</div>
-                    <div id="modal-recipe-status-text" style="font-size:16px; font-weight:bold; color:#2ecc71; text-shadow:1px 1px 0px #000;">已習得</div>
-                    <div id="modal-recipe-portions-text" style="font-size:14px; color:#ffcb05; text-shadow:1px 1px 0px #000;">所需份數：1 份</div>
-                </div>
-                <img id="modal-recipe-icon-lg" class="game-recipe-icon-large" src="" alt="Recipe Icon">
             </div>
 
-            <div class="game-recipe-content">
-                <div style="font-size:16px; font-weight:bold; color:#ffcb05; margin-bottom: 12px; border-bottom: 2px dashed #3a4e8c; padding-bottom: 8px; text-shadow: 1px 1px 0px #000;">配方材料</div>
-                <div id="modal-recipe-ingredients-flex" style="display: flex; gap: 16px; margin-bottom: 15px; flex-wrap: wrap;"></div>
-                <button class="close-btn" onclick="closeRecipeDetailModal()">關閉視窗</button>
+            <div class="game-trade-banner">
+                <div class="game-trade-info">
+                    <span class="game-trade-label">需求數量</span>
+                    <span id="modal-recipe-demand-val" class="game-trade-val">0</span>
+                    <span id="modal-recipe-status-text" class="game-trade-sub" style="color:#2ecc71;">已習得</span>
+                </div>
+                <div id="modal-recipe-icon-circle" class="game-trade-icon-circle">
+                    <img id="modal-recipe-icon-lg" src="" alt="Recipe Icon">
+                </div>
+            </div>
+
+            <div class="game-trade-recipe-section">
+                <div class="game-trade-section-bar">料理配方</div>
+                <div id="modal-recipe-ingredients-flex" class="game-trade-ings-box"></div>
+            </div>
+
+            <div class="game-trade-qty-bar">
+                <span class="game-trade-qty-label">數量</span>
+                <div class="game-trade-controls">
+                    <button type="button" class="game-round-btn" onclick="setMinRecipeEatQty()" title="最低食用數量" aria-label="最低">
+                        <svg viewBox="0 0 24 24"><polyline points="7 7 12 12 17 7"></polyline><polyline points="7 13 12 18 17 13"></polyline></svg>
+                    </button>
+                    <button type="button" class="game-round-btn" onclick="stepRecipeEatQty(-1)" title="減少一份" aria-label="減少">
+                        <svg viewBox="0 0 24 24"><line x1="6" y1="12" x2="18" y2="12"></line></svg>
+                    </button>
+                    <div id="recipe-eat-qty-display" class="game-qty-pill">1</div>
+                    <button type="button" class="game-round-btn" onclick="stepRecipeEatQty(1)" title="增加一份" aria-label="增加">
+                        <svg viewBox="0 0 24 24"><line x1="12" y1="6" x2="12" y2="18"></line><line x1="6" y1="12" x2="18" y2="12"></line></svg>
+                    </button>
+                    <button type="button" class="game-round-btn" onclick="setMaxRecipeEatQty()" title="最高需求數量" aria-label="最高">
+                        <svg viewBox="0 0 24 24"><polyline points="17 11 12 6 7 11"></polyline><polyline points="17 17 12 12 7 17"></polyline></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="game-trade-footer">
+                <button type="button" class="game-pill-btn game-pill-cancel" onclick="closeRecipeDetailModal()">取消</button>
+                <button type="button" class="game-pill-btn game-pill-confirm" onclick="confirmEatFromRecipeModal()">食用</button>
             </div>
         </div>
     </div>
 
-    <!-- 食用食譜彈跳視窗 -->
-    <div id="consume-recipe-modal" class="modal" style="z-index: 120;">
-        <div class="modal-content" style="padding: 20px; width: 400px;">
-            <h2 id="consume-modal-title" style="font-size: 20px; color: #ffcb05; margin-bottom: 12px; text-shadow: 2px 2px 0px #000;">🍴 食用料理</h2>
-            <input type="hidden" id="consume-recipe-index" value="-1">
-            
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 15px; background: rgba(0,0,0,0.25); padding: 10px 14px; border-radius: 6px; border: 1px dashed #3a4e8c;">
-                <label style="margin: 0; font-size: 16px;">輸入食用份數：</label>
-                <input type="number" id="consume-portions-input" class="text-input" value="1" min="1" style="width: 80px; height: 38px; text-align: center; font-size: 16px; font-weight: bold; margin: 0;" oninput="updateConsumePreview()">
-            </div>
-
-            <div style="font-size: 13px; color: #b3c0e6; margin-bottom: 8px; text-shadow: 1px 1px 0 #000;">預計扣除庫存預覽：</div>
-            <div id="consume-preview-list" style="display: flex; flex-wrap: wrap; gap: 12px; background: rgba(0,0,0,0.35); padding: 12px; border-radius: 6px; border: 1px solid #3a4e8c; margin-bottom: 10px;"></div>
-
-            <button class="save-btn" onclick="confirmConsumeRecipe()">✅ 確認食用 (扣除庫存)</button>
-            <button class="close-btn" onclick="closeModal('consume-recipe-modal')">取消</button>
-        </div>
-    </div>
-
-    <!-- 售出食材彈跳視窗 -->
+    <!-- 圖一交易行風格（深藍金配色）：售出食材彈跳視窗 -->
     <div id="sell-ingredient-modal" class="modal" style="z-index: 125;">
-        <div class="modal-content" style="padding: 20px; width: 380px;">
-            <h2 id="sell-modal-title" style="font-size: 20px; color: #ffcb05; margin-bottom: 12px; text-shadow: 2px 2px 0px #000;">💰 售出食材</h2>
+        <div class="game-trade-modal">
             <input type="hidden" id="sell-ingredient-name" value="">
-            
-            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; background: rgba(0,0,0,0.25); padding: 10px 14px; border-radius: 6px; border: 1px dashed #3a4e8c;">
-                <div class="ing-circle-icon" id="sell-modal-icon-box"></div>
-                <div style="display: flex; flex-direction: column; gap: 3px;">
-                    <div id="sell-modal-info-stock" style="font-size: 13px; color: #b3c0e6;">目前庫存：0</div>
-                    <div id="sell-modal-info-surplus" style="font-size: 14px; color: #ffcb05; font-weight: bold;">建議可售：0</div>
+            <div class="game-trade-header">
+                <div class="game-trade-title-wrap">
+                    <span id="sell-modal-title" class="game-trade-title">食材名稱</span>
                 </div>
             </div>
-
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; background: rgba(0,0,0,0.25); padding: 10px 14px; border-radius: 6px; border: 1px solid #3a4e8c;">
-                <label style="margin: 0; font-size: 15px;">輸入售出數量：</label>
-                <div style="display: flex; align-items: center; gap: 6px;">
-                    <input type="number" id="sell-qty-input" class="text-input" value="1" min="1" style="width: 80px; height: 36px; text-align: center; font-size: 16px; font-weight: bold; margin: 0;" oninput="updateSellPreview()">
-                    <button type="button" class="btn-mini" onclick="setMaxSellQty()" style="height: 36px; padding: 0 8px;">最大可售</button>
+            <div class="game-trade-banner">
+                <div class="game-trade-info">
+                    <span class="game-trade-label">持有數量</span>
+                    <span id="sell-modal-info-stock" class="game-trade-val">0</span>
+                </div>
+                <div id="sell-modal-icon-box" class="game-trade-icon-circle"></div>
+            </div>
+            <div class="game-trade-qty-bar">
+                <span class="game-trade-qty-label">數量</span>
+                <div class="game-trade-controls">
+                    <button type="button" class="game-round-btn" onclick="setMinSellQty()" title="最低可售出數量" aria-label="最低">
+                        <svg viewBox="0 0 24 24"><polyline points="7 7 12 12 17 7"></polyline><polyline points="7 13 12 18 17 13"></polyline></svg>
+                    </button>
+                    <button type="button" class="game-round-btn" onclick="stepSellQty(-1)" title="減少一份" aria-label="減少">
+                        <svg viewBox="0 0 24 24"><line x1="6" y1="12" x2="18" y2="12"></line></svg>
+                    </button>
+                    <div id="sell-qty-display" class="game-qty-pill">1</div>
+                    <button type="button" class="game-round-btn" onclick="stepSellQty(1)" title="增加一份" aria-label="增加">
+                        <svg viewBox="0 0 24 24"><line x1="12" y1="6" x2="12" y2="18"></line><line x1="6" y1="12" x2="18" y2="12"></line></svg>
+                    </button>
+                    <button type="button" class="game-round-btn" onclick="setMaxSellQty()" title="最高可售出數量" aria-label="最高">
+                        <svg viewBox="0 0 24 24"><polyline points="17 11 12 6 7 11"></polyline><polyline points="17 17 12 12 7 17"></polyline></svg>
+                    </button>
                 </div>
             </div>
-
-            <div id="sell-preview-text" style="font-size: 13px; color: #2ecc71; text-align: right; margin-bottom: 10px; text-shadow: 1px 1px 0 #000;">售出後剩餘庫存：0</div>
-
-            <button class="save-btn" onclick="confirmSellIngredient()">✅ 確認售出 (扣除庫存)</button>
-            <button class="close-btn" onclick="closeModal('sell-ingredient-modal')">取消</button>
+            <div class="game-trade-footer">
+                <button type="button" class="game-pill-btn game-pill-cancel" onclick="closeModal('sell-ingredient-modal')">取消</button>
+                <button type="button" class="game-pill-btn game-pill-confirm" onclick="confirmSellIngredient()">售出</button>
+            </div>
         </div>
     </div>
 
@@ -1005,7 +1218,7 @@
         </div>
     </div>
 
-    <!-- 所有可出售食材彈跳視窗 (列出全部可出售) -->
+    <!-- 所有可出售食材彈跳視窗 (列出全部符合門檻的可出售食材) -->
     <div id="all-surplus-modal" class="modal">
         <div class="modal-content" style="padding: 20px;">
             <h2 style="font-size: 20px; color: #ffcb05; margin-bottom: 15px; text-shadow: 2px 2px 0px #000;">所有可出售食材總覽</h2>
@@ -1125,10 +1338,10 @@
     </div>
 
     <script>
-        // 請將您的 Firebase Realtime Database 網址直接貼在下方的引號內，即可全自動跨裝置同步：
+        // 內建您的專屬 Firebase Realtime Database 網址，所有裝置開啟網頁即自動雙向同步
         const DEFAULT_FIREBASE_URL = "https://scepterswordfoodinventory-default-rtdb.firebaseio.com/"; 
 
-        const DATA_VERSION = 'v2026_perfect_restore_v18';
+        const DATA_VERSION = 'v2026_perfect_restore_v21';
         const defaultRecipeIconImg = "食譜預設.png";
         const defaultIngIconImg = "食材預設.png";
 
@@ -1186,7 +1399,17 @@
         let addIngReturnTarget = 'inventory';
         let currentKey = 'rabbit';
         let openedFromAllRecipes = false;
-        let currentMaxSurplusQty = 0;
+
+        // 售出彈窗專用狀態變數
+        let currentSellStep = 1;
+        let currentSellMin = 1;
+        let currentSellMax = 1;
+        let currentSellQty = 1;
+
+        // 食譜食用專用狀態變數
+        let currentRecipeEatMin = 1;
+        let currentRecipeEatMax = 1;
+        let currentRecipeEatQty = 1;
 
         // 雲端同步控制變數
         let cloudEventSource = null;
@@ -1206,7 +1429,7 @@
 
         // ==================== ☁️ 全自動背景雲端同步核心函式 ====================
         function getCloudUrl() {
-            let url = DEFAULT_FIREBASE_URL || localStorage.getItem('firebase_db_url') || '';
+            let url = DEFAULT_FIREBASE_URL || '';
             return url ? url.trim().replace(/\/+$/, '') : '';
         }
 
@@ -1307,41 +1530,6 @@
                 pullFromCloud();
             }
         });
-
-        // ==================== 手動匯出與匯入 ====================
-        function exportCurrentData() {
-            const dataObj = {
-                ingredientsMap: getIngredientsMap(),
-                rabbitRecipes: getRecipes('rabbit'),
-                artemisRecipes: getRecipes('artemis'),
-                rabbitInv: getInventory('rabbit'),
-                artemisInv: getInventory('artemis')
-            };
-            const jsonStr = JSON.stringify(dataObj);
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(jsonStr).then(() => {
-                    alert('✅ 最新資料碼已複製到剪貼簿！\n可在另一台裝置點擊「📥 匯入」貼上同步。');
-                }).catch(() => {
-                    prompt('請手動全選並複製以下資料碼：', jsonStr);
-                });
-            } else {
-                prompt('請手動全選並複製以下資料碼：', jsonStr);
-            }
-        }
-
-        function importCurrentData() {
-            const jsonStr = prompt('請貼上從另一台裝置「📋 匯出」複製的資料碼：');
-            if (!jsonStr) return;
-            try {
-                const dataObj = JSON.parse(jsonStr);
-                if (applyFullDataObject(dataObj)) {
-                    pushToCloud();
-                    alert('✅ 資料匯入成功！畫面已同步為最新狀態。');
-                }
-            } catch (e) {
-                alert('❌ 資料格式錯誤，請確認是否完整複製了匯出的資料碼！');
-            }
-        }
 
         function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
 
@@ -1673,14 +1861,6 @@
             return "rank-rare";
         }
 
-        function getRankBgClass(rank) {
-            if (rank === "稀有") return "bg-rank-rare";
-            if (rank === "史詩") return "bg-rank-epic";
-            if (rank === "傳說") return "bg-rank-legend";
-            if (rank === "奇蹟") return "bg-rank-miracle";
-            return "bg-rank-rare";
-        }
-
         function getCircleRankClass(rank) {
             if (rank === "一般") return "circle-normal";
             if (rank === "稀有") return "circle-rare";
@@ -1749,6 +1929,49 @@
             });
 
             return scoredRecipes;
+        }
+
+        // 依食材品質取得「最低可售出門檻（1份倍數）」：一般為5、稀有為3、史詩與傳說為1
+        function getMinSellThreshold(rank) {
+            if (rank === "一般") return 5;
+            if (rank === "稀有") return 3;
+            return 1;
+        }
+
+        // 計算所有達到最低售出門檻的可出售食材清單（顯示所有可出售數量，不用強制倍數）
+        function getValidSurplusList(recipes, inv, ingMap) {
+            let totalDemand = {};
+            recipes.forEach(recipe => {
+                const portions = recipe.portions !== undefined ? Number(recipe.portions) : 1;
+                if (recipe.ingredients && portions > 0) {
+                    for (let [ing, perPortionQty] of Object.entries(recipe.ingredients)) {
+                        totalDemand[ing] = (totalDemand[ing] || 0) + (perPortionQty * portions);
+                    }
+                }
+            });
+
+            let surplusList = [];
+            for (let [item, invQty] of Object.entries(inv)) {
+                if (EXCLUDED_INGS.includes(item)) continue;
+                const demQty = totalDemand[item] || 0;
+                const rawSurplus = invQty - demQty;
+                if (rawSurplus > 0) {
+                    const ingMeta = ingMap[item] || { rank: "一般", icon: "" };
+                    const rank = ingMeta.rank || "一般";
+                    const minThreshold = getMinSellThreshold(rank);
+                    if (rawSurplus >= minThreshold) {
+                        surplusList.push({
+                            name: item,
+                            inventory: invQty,
+                            demand: demQty,
+                            surplus: rawSurplus,
+                            groupSize: minThreshold,
+                            ...ingMeta
+                        });
+                    }
+                }
+            }
+            return surplusList;
         }
 
         function renderDailyGathering() {
@@ -1868,61 +2091,69 @@
             return `<div class="recipe-ings-flex">${itemsHtml}</div>`;
         }
 
-        // 開啟售出食材彈窗
+        // ==================== 圖一風格：售出食材彈窗控制邏輯 ====================
         function openSellModal(ingName, surplusQty, evt) {
             if (evt) evt.stopPropagation();
             const inv = getInventory(currentKey);
             const ingMap = getIngredientsMap();
             const currentStock = inv[ingName] || 0;
-            const ingMeta = ingMap[ingName] || { icon: "" };
+            const ingMeta = ingMap[ingName] || { rank: "一般", icon: "" };
+            const rank = ingMeta.rank || "一般";
 
-            currentMaxSurplusQty = surplusQty;
+            // 一般食材5的倍數、稀有食材3的倍數、史詩及傳說1的倍數
+            currentSellStep = getMinSellThreshold(rank);
+            currentSellMin = currentSellStep;
+            currentSellMax = Math.floor(surplusQty / currentSellStep) * currentSellStep;
+            if (currentSellMax < currentSellMin) currentSellMax = currentSellMin;
+
+            // 預設開啟時顯示最高可售出數量
+            currentSellQty = currentSellMax;
 
             document.getElementById('sell-ingredient-name').value = ingName;
-            document.getElementById('sell-modal-title').innerText = `💰 售出：${ingName}`;
-            document.getElementById('sell-modal-icon-box').innerHTML = renderImgHtml(ingMeta.icon, "", defaultIngIconImg, ingName);
-            document.getElementById('sell-modal-info-stock').innerText = `目前庫存：${currentStock}`;
-            document.getElementById('sell-modal-info-surplus').innerText = `建議可售：${surplusQty}`;
+            document.getElementById('sell-modal-title').innerText = ingName;
+            document.getElementById('sell-modal-info-stock').innerText = currentStock;
 
-            const qtyInput = document.getElementById('sell-qty-input');
-            qtyInput.value = surplusQty > 0 ? surplusQty : 1;
-            qtyInput.max = currentStock;
+            const iconBox = document.getElementById('sell-modal-icon-box');
+            iconBox.className = `game-trade-icon-circle ${getCircleRankClass(rank)}`;
+            iconBox.innerHTML = renderImgHtml(ingMeta.icon, "", defaultIngIconImg, ingName);
 
-            updateSellPreview();
+            updateSellDisplay();
             document.getElementById('sell-ingredient-modal').style.display = 'flex';
         }
 
-        function setMaxSellQty() {
-            const qtyInput = document.getElementById('sell-qty-input');
-            qtyInput.value = currentMaxSurplusQty;
-            updateSellPreview();
+        function updateSellDisplay() {
+            document.getElementById('sell-qty-display').innerText = currentSellQty;
         }
 
-        function updateSellPreview() {
-            const ingName = document.getElementById('sell-ingredient-name').value;
-            const inv = getInventory(currentKey);
-            const currentStock = inv[ingName] || 0;
-            const sellQty = Math.max(0, parseInt(document.getElementById('sell-qty-input').value) || 0);
-            const remain = Math.max(0, currentStock - sellQty);
-            const previewEl = document.getElementById('sell-preview-text');
-            previewEl.innerText = `售出後剩餘庫存：${remain}`;
-            previewEl.style.color = sellQty > currentStock ? '#ff4757' : '#2ecc71';
+        function setMinSellQty() {
+            currentSellQty = currentSellMin;
+            updateSellDisplay();
+        }
+
+        function setMaxSellQty() {
+            currentSellQty = currentSellMax;
+            updateSellDisplay();
+        }
+
+        function stepSellQty(dir) {
+            let nextVal = currentSellQty + (dir * currentSellStep);
+            if (nextVal < currentSellMin) nextVal = currentSellMin;
+            if (nextVal > currentSellMax) nextVal = currentSellMax;
+            currentSellQty = nextVal;
+            updateSellDisplay();
         }
 
         function confirmSellIngredient() {
             const ingName = document.getElementById('sell-ingredient-name').value;
-            const sellQty = parseInt(document.getElementById('sell-qty-input').value) || 0;
+            const sellQty = currentSellQty;
 
-            if (!ingName || sellQty <= 0) {
-                alert('請輸入大於 0 的售出數量！');
-                return;
-            }
+            if (!ingName || sellQty <= 0) return;
 
             const inv = getInventory(currentKey);
             const currentStock = inv[ingName] || 0;
 
             if (sellQty > currentStock) {
-                alert(`售出數量 (${sellQty}) 不能超過目前庫存 (${currentStock})！`);
+                alert(`售出數量 (${sellQty}) 不能超過持有數量 (${currentStock})！`);
                 return;
             }
 
@@ -1935,6 +2166,187 @@
 
             if (document.getElementById('all-surplus-modal').style.display === 'flex') {
                 openAllSurplusModal();
+            }
+        }
+
+        // ==================== 圖一風格：食譜詳情與食用視窗控制邏輯 ====================
+        function openConsumeModal(recipeIndex, evt) {
+            if (evt) evt.stopPropagation();
+            openRecipeDetailByIndex(recipeIndex, false);
+        }
+
+        function openRecipeDetailByIndex(recipeIndex, fromAllRecipes = false) {
+            openedFromAllRecipes = fromAllRecipes;
+            const recipes = getRecipes(currentKey);
+            const inv = getInventory(currentKey);
+            const ingMap = getIngredientsMap();
+            const recipe = recipes[recipeIndex];
+
+            if (!recipe) return;
+
+            const portions = recipe.portions !== undefined ? Number(recipe.portions) : 1;
+
+            document.getElementById('modal-recipe-index').value = recipeIndex;
+            const titleEl = document.getElementById('modal-recipe-name');
+            titleEl.innerText = recipe.name;
+            titleEl.className = `game-trade-title ${getRankClass(recipe.rank || "稀有")}`;
+
+            document.getElementById('modal-recipe-attr-badge').innerHTML = getAttrBadgeHtml(recipe.attr);
+            document.getElementById('modal-recipe-demand-val').innerText = portions;
+
+            const statusEl = document.getElementById('modal-recipe-status-text');
+            statusEl.innerText = recipe.learned !== false ? '已習得' : '未取得';
+            statusEl.style.color = recipe.learned !== false ? '#2ecc71' : '#9ca3af';
+
+            const iconCircle = document.getElementById('modal-recipe-icon-circle');
+            iconCircle.className = `game-trade-icon-circle ${getCircleRankClass(recipe.rank || "稀有")}`;
+
+            const iconLg = document.getElementById('modal-recipe-icon-lg');
+            iconLg.removeAttribute('data-loaded');
+            if (recipe.icon && recipe.icon.startsWith('data:image')) {
+                iconLg.onerror = null;
+                iconLg.src = recipe.icon;
+            } else {
+                iconLg.setAttribute('data-name', recipe.name);
+                iconLg.setAttribute('data-fallback', defaultRecipeIconImg);
+                iconLg.setAttribute('data-attempt', '0');
+                iconLg.onerror = function() { window.imgErr(this); };
+                iconLg.src = `${recipe.name}.png`;
+            }
+
+            const flexContainer = document.getElementById('modal-recipe-ingredients-flex');
+            flexContainer.innerHTML = '';
+
+            if (recipe.ingredients) {
+                const sortedEntries = getSortedRecipeIngredientsEntries(recipe.ingredients);
+                for (let [ing, perPortionQty] of sortedEntries) {
+                    const requiredQty = perPortionQty * portions;
+                    const invQty = inv[ing] || 0;
+                    const diff = Math.max(0, requiredQty - invQty);
+                    const ingMeta = ingMap[ing] || { icon: "" };
+
+                    const stockDisplay = diff > 0
+                        ? `<span class="qty-red" style="font-size:14px; text-shadow: 1px 1px 0 #000;">${invQty}/${perPortionQty}</span>`
+                        : `<span class="qty-green" style="font-size:14px; text-shadow: 1px 1px 0 #000;">${invQty}/${perPortionQty}</span>`;
+
+                    flexContainer.innerHTML += `
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                            <div class="ing-circle-icon">
+                                ${renderImgHtml(ingMeta.icon, "", defaultIngIconImg, ing)}
+                            </div>
+                            <span style="font-size:13px; color:#ffffff; text-shadow: 1px 1px 0 #000;">${ing}</span>
+                            ${stockDisplay}
+                        </div>
+                    `;
+                }
+            }
+
+            // 設定食用數量預設為 1，最高為需求數量（若需求為0則最高可調至99）
+            currentRecipeEatMin = 1;
+            currentRecipeEatMax = portions > 0 ? portions : 99;
+            currentRecipeEatQty = 1;
+            updateRecipeEatDisplay();
+
+            document.getElementById('modal-edit-btn').onclick = function() {
+                closeModal('recipe-modal');
+                openEditRecipeModal(recipeIndex);
+            };
+
+            document.getElementById('modal-delete-btn').onclick = function() {
+                if (confirm(`確定要刪除食譜「${recipe.name}」嗎？（兩位角色皆會同步刪除）`)) {
+                    deleteRecipe(recipeIndex);
+                }
+            };
+
+            document.getElementById('recipe-modal').style.display = 'flex';
+        }
+
+        function updateRecipeEatDisplay() {
+            document.getElementById('recipe-eat-qty-display').innerText = currentRecipeEatQty;
+        }
+
+        function setMinRecipeEatQty() {
+            currentRecipeEatQty = currentRecipeEatMin;
+            updateRecipeEatDisplay();
+        }
+
+        function setMaxRecipeEatQty() {
+            currentRecipeEatQty = currentRecipeEatMax;
+            updateRecipeEatDisplay();
+        }
+
+        function stepRecipeEatQty(dir) {
+            let nextVal = currentRecipeEatQty + dir;
+            if (nextVal < currentRecipeEatMin) nextVal = currentRecipeEatMin;
+            if (nextVal > currentRecipeEatMax) nextVal = currentRecipeEatMax;
+            currentRecipeEatQty = nextVal;
+            updateRecipeEatDisplay();
+        }
+
+        function confirmEatFromRecipeModal() {
+            const recipeIndex = parseInt(document.getElementById('modal-recipe-index').value);
+            const count = currentRecipeEatQty;
+
+            if (count <= 0) return;
+
+            const recipes = getRecipes(currentKey);
+            const inv = getInventory(currentKey);
+            const recipe = recipes[recipeIndex];
+            if (!recipe) return;
+
+            if (recipe.ingredients) {
+                for (let [ing, perPortionQty] of Object.entries(recipe.ingredients)) {
+                    const deduct = perPortionQty * count;
+                    inv[ing] = Math.max(0, (inv[ing] || 0) - deduct);
+                }
+            }
+
+            const currentPortions = recipe.portions !== undefined ? Number(recipe.portions) : 0;
+            recipe.portions = Math.max(0, currentPortions - count);
+
+            localStorage.setItem(`inv_${currentKey}`, JSON.stringify(inv));
+            localStorage.setItem(`recipes_${currentKey}`, JSON.stringify(recipes));
+            pushToCloud();
+
+            closeModal('recipe-modal');
+            renderUI();
+
+            if (openedFromAllRecipes) {
+                openAllRecipesModal();
+            }
+        }
+
+        function closeRecipeDetailModal() {
+            closeModal('recipe-modal');
+            if (openedFromAllRecipes) {
+                openAllRecipesModal();
+            }
+        }
+
+        function cancelEditRecipeModal() {
+            closeModal('add-recipe-modal');
+            if (openedFromAllRecipes) {
+                openAllRecipesModal();
+            }
+        }
+
+        function deleteRecipe(recipeIndex) {
+            let recipes = getRecipes(currentKey);
+            const targetName = recipes[recipeIndex]?.name;
+            recipes.splice(recipeIndex, 1);
+            localStorage.setItem(`recipes_${currentKey}`, JSON.stringify(recipes));
+
+            const otherKey = currentKey === 'rabbit' ? 'artemis' : 'rabbit';
+            let otherRecipes = getRecipes(otherKey);
+            otherRecipes = otherRecipes.filter(r => r.name !== targetName);
+            localStorage.setItem(`recipes_${otherKey}`, JSON.stringify(otherRecipes));
+            pushToCloud();
+
+            closeModal('recipe-modal');
+            renderUI();
+
+            if (openedFromAllRecipes) {
+                openAllRecipesModal();
             }
         }
 
@@ -1982,7 +2394,7 @@
 
                         recipeContainer.innerHTML += `
                             <div class="recipe-card ${unlearnedClass}" onclick="openRecipeDetailByIndex(${recipe.originalIndex}, false)">
-                                <button class="card-consume-btn" onclick="openConsumeModal(${recipe.originalIndex}, event)" title="輸入食用份數並自動扣除庫存">🍴 食用</button>
+                                <button class="card-consume-btn" onclick="openConsumeModal(${recipe.originalIndex}, event)" title="開啟食譜並食用">🍴 食用</button>
                                 <div class="recipe-header-flex">
                                     ${renderImgHtml(recipe.icon, "recipe-icon", defaultRecipeIconImg, recipe.name)}
                                     <div class="recipe-title-box">
@@ -1998,25 +2410,8 @@
                     recipeContainer.innerHTML = `<p style="color: #ffffff; text-shadow: 1px 1px 0 #000; padding: 10px;">找不到符合篩選條件的食譜。</p>`;
                 }
 
-                let totalDemand = {};
-                recipes.forEach(recipe => {
-                    const portions = recipe.portions !== undefined ? Number(recipe.portions) : 1;
-                    if (recipe.ingredients && portions > 0) {
-                        for (let [ing, perPortionQty] of Object.entries(recipe.ingredients)) {
-                            totalDemand[ing] = (totalDemand[ing] || 0) + (perPortionQty * portions);
-                        }
-                    }
-                });
-
-                let surplusList = [];
-                for (let [item, invQty] of Object.entries(inv)) {
-                    if (EXCLUDED_INGS.includes(item)) continue;
-                    const demQty = totalDemand[item] || 0;
-                    if (invQty > demQty) {
-                        const ingMeta = ingMap[item] || { rank: "一般", icon: "" };
-                        surplusList.push({ name: item, inventory: invQty, demand: demQty, surplus: invQty - demQty, ...ingMeta });
-                    }
-                }
+                // 取得符合門檻（一般>=5、稀有>=3、史詩傳說>=1）的可出售食材清單，並顯示全部可出售數量
+                let surplusList = getValidSurplusList(recipes, inv, ingMap);
                 surplusList.sort((a, b) => b.surplus - a.surplus);
 
                 if (surplusSearchKey) {
@@ -2031,7 +2426,7 @@
                         const ingMeta = ingMap[item.name] || { icon: "" };
                         const safeItemName = item.name.replace(/'/g, "\\'");
                         surplusItemsHtml += `
-                            <div class="gathering-item" title="${item.name}｜庫存: ${item.inventory} / 需求: ${item.demand} / 可售: ${item.surplus}">
+                            <div class="gathering-item" title="${item.name} (${item.rank || '一般'})｜庫存: ${item.inventory} / 需求: ${item.demand} / 可售: ${item.surplus}">
                                 <div class="ing-circle-icon">
                                     ${renderImgHtml(ingMeta.icon, "", defaultIngIconImg, item.name)}
                                 </div>
@@ -2055,7 +2450,7 @@
                 } else {
                     surplusContainer.innerHTML = `
                         <div class="surplus-section-wrap">
-                            <p style="color: #718096; font-style: italic; padding: 10px;">目前沒有可出售食材。</p>
+                            <p style="color: #718096; font-style: italic; padding: 10px;">目前沒有達到售出門檻的食材。</p>
                             <div class="more-btn-grid">
                                 <div class="more-card" onclick="openAllSurplusModal()">
                                     <div class="plus-icon">+</div>
@@ -2067,209 +2462,6 @@
                 }
             } catch (error) {
                 console.error("UI 渲染錯誤：", error);
-            }
-        }
-
-        function openRecipeDetailByIndex(recipeIndex, fromAllRecipes = false) {
-            openedFromAllRecipes = fromAllRecipes;
-            const recipes = getRecipes(currentKey);
-            const inv = getInventory(currentKey);
-            const ingMap = getIngredientsMap();
-            const recipe = recipes[recipeIndex];
-
-            if (!recipe) return;
-
-            const portions = recipe.portions !== undefined ? Number(recipe.portions) : 1;
-
-            const headerBg = document.getElementById('modal-recipe-header-bg');
-            if (headerBg) {
-                headerBg.className = `game-recipe-header ${getRankBgClass(recipe.rank || "稀有")}`;
-            }
-            
-            document.getElementById('modal-recipe-name').innerText = recipe.name;
-            document.getElementById('modal-recipe-status-text').innerText = recipe.learned !== false ? '已習得' : '未取得';
-            document.getElementById('modal-recipe-status-text').style.color = recipe.learned !== false ? '#2ecc71' : '#9ca3af';
-            document.getElementById('modal-recipe-portions-text').innerText = `所需份數：${portions} 份`;
-            
-            document.getElementById('modal-recipe-attr-badge').innerHTML = getAttrBadgeHtml(recipe.attr);
-
-            const iconLg = document.getElementById('modal-recipe-icon-lg');
-            iconLg.removeAttribute('data-loaded');
-            if (recipe.icon && recipe.icon.startsWith('data:image')) {
-                iconLg.onerror = null;
-                iconLg.src = recipe.icon;
-            } else {
-                iconLg.setAttribute('data-name', recipe.name);
-                iconLg.setAttribute('data-fallback', defaultRecipeIconImg);
-                iconLg.setAttribute('data-attempt', '0');
-                iconLg.onerror = function() { window.imgErr(this); };
-                iconLg.src = `${recipe.name}.png`;
-            }
-
-            const flexContainer = document.getElementById('modal-recipe-ingredients-flex');
-            flexContainer.innerHTML = '';
-
-            if (recipe.ingredients) {
-                const sortedEntries = getSortedRecipeIngredientsEntries(recipe.ingredients);
-                for (let [ing, perPortionQty] of sortedEntries) {
-                    const requiredQty = perPortionQty * portions;
-                    const invQty = inv[ing] || 0;
-                    const diff = Math.max(0, requiredQty - invQty);
-                    const ingMeta = ingMap[ing] || { icon: "" };
-
-                    const stockDisplay = diff > 0
-                        ? `<span class="qty-red" style="font-size:14px; text-shadow: 1px 1px 0 #000;">${invQty}/${perPortionQty}</span>`
-                        : `<span class="qty-green" style="font-size:14px; text-shadow: 1px 1px 0 #000;">${invQty}/${perPortionQty}</span>`;
-
-                    flexContainer.innerHTML += `
-                        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
-                            <div class="ing-circle-icon">
-                                ${renderImgHtml(ingMeta.icon, "", defaultIngIconImg, ing)}
-                            </div>
-                            <span style="font-size:13px; color:#ffffff; text-shadow: 1px 1px 0 #000;">${ing}</span>
-                            ${stockDisplay}
-                        </div>
-                    `;
-                }
-            }
-
-            document.getElementById('modal-consume-btn').onclick = function(event) {
-                openConsumeModal(recipeIndex, event);
-            };
-
-            document.getElementById('modal-edit-btn').onclick = function() {
-                closeModal('recipe-modal');
-                openEditRecipeModal(recipeIndex);
-            };
-
-            document.getElementById('modal-delete-btn').onclick = function() {
-                if (confirm(`確定要刪除食譜「${recipe.name}」嗎？（兩位角色皆會同步刪除）`)) {
-                    deleteRecipe(recipeIndex);
-                }
-            };
-
-            document.getElementById('recipe-modal').style.display = 'flex';
-        }
-
-        function openConsumeModal(recipeIndex, evt) {
-            if (evt) evt.stopPropagation();
-            const recipes = getRecipes(currentKey);
-            const recipe = recipes[recipeIndex];
-            if (!recipe) return;
-
-            document.getElementById('consume-recipe-index').value = recipeIndex;
-            document.getElementById('consume-modal-title').innerText = `🍴 食用：${recipe.name}`;
-            document.getElementById('consume-portions-input').value = 1;
-            updateConsumePreview();
-
-            document.getElementById('consume-recipe-modal').style.display = 'flex';
-        }
-
-        function updateConsumePreview() {
-            const recipeIndex = parseInt(document.getElementById('consume-recipe-index').value);
-            const count = Math.max(0, parseInt(document.getElementById('consume-portions-input').value) || 0);
-            const recipes = getRecipes(currentKey);
-            const inv = getInventory(currentKey);
-            const ingMap = getIngredientsMap();
-            const recipe = recipes[recipeIndex];
-            const previewContainer = document.getElementById('consume-preview-list');
-            previewContainer.innerHTML = '';
-
-            if (!recipe || !recipe.ingredients) return;
-
-            const sortedEntries = getSortedRecipeIngredientsEntries(recipe.ingredients);
-            for (let [ing, perPortionQty] of sortedEntries) {
-                if (EXCLUDED_INGS.includes(ing)) continue;
-                const deductQty = perPortionQty * count;
-                const invQty = inv[ing] || 0;
-                const remainQty = Math.max(0, invQty - deductQty);
-                const isShort = invQty < deductQty;
-                const ingMeta = ingMap[ing] || { icon: "" };
-
-                previewContainer.innerHTML += `
-                    <div style="display: flex; flex-direction: column; align-items: center; gap: 3px; min-width: 68px;">
-                        <div class="ing-circle-icon" style="width: 42px; height: 42px;">
-                            ${renderImgHtml(ingMeta.icon, "", defaultIngIconImg, ing)}
-                        </div>
-                        <span style="font-size: 12px; color: #fff; text-shadow: 1px 1px 0 #000;">${ing}</span>
-                        <span style="font-size: 12px; color: #ff4757; font-weight: bold; text-shadow: 1px 1px 0 #000;">-${deductQty}</span>
-                        <span style="font-size: 11px; color: ${isShort ? '#ff4757' : '#2ecc71'}; text-shadow: 1px 1px 0 #000;">剩 ${remainQty}</span>
-                    </div>
-                `;
-            }
-
-            if (previewContainer.innerHTML === '') {
-                previewContainer.innerHTML = `<span style="font-size:12px; color:#b3c0e6;">僅消耗基礎食材</span>`;
-            }
-        }
-
-        function confirmConsumeRecipe() {
-            const recipeIndex = parseInt(document.getElementById('consume-recipe-index').value);
-            const count = parseInt(document.getElementById('consume-portions-input').value) || 0;
-
-            if (count <= 0) {
-                alert('請輸入大於 0 的食用份數！');
-                return;
-            }
-
-            const recipes = getRecipes(currentKey);
-            const inv = getInventory(currentKey);
-            const recipe = recipes[recipeIndex];
-            if (!recipe) return;
-
-            if (recipe.ingredients) {
-                for (let [ing, perPortionQty] of Object.entries(recipe.ingredients)) {
-                    const deduct = perPortionQty * count;
-                    inv[ing] = Math.max(0, (inv[ing] || 0) - deduct);
-                }
-            }
-
-            const currentPortions = recipe.portions !== undefined ? Number(recipe.portions) : 0;
-            recipe.portions = Math.max(0, currentPortions - count);
-
-            localStorage.setItem(`inv_${currentKey}`, JSON.stringify(inv));
-            localStorage.setItem(`recipes_${currentKey}`, JSON.stringify(recipes));
-            pushToCloud();
-
-            closeModal('consume-recipe-modal');
-            renderUI();
-
-            if (document.getElementById('recipe-modal').style.display === 'flex') {
-                openRecipeDetailByIndex(recipeIndex, openedFromAllRecipes);
-            }
-        }
-
-        function closeRecipeDetailModal() {
-            closeModal('recipe-modal');
-            if (openedFromAllRecipes) {
-                openAllRecipesModal();
-            }
-        }
-
-        function cancelEditRecipeModal() {
-            closeModal('add-recipe-modal');
-            if (openedFromAllRecipes) {
-                openAllRecipesModal();
-            }
-        }
-
-        function deleteRecipe(recipeIndex) {
-            let recipes = getRecipes(currentKey);
-            const targetName = recipes[recipeIndex]?.name;
-            recipes.splice(recipeIndex, 1);
-            localStorage.setItem(`recipes_${currentKey}`, JSON.stringify(recipes));
-
-            const otherKey = currentKey === 'rabbit' ? 'artemis' : 'rabbit';
-            let otherRecipes = getRecipes(otherKey);
-            otherRecipes = otherRecipes.filter(r => r.name !== targetName);
-            localStorage.setItem(`recipes_${otherKey}`, JSON.stringify(otherRecipes));
-            pushToCloud();
-
-            closeModal('recipe-modal');
-            renderUI();
-
-            if (openedFromAllRecipes) {
-                openAllRecipesModal();
             }
         }
 
@@ -2349,7 +2541,7 @@
             document.getElementById('all-recipes-modal').style.display = 'flex';
         }
 
-        // 所有可出售食材總覽 (列出全部可出售，並附帶售出按鈕)
+        // 所有可出售食材總覽 (列出全部符合門檻的可出售食材，並附帶售出按鈕)
         function openAllSurplusModal() {
             const recipes = getRecipes(currentKey);
             const inv = getInventory(currentKey);
@@ -2359,25 +2551,7 @@
 
             const filterKey = document.getElementById('all-surplus-search')?.value.trim().toLowerCase() || '';
 
-            let totalDemand = {};
-            recipes.forEach(recipe => {
-                const portions = recipe.portions !== undefined ? Number(recipe.portions) : 1;
-                if (recipe.ingredients && portions > 0) {
-                    for (let [ing, perPortionQty] of Object.entries(recipe.ingredients)) {
-                        totalDemand[ing] = (totalDemand[ing] || 0) + (perPortionQty * portions);
-                    }
-                }
-            });
-
-            let surplusList = [];
-            for (let [item, invQty] of Object.entries(inv)) {
-                if (EXCLUDED_INGS.includes(item)) continue;
-                const demQty = totalDemand[item] || 0;
-                if (invQty > demQty) {
-                    const ingMeta = ingMap[item] || { rank: "一般", icon: "" };
-                    surplusList.push({ name: item, inventory: invQty, demand: demQty, surplus: invQty - demQty, ...ingMeta });
-                }
-            }
+            let surplusList = getValidSurplusList(recipes, inv, ingMap);
 
             surplusList.sort((a, b) => {
                 const wA = rankWeight[a.rank] !== undefined ? rankWeight[a.rank] : 0;
@@ -2395,7 +2569,7 @@
             }
 
             if (surplusList.length === 0) {
-                listContainer.innerHTML = `<p style="color: #ffffff; text-shadow: 1px 1px 0 #000; padding: 10px; grid-column: 1 / -1;">目前沒有可出售食材。</p>`;
+                listContainer.innerHTML = `<p style="color: #ffffff; text-shadow: 1px 1px 0 #000; padding: 10px; grid-column: 1 / -1;">目前沒有達到售出門檻的食材。</p>`;
             } else {
                 surplusList.forEach(item => {
                     const circleRankClass = getCircleRankClass(item.rank || "一般");
