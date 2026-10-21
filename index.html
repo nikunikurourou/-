@@ -301,20 +301,6 @@
             image-rendering: pixelated;
         }
 
-        /* 屬性圖示 */
-        .attr-icon {
-            width: 22px;
-            height: 22px;
-            object-fit: contain;
-            image-rendering: pixelated;
-            display: inline-block;
-            vertical-align: middle;
-            background-color: transparent;
-            border-radius: 50%;
-            overflow: hidden;
-            flex-shrink: 0;
-        }
-
         /* 圓形食材 ICON 容器 */
         .ing-circle-icon {
             width: 48px;
@@ -503,6 +489,14 @@
             text-shadow: 1px 1px 0 #000;
         }
 
+        /* 圓形料理/食材圖示外層容器：讓左上角屬性徽章不被裁切 */
+        .game-trade-icon-wrap {
+            position: relative;
+            width: 84px;
+            height: 84px;
+            flex-shrink: 0;
+        }
+
         .game-trade-icon-circle {
             width: 84px;
             height: 84px;
@@ -527,6 +521,32 @@
             width: 78%;
             height: 78%;
             object-fit: contain;
+            image-rendering: pixelated;
+        }
+
+        /* 食譜詳情圓形圖示左上角的屬性徽章（如圖位置） */
+        .game-trade-attr-corner {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 26px;
+            height: 26px;
+            background-color: #1e1e24;
+            border-radius: 50%;
+            border: 1.5px solid #45454f;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 5;
+            box-shadow: 1px 2px 4px rgba(0, 0, 0, 0.85);
+            overflow: hidden;
+        }
+
+        .game-trade-attr-corner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
             image-rendering: pixelated;
         }
 
@@ -951,13 +971,13 @@
 
         .overview-attr-badge {
             position: absolute;
-            top: -3px;
-            left: -3px;
+            top: -2px;
+            left: -2px;
             width: 24px;
             height: 24px;
             background-color: #1e1e24;
             border-radius: 50%;
-            border: 1.5px solid #555;
+            border: 1.5px solid #45454f;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -1103,7 +1123,6 @@
             <div class="game-trade-header">
                 <div class="game-trade-title-wrap">
                     <span id="modal-recipe-name" class="game-trade-title">食譜名稱</span>
-                    <span id="modal-recipe-attr-badge" style="display: inline-flex; align-items: center;"></span>
                 </div>
                 <div class="game-trade-top-actions">
                     <button id="modal-edit-btn" class="btn-mini" title="編輯食譜">✏️</button>
@@ -1117,8 +1136,12 @@
                     <span id="modal-recipe-demand-val" class="game-trade-val">0</span>
                     <span id="modal-recipe-status-text" class="game-trade-sub" style="color:#2ecc71;">已習得</span>
                 </div>
-                <div id="modal-recipe-icon-circle" class="game-trade-icon-circle">
-                    <img id="modal-recipe-icon-lg" src="" alt="Recipe Icon">
+                <!-- 圓形食譜圖示與左上角屬性徽章 -->
+                <div class="game-trade-icon-wrap">
+                    <div id="modal-recipe-attr-badge" class="game-trade-attr-corner" style="display: none;"></div>
+                    <div id="modal-recipe-icon-circle" class="game-trade-icon-circle">
+                        <img id="modal-recipe-icon-lg" src="" alt="Recipe Icon">
+                    </div>
                 </div>
             </div>
 
@@ -1870,16 +1893,6 @@
             return "circle-rare";
         }
 
-        function getAttrBadgeHtml(attr) {
-            if (!attr) return "";
-            const attrBaseName = attrIconMap[attr];
-            if (attrBaseName) {
-                const safeAttr = String(attrBaseName).replace(/"/g, "&quot;");
-                return `<img src="${safeAttr}.png" class="attr-icon" data-name="${safeAttr}" data-fallback="" data-attempt="0" onerror="window.imgErr(this)" alt="${safeAttr}" title="${safeAttr}屬性">`;
-            }
-            return "";
-        }
-
         function calculateRecipeShortage(recipe, inv) {
             const portions = recipe.portions !== undefined ? Number(recipe.portions) : 1;
             let missingItems = [];
@@ -2191,7 +2204,18 @@
             titleEl.innerText = recipe.name;
             titleEl.className = `game-trade-title ${getRankClass(recipe.rank || "稀有")}`;
 
-            document.getElementById('modal-recipe-attr-badge').innerHTML = getAttrBadgeHtml(recipe.attr);
+            // 將屬性圖示設置在右側圓形食譜 ICON 左上角
+            const attrBadgeEl = document.getElementById('modal-recipe-attr-badge');
+            const attrBaseName = attrIconMap[recipe.attr];
+            if (attrBaseName) {
+                const safeAttr = String(attrBaseName).replace(/"/g, "&quot;");
+                attrBadgeEl.innerHTML = `<img src="${safeAttr}.png" data-name="${safeAttr}" data-fallback="" data-attempt="0" onerror="window.imgErr(this)" alt="${safeAttr}" title="${safeAttr}屬性">`;
+                attrBadgeEl.style.display = 'flex';
+            } else {
+                attrBadgeEl.innerHTML = '';
+                attrBadgeEl.style.display = 'none';
+            }
+
             document.getElementById('modal-recipe-demand-val').innerText = portions;
 
             const statusEl = document.getElementById('modal-recipe-status-text');
