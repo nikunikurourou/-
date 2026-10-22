@@ -370,13 +370,22 @@
             align-items: flex-start;
         }
 
-        /* 主頁與詳情視窗共用的缺少食材項目容器 (圓形圖示 + 右下角紅字 + 底部食材名稱) */
         .missing-ing-item {
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 4px;
             width: 62px;
+            transition: transform 0.12s;
+        }
+        .missing-ing-item.clickable-ing {
+            cursor: pointer;
+        }
+        .missing-ing-item.clickable-ing:hover {
+            transform: scale(1.08);
+        }
+        .missing-ing-item.clickable-ing:hover .missing-ing-circle {
+            border-color: #ffcb05;
         }
 
         .missing-ing-circle {
@@ -391,6 +400,7 @@
             position: relative;
             box-shadow: 2px 2px 4px rgba(0,0,0,0.6);
             flex-shrink: 0;
+            transition: border-color 0.12s;
         }
 
         .missing-ing-circle img {
@@ -509,6 +519,10 @@
             align-items: center;
             gap: 3px;
             width: 68px;
+            transition: transform 0.12s;
+        }
+        .gathering-item:hover {
+            transform: scale(1.06);
         }
 
         .gathering-item-name {
@@ -1448,7 +1462,7 @@
         </div>
     </div>
 
-    <!-- 4. 編輯 / 新增食材彈跳視窗 -->
+    <!-- 4. 編輯 / 新增食材彈跳視窗 (已加入食材分類與昇華來源設定) -->
     <div id="edit-ingredient-item-modal" class="modal" style="z-index: 140;">
         <div class="game-trade-modal editor-modal-sm">
             <div class="game-trade-header">
@@ -1471,6 +1485,22 @@
                     <span class="tag-option" data-val="稀有" onclick="selectFormTag('edit-ing-rank', '稀有', this)">稀有 (藍)</span>
                     <span class="tag-option" data-val="史詩" onclick="selectFormTag('edit-ing-rank', '史詩', this)">史詩 (紫)</span>
                     <span class="tag-option" data-val="傳說" onclick="selectFormTag('edit-ing-rank', '傳說', this)">傳說 (橘)</span>
+                </div>
+
+                <label>食材分類：</label>
+                <input type="hidden" id="edit-ing-category" value="其他食材">
+                <div class="tag-group" id="edit-ing-category-tags">
+                    <span class="tag-option" data-val="可拾取食材" onclick="selectIngCategoryTag('可拾取食材', this)">可拾取食材</span>
+                    <span class="tag-option" data-val="昇華食材" onclick="selectIngCategoryTag('昇華食材', this)">昇華食材</span>
+                    <span class="tag-option" data-val="商店食材" onclick="selectIngCategoryTag('商店食材', this)">商店食材</span>
+                    <span class="tag-option" data-val="地圖食材" onclick="selectIngCategoryTag('地圖食材', this)">地圖食材</span>
+                    <span class="tag-option active" data-val="其他食材" onclick="selectIngCategoryTag('其他食材', this)">其他食材</span>
+                </div>
+
+                <!-- 當選擇「昇華食材」時，顯示對應的可拾取食材下拉選單 -->
+                <div id="edit-ing-base-wrap" style="display: none; margin-bottom: 12px;">
+                    <label>對應的可拾取食材（昇華來源）：</label>
+                    <select id="edit-ing-base-select" class="text-input" style="margin-bottom: 0; height: 38px; cursor: pointer;"></select>
                 </div>
 
                 <label>食材圖示：</label>
@@ -1512,7 +1542,7 @@
         </div>
     </div>
 
-    <!-- 6. 快捷修改單一食材庫存彈窗 (點擊今日推薦時開啟) -->
+    <!-- 6. 快捷修改單一食材庫存彈窗 (點擊今日推薦或主頁缺少食材時開啟) -->
     <div id="quick-stock-modal" class="modal" style="z-index: 135;">
         <div class="game-trade-modal" style="width: 360px;">
             <div class="game-trade-header">
@@ -1584,33 +1614,28 @@
         const attrIconMap = { "攻擊": "攻擊", "防禦": "防禦", "生命": "生命", "速度": "速度" };
         const rankWeight = { "奇蹟": 4, "傳說": 3, "史詩": 2, "稀有": 1, "一般": 0 };
 
-        // 商店可購買的基礎食材 (不顯示於主頁缺少清單、不列入計算)
-        const EXCLUDED_INGS = ["水", "胡椒", "糖", "鹽", "蘑菇", "青禾", "芥菜", "琥珀凝膠"];
-
-        // 肉類食材 (不列入食譜排序與推薦判斷計算)
-        const MEAT_INGS = ["生肉", "嫩肉", "精肉", "絕品肉"];
-
-        // 合計所有不列入排序判斷計算的食材
-        const IGNORED_FOR_CALC_INGS = [...EXCLUDED_INGS, ...MEAT_INGS];
-
-        const INGREDIENT_ORDER = [
-            "水", "胡椒", "糖", "鹽", "蘑菇", "青禾", "芥菜", "琥珀凝膠",
-            "生肉", "嫩肉", "精肉", "絕品肉", "麵粉", "蜂蜜", "百花蜜", "蜂王漿",
-            "馬鈴薯", "甜馬鈴薯", "嘟嘟莓", "多汁嘟嘟莓", "藍鳥蛋", "鈷藍鳥蛋", "潔白松露",
-            "奶油", "咸奶油", "脫脂奶油", "咖哩", "濃香咖哩", "刺刺果", "尖刺刺果",
-            "甲殼栗", "鐵甲殼栗", "綠洲之星", "綠洲新星", "寶藏駝奶", "味噌", "辛味噌",
-            "水舞葉", "天舞青葉", "花瓣魚", "鮮花瓣魚", "章魚", "潮汐八爪魚", "紺青龍蝦",
-            "辣椒", "妖魔辣椒", "豆子", "乾脆豆子", "竹筍", "山珍竹筍",
-            "大螯蟹", "大螯蟹王", "金盞靈芝", "雷電香油", "純淨雷電香油",
-            "蘭香茸", "星夜蘭香茸", "雲海螺肉", "風飄雲海螺肉", "陽光果", "黃金陽光果", "女神之淚"
-        ];
-
+        // ==================== 預設食材分類定義 ====================
+        // 1. 可拾取食材 (15種)
         const GATHERABLE_INGS = [
             "馬鈴薯", "嘟嘟莓", "藍鳥蛋", "刺刺果", "甲殼栗", 
             "綠洲之星", "水舞葉", "花瓣魚", "章魚", "豆子", 
             "竹筍", "大螯蟹", "蘭香茸", "雲海螺肉", "陽光果"
         ];
 
+        // 2. 昇華食材 (15種)
+        const UPGRADED_INGS = [
+            "甜馬鈴薯", "多汁嘟嘟莓", "鈷藍鳥蛋", "尖刺刺果", "鐵甲殼栗",
+            "綠洲新星", "天舞青葉", "鮮花瓣魚", "潮汐八爪魚", "乾脆豆子",
+            "山珍竹筍", "大螯蟹王", "星夜蘭香茸", "風飄雲海螺肉", "黃金陽光果"
+        ];
+
+        // 3. 商店食材
+        const SHOP_INGS = ["水", "胡椒", "糖", "鹽"];
+
+        // 4. 地圖食材
+        const MAP_INGS = ["青禾", "芥菜", "琥珀凝膠", "生肉", "嫩肉", "精肉", "絕品肉"];
+
+        // 預設可拾取食材 -> 昇華食材 對應表
         const UPGRADE_MAP = {
             "馬鈴薯": "甜馬鈴薯",
             "嘟嘟莓": "多汁嘟嘟莓",
@@ -1629,10 +1654,32 @@
             "陽光果": "黃金陽光果"
         };
 
+        // 昇華食材 -> 可拾取食材 反向對應表
         const REVERSE_UPGRADE_MAP = {};
         for (let [k, v] of Object.entries(UPGRADE_MAP)) {
             REVERSE_UPGRADE_MAP[v] = k;
         }
+
+        // 根據食材名稱取得預設分類
+        function getDefaultCategory(ingName) {
+            if (GATHERABLE_INGS.includes(ingName)) return "可拾取食材";
+            if (UPGRADED_INGS.includes(ingName)) return "昇華食材";
+            if (SHOP_INGS.includes(ingName)) return "商店食材";
+            if (MAP_INGS.includes(ingName)) return "地圖食材";
+            return "其他食材";
+        }
+
+        const INGREDIENT_ORDER = [
+            "水", "胡椒", "糖", "鹽", "蘑菇", "青禾", "芥菜", "琥珀凝膠",
+            "生肉", "嫩肉", "精肉", "絕品肉", "麵粉", "蜂蜜", "百花蜜", "蜂王漿",
+            "馬鈴薯", "甜馬鈴薯", "嘟嘟莓", "多汁嘟嘟莓", "藍鳥蛋", "鈷藍鳥蛋", "潔白松露",
+            "奶油", "咸奶油", "脫脂奶油", "咖哩", "濃香咖哩", "刺刺果", "尖刺刺果",
+            "甲殼栗", "鐵甲殼栗", "綠洲之星", "綠洲新星", "寶藏駝奶", "味噌", "辛味噌",
+            "水舞葉", "天舞青葉", "花瓣魚", "鮮花瓣魚", "章魚", "潮汐八爪魚", "紺青龍蝦",
+            "辣椒", "妖魔辣椒", "豆子", "乾脆豆子", "竹筍", "山珍竹筍",
+            "大螯蟹", "大螯蟹王", "金盞靈芝", "雷電香油", "純淨雷電香油",
+            "蘭香茸", "星夜蘭香茸", "雲海螺肉", "風飄雲海螺肉", "陽光果", "黃金陽光果", "女神之淚"
+        ];
 
         let currentMainLearnedFilter = 'ALL';
         let currentMainAttrFilter = 'ALL';
@@ -1656,7 +1703,11 @@
 
         const userProvidedIngredientsMap = {"水":{"rank":"一般","icon":""},"胡椒":{"rank":"一般","icon":""},"糖":{"rank":"一般","icon":""},"鹽":{"rank":"一般","icon":""},"蘑菇":{"rank":"一般","icon":""},"青禾":{"rank":"一般","icon":""},"芥菜":{"rank":"一般","icon":""},"琥珀凝膠":{"rank":"一般","icon":""},"生肉":{"rank":"一般","icon":""},"嫩肉":{"rank":"稀有","icon":""},"精肉":{"rank":"史詩","icon":""},"絕品肉":{"rank":"傳說","icon":""},"麵粉":{"rank":"一般","icon":""},"蜂蜜":{"rank":"稀有","icon":""},"百花蜜":{"rank":"史詩","icon":""},"蜂王漿":{"rank":"傳說","icon":""},"馬鈴薯":{"rank":"一般","icon":""},"甜馬鈴薯":{"rank":"稀有","icon":""},"嘟嘟莓":{"rank":"稀有","icon":""},"多汁嘟嘟莓":{"rank":"史詩","icon":""},"藍鳥蛋":{"rank":"史詩","icon":""},"鈷藍鳥蛋":{"rank":"傳說","icon":""},"潔白松露":{"rank":"傳說","icon":""},"奶油":{"rank":"稀有","icon":""},"咸奶油":{"rank":"史詩","icon":""},"脫脂奶油":{"rank":"傳說","icon":""},"咖哩":{"rank":"稀有","icon":""},"濃香咖哩":{"rank":"史詩","icon":""},"刺刺果":{"rank":"一般","icon":""},"尖刺刺果":{"rank":"稀有","icon":""},"甲殼栗":{"rank":"稀有","icon":""},"鐵甲殼栗":{"rank":"史詩","icon":""},"綠洲之星":{"rank":"史詩","icon":""},"綠洲新星":{"rank":"傳說","icon":""},"寶藏駝奶":{"rank":"史詩","icon":""},"味噌":{"rank":"稀有","icon":""},"辛味噌":{"rank":"史詩","icon":""},"水舞葉":{"rank":"一般","icon":""},"天舞青葉":{"rank":"稀有","icon":""},"花瓣魚":{"rank":"稀有","icon":""},"鮮花瓣魚":{"rank":"史詩","icon":""},"章魚":{"rank":"史詩","icon":""},"潮汐八爪魚":{"rank":"傳說","icon":""},"紺青龍蝦":{"rank":"傳說","icon":""},"辣椒":{"rank":"稀有","icon":""},"妖魔辣椒":{"rank":"史詩","icon":""},"豆子":{"rank":"一般","icon":""},"乾脆豆子":{"rank":"稀有","icon":""},"竹筍":{"rank":"稀有","icon":""},"山珍竹筍":{"rank":"史詩","icon":""},"大螯蟹":{"rank":"史詩","icon":""},"大螯蟹王":{"rank":"傳說","icon":""},"金盞靈芝":{"rank":"傳說","icon":""},"雷電香油":{"rank":"稀有","icon":""},"純淨雷電香油":{"rank":"史詩","icon":""},"蘭香茸":{"rank":"一般","icon":""},"星夜蘭香茸":{"rank":"稀有","icon":""},"雲海螺肉":{"rank":"稀有","icon":""},"風飄雲海螺肉":{"rank":"史詩","icon":""},"陽光果":{"rank":"史詩","icon":""},"黃金陽光果":{"rank":"傳說","icon":""},"女神之淚":{"rank":"傳說","icon":""}};
 
-        const defaultIngredientsMap = userProvidedIngredientsMap;
+        // 為預設地圖補齊分類與昇華來源
+        for (let [k, v] of Object.entries(userProvidedIngredientsMap)) {
+            v.category = getDefaultCategory(k);
+            v.baseIng = REVERSE_UPGRADE_MAP[k] || "";
+        }
 
         const userProvidedRabbitRecipes = [{"name":"蜜汁烤肉","rank":"史詩","learned":true,"portions":20,"attr":"攻擊","icon":"","ingredients":{"嫩肉":2,"蜂蜜":10}},{"name":"酸甜嘟嘟肉","rank":"史詩","learned":true,"portions":0,"attr":"速度","icon":"","ingredients":{"嫩肉":2,"嘟嘟莓":10}},{"name":"嘟嘟果釀","rank":"史詩","learned":true,"portions":0,"attr":"速度","icon":"","ingredients":{"水":2,"嘟嘟莓":10}},{"name":"黃金散蛋","rank":"傳說","learned":true,"portions":18,"attr":"生命","icon":"","ingredients":{"青禾":2,"百花蜜":7,"藍鳥蛋":3}},{"name":"樹莓蛋糕","rank":"傳說","learned":true,"portions":0,"attr":"生命","icon":"","ingredients":{"青禾":2,"多汁嘟嘟莓":3,"藍鳥蛋":7}},{"name":"焦甜殼栗","rank":"史詩","learned":true,"portions":19,"attr":"防禦","icon":"","ingredients":{"奶油":5,"甲殼栗":5}},{"name":"滾栗子烤肉","rank":"史詩","learned":true,"portions":20,"attr":"防禦","icon":"","ingredients":{"胡椒":2,"嫩肉":2,"甲殼栗":10}},{"name":"鮮果燒肉","rank":"史詩","learned":true,"portions":0,"attr":"攻擊","icon":"","ingredients":{"嫩肉":2,"咖哩":5,"尖刺刺果":5}},{"name":"咖哩什錦燉菜","rank":"傳說","learned":true,"portions":12,"attr":"速度","icon":"","ingredients":{"精肉":2,"濃香咖哩":4,"鐵甲殼栗":3,"綠洲之星":3}},{"name":"海之味","rank":"史詩","learned":true,"portions":0,"attr":"生命","icon":"","ingredients":{"味噌":2,"天舞青葉":5,"花瓣魚":3}},{"name":"源式章魚燒","rank":"傳說","learned":true,"portions":19,"attr":"攻擊","icon":"","ingredients":{"多汁嘟嘟莓":2,"辛味噌":3,"章魚":5}},{"name":"蜜汁豆餅","rank":"史詩","learned":true,"attr":"生命","icon":"","ingredients":{"蜂蜜":1,"乾脆豆子":1},"portions":0},{"name":"竹筍控肉","rank":"史詩","learned":true,"portions":0,"attr":"攻擊","icon":"","ingredients":{"嫩肉":2,"竹筍":10}},{"name":"太陽光暈","rank":"傳說","learned":true,"portions":6,"attr":"速度","icon":"","ingredients":{"咸奶油":4,"鐵甲殼栗":3,"綠洲之星":3}},{"name":"雲端果塔","rank":"史詩","learned":true,"portions":20,"attr":"速度","icon":"","ingredients":{"嘟嘟莓":1,"奶油":2,"星夜蘭香茸":7}},{"name":"解厄刺身","rank":"傳說","learned":true,"portions":8,"attr":"攻擊","icon":"","ingredients":{"辛味噌":2,"鮮花瓣魚":5,"章魚":3}},{"name":"將軍破陣","rank":"傳說","learned":true,"portions":0,"attr":"防禦","icon":"","ingredients":{"精肉":2,"妖魔辣椒":5,"大螯蟹":5}},{"name":"身披金甲","rank":"傳說","learned":true,"portions":10,"attr":"防禦","icon":"","ingredients":{"精肉":2,"山珍竹筍":5,"大螯蟹":5}},{"name":"聖輝拔絲","rank":"傳說","learned":true,"portions":27,"attr":"攻擊","icon":"","ingredients":{"百花蜜":1,"純淨雷電香油":2,"陽光果":7}},{"name":"坎斯汀漢堡","rank":"史詩","learned":true,"portions":0,"attr":"防禦","icon":"","ingredients":{"嫩肉":2,"甜馬鈴薯":10}},{"name":"塔吉鍋燉肉","rank":"史詩","learned":true,"portions":0,"attr":"防禦","icon":"","ingredients":{"嫩肉":2,"甜馬鈴薯":5,"咖哩":5}},{"name":"源式拉麵","rank":"史詩","learned":true,"portions":0,"attr":"生命","icon":"","ingredients":{"嫩肉":2,"味噌":5,"花瓣魚":5}},{"name":"花魚天婦羅","rank":"史詩","learned":true,"portions":0,"attr":"生命","icon":"","ingredients":{"尖刺刺果":5,"天舞青葉":2,"花瓣魚":3}},{"name":"醬香滷肉","rank":"史詩","learned":true,"portions":0,"attr":"生命","icon":"","ingredients":{"胡椒":2,"嫩肉":2,"乾脆豆子":10}},{"name":"紅燒獅子頭","rank":"史詩","learned":true,"portions":13,"attr":"攻擊","icon":"","ingredients":{"嫩肉":2,"辣椒":10}},{"name":"軍團燒肉","rank":"史詩","learned":true,"portions":28,"attr":"防禦","icon":"","ingredients":{"嫩肉":2,"竹筍":2,"雲海螺肉":8}},{"name":"芳香裹肉捲","rank":"史詩","learned":true,"portions":29,"attr":"速度","icon":"","ingredients":{"嫩肉":2,"雷電香油":5,"星夜蘭香茸":5}}];
 
@@ -1665,6 +1716,51 @@
         const userProvidedArtemisRecipes = [{"name":"蜜汁烤肉","rank":"史詩","learned":true,"attr":"攻擊","ingredients":{"嫩肉":2,"蜂蜜":10},"portions":14},{"name":"酸甜嘟嘟肉","rank":"史詩","learned":true,"attr":"速度","ingredients":{"嫩肉":2,"嘟嘟莓":10},"portions":190},{"name":"黃金散蛋","rank":"傳說","learned":true,"attr":"生命","ingredients":{"青禾":2,"百花蜜":7,"藍鳥蛋":3},"portions":6},{"name":"咖哩什錦燉菜","rank":"傳說","learned":true,"attr":"速度","icon":"","ingredients":{"精肉":2,"濃香咖哩":4,"鐵甲殼栗":3,"綠洲之星":3},"portions":44},{"name":"嘟嘟果釀","rank":"史詩","learned":false,"portions":0,"attr":"速度","icon":"","ingredients":{"水":2,"嘟嘟莓":10}},{"name":"樹莓蛋糕","rank":"傳說","learned":false,"portions":0,"attr":"生命","icon":"","ingredients":{"青禾":2,"多汁嘟嘟莓":3,"藍鳥蛋":7}},{"name":"焦甜殼栗","rank":"史詩","learned":false,"portions":0,"attr":"防禦","icon":"","ingredients":{"奶油":5,"甲殼栗":5}},{"name":"滾栗子烤肉","rank":"史詩","learned":false,"portions":0,"attr":"防禦","icon":"","ingredients":{"胡椒":2,"嫩肉":2,"甲殼栗":10}},{"name":"鮮果燒肉","rank":"史詩","learned":false,"portions":0,"attr":"攻擊","icon":"","ingredients":{"嫩肉":2,"咖哩":5,"尖刺刺果":5}},{"name":"海之味","rank":"史詩","learned":false,"portions":0,"attr":"生命","icon":"","ingredients":{"味噌":2,"天舞青葉":5,"花瓣魚":3}},{"name":"源式章魚燒","rank":"傳說","learned":false,"portions":0,"attr":"攻擊","icon":"","ingredients":{"多汁嘟嘟莓":2,"辛味噌":3,"章魚":5}},{"name":"蜜汁豆餅","rank":"史詩","learned":false,"portions":0,"attr":"生命","icon":"","ingredients":{"蜂蜜":1,"乾脆豆子":1}},{"name":"竹筍控肉","rank":"史詩","learned":false,"portions":0,"attr":"攻擊","icon":"","ingredients":{"嫩肉":2,"竹筍":10}},{"name":"太陽光暈","rank":"傳說","learned":false,"portions":0,"attr":"速度","icon":"","ingredients":{"咸奶油":4,"鐵甲殼栗":3,"綠洲之星":3}},{"name":"雲端果塔","rank":"史詩","learned":false,"portions":0,"attr":"速度","icon":"","ingredients":{"嘟嘟莓":1,"奶油":2,"星夜蘭香茸":7}},{"name":"解厄刺身","rank":"傳說","learned":false,"portions":0,"attr":"攻擊","icon":"","ingredients":{"鮮花瓣魚":5,"章魚":3,"辛味噌":2}},{"name":"將軍破陣","rank":"傳說","learned":false,"portions":0,"attr":"防禦","icon":"","ingredients":{"精肉":2,"妖魔辣椒":5,"大螯蟹":5}},{"name":"身披金甲","rank":"傳說","learned":false,"portions":0,"attr":"防禦","icon":"","ingredients":{"精肉":2,"山珍竹筍":5,"大螯蟹":5}},{"name":"聖輝拔絲","rank":"傳說","learned":false,"portions":0,"attr":"攻擊","icon":"","ingredients":{"百花蜜":1,"純淨雷電香油":2,"陽光果":7}},{"name":"坎斯汀漢堡","rank":"史詩","learned":false,"portions":0,"attr":"防禦","icon":"","ingredients":{"嫩肉":2,"甜馬鈴薯":10}},{"name":"塔吉鍋燉肉","rank":"史詩","learned":false,"portions":0,"attr":"防禦","icon":"","ingredients":{"嫩肉":2,"甜馬鈴薯":5,"咖哩":5}},{"name":"源式拉麵","rank":"史詩","learned":false,"portions":0,"attr":"生命","icon":"","ingredients":{"嫩肉":2,"味噌":5,"花瓣魚":5}},{"name":"花魚天婦羅","rank":"史詩","learned":false,"portions":0,"attr":"生命","icon":"","ingredients":{"尖刺刺果":5,"天舞青葉":2,"花瓣魚":3}},{"name":"醬香滷肉","rank":"史詩","learned":false,"portions":0,"attr":"生命","icon":"","ingredients":{"胡椒":2,"嫩肉":2,"乾脆豆子":10}},{"name":"紅燒獅子頭","rank":"史詩","learned":false,"portions":0,"attr":"攻擊","icon":"","ingredients":{"嫩肉":2,"辣椒":10}},{"name":"軍團燒肉","rank":"史詩","learned":false,"portions":0,"attr":"防禦","icon":"","ingredients":{"嫩肉":2,"竹筍":2,"雲海螺肉":8}},{"name":"芳香裹肉捲","rank":"史詩","learned":false,"portions":0,"attr":"速度","icon":"","ingredients":{"嫩肉":2,"雷電香油":5,"星夜蘭香茸":5}}];
 
         const userProvidedArtemisInv = {"多汁嘟嘟莓":40,"馬鈴薯":0,"甜馬鈴薯":0,"嘟嘟莓":0,"藍鳥蛋":0,"鈷藍鳥蛋":0,"潔白松露":0,"刺刺果":0,"尖刺刺果":0,"甲殼栗":0,"鐵甲殼栗":0,"綠洲之星":0,"綠洲新星":0,"寶藏駝奶":0,"水舞葉":0,"天舞青葉":0,"花瓣魚":0,"鮮花瓣魚":0,"章魚":0,"潮汐八爪魚":0,"紺青龍蝦":0,"麵粉":0,"蜂蜜":0,"百花蜜":0,"蜂王漿":0,"奶油":0,"咸奶油":0,"脫脂奶油":0,"咖哩":0,"濃香咖哩":0,"味噌":0,"辛味噌":0,"乾脆豆子":0,"竹筍":0,"山珍竹筍":0,"辣椒":0,"妖魔辣椒":0,"大螯蟹":0,"星夜蘭香茸":0,"雲海螺肉":0,"陽光果":0,"雷電香油":0,"純淨雷電香油":0,"精肉":0,"青禾":0,"嫩肉":0,"水":0,"胡椒":0,"糖":0,"鹽":0,"蘑菇":0,"芥菜":0,"琥珀凝膠":0,"絕品肉":0,"金盞靈芝":0,"黃金陽光果":0,"女神之淚":0,"生肉":0,"豆子":0,"大螯蟹王":0,"蘭香茸":0,"風飄雲海螺肉":0};
+
+        // ==================== 動態分類判斷輔助函式 ====================
+        function getIngCategory(ingName, ingMap) {
+            const map = ingMap || getIngredientsMap();
+            if (map[ingName] && map[ingName].category) {
+                return map[ingName].category;
+            }
+            return getDefaultCategory(ingName);
+        }
+
+        function getIngBaseGatherable(ingName, ingMap) {
+            const map = ingMap || getIngredientsMap();
+            if (map[ingName] && map[ingName].baseIng) {
+                return map[ingName].baseIng;
+            }
+            return REVERSE_UPGRADE_MAP[ingName] || "";
+        }
+
+        // 取得所有目前分類為「可拾取食材」的清單
+        function getGatherableIngsList(ingMap) {
+            const map = ingMap || getIngredientsMap();
+            const list = [];
+            getAllIngredientsList().forEach(item => {
+                if (getIngCategory(item, map) === "可拾取食材") {
+                    list.push(item);
+                }
+            });
+            return list;
+        }
+
+        // 判斷是否不顯示於主頁缺少清單 / 可出售清單 (商店食材 + 蘑菇/青禾/芥菜/琥珀凝膠)
+        function isExcludedFromMainDisplay(ingName, ingMap) {
+            const cat = getIngCategory(ingName, ingMap);
+            if (cat === "商店食材") return true;
+            if (["蘑菇", "青禾", "芥菜", "琥珀凝膠"].includes(ingName)) return true;
+            return false;
+        }
+
+        // 判斷是否不列入食譜排序與每日推薦計算 (商店食材 + 地圖食材 + 蘑菇)
+        function isIgnoredForCalculation(ingName, ingMap) {
+            const cat = getIngCategory(ingName, ingMap);
+            if (cat === "商店食材" || cat === "地圖食材") return true;
+            if (ingName === "蘑菇") return true;
+            return false;
+        }
 
         function getCloudUrl() {
             let url = DEFAULT_FIREBASE_URL || '';
@@ -1810,6 +1906,30 @@
             element.classList.add('active');
         }
 
+        // 點選食材分類標籤時，若為「昇華食材」則顯示對應的可拾取食材下拉選單
+        function selectIngCategoryTag(value, element) {
+            selectFormTag('edit-ing-category', value, element);
+            const baseWrap = document.getElementById('edit-ing-base-wrap');
+            if (value === '昇華食材') {
+                populateBaseGatherableSelect(document.getElementById('edit-ing-base-select').value);
+                baseWrap.style.display = 'block';
+            } else {
+                baseWrap.style.display = 'none';
+            }
+        }
+
+        function populateBaseGatherableSelect(selectedBase = '') {
+            const selectEl = document.getElementById('edit-ing-base-select');
+            if (!selectEl) return;
+            const ingMap = getIngredientsMap();
+            const gatherables = getGatherableIngsList(ingMap);
+            selectEl.innerHTML = `<option value="">-- 請選擇對應的可拾取食材 --</option>`;
+            gatherables.forEach(g => {
+                const isSel = (g === selectedBase) ? 'selected' : '';
+                selectEl.innerHTML += `<option value="${g}" ${isSel}>${g}</option>`;
+            });
+        }
+
         function setTagGroupValue(inputId, groupId, value) {
             document.getElementById(inputId).value = value;
             const group = document.getElementById(groupId);
@@ -1915,13 +2035,27 @@
         window.addEventListener('DOMContentLoaded', initBackground);
 
         function getIngredientsMap() {
-            let map = { ...userProvidedIngredientsMap };
+            let map = {};
+            for (let [k, v] of Object.entries(userProvidedIngredientsMap)) {
+                map[k] = { ...v };
+            }
             try {
                 const saved = localStorage.getItem('global_ingredients_map');
                 if (saved) {
                     const parsed = JSON.parse(saved);
                     for (let [k, v] of Object.entries(parsed)) {
-                        map[k] = { ...(map[k] || { rank: "一般", icon: "" }), ...v };
+                        const defCat = getDefaultCategory(k);
+                        const defBase = REVERSE_UPGRADE_MAP[k] || "";
+                        map[k] = {
+                            rank: "一般",
+                            icon: "",
+                            category: defCat,
+                            baseIng: defBase,
+                            ...(map[k] || {}),
+                            ...v
+                        };
+                        if (!map[k].category) map[k].category = defCat;
+                        if (map[k].baseIng === undefined) map[k].baseIng = defBase;
                     }
                 }
             } catch (e) {}
@@ -2106,19 +2240,16 @@
             return "circle-rare";
         }
 
-        // ==================== 食譜缺口計算與 1/2/3 分類統計 ====================
-        // 忽略清單：水、胡椒、糖、鹽、蘑菇、青禾、芥菜、琥珀凝膠 + 生肉、嫩肉、精肉、絕品肉
-        // 1: 可採集食材 (GATHERABLE_INGS)
-        // 2: 昇華食材 (REVERSE_UPGRADE_MAP)
-        // 3: 非前兩項食材 (如百花蜜、濃香咖哩、辛味噌等)
+        // ==================== 食譜缺口計算與 1/2/3 分類統計 (支援動態分類設定) ====================
         function calculateRecipeShortage(recipe, inv) {
             const portions = recipe.portions !== undefined ? Number(recipe.portions) : 1;
+            const ingMap = getIngredientsMap();
             let missingItems = [];
             let allItems = [];
-            let totalMissing = 0;        // 1 + 2 + 3 納入計算的總缺口 (不含商店與肉類)
+            let totalMissing = 0;        // 1 + 2 + 3 納入計算的總缺口 (不含商店與地圖食材)
             let displayMissingTotal = 0; // 不含商店調料的所有缺口 (用於總覽燈號顯示)
-            let missing12Total = 0;      // 1 + 2 (可採集 + 昇華) 缺口數量加總
-            let missing3Total = 0;       // 3 (非前兩項食材) 缺口數量加總
+            let missing12Total = 0;      // 1 + 2 (可拾取 + 昇華) 缺口數量加總
+            let missing3Total = 0;       // 3 (其他食材) 缺口數量加總
             let hasType12Missing = false;// 是否含有可拾取或昇華食材缺口
             let hasType3Missing = false; // 是否含有第 3 類食材缺口
             let rawTotalMissing = 0;
@@ -2131,15 +2262,13 @@
                     const diff = Math.max(0, requiredQty - invQty);
                     if (diff > 0) {
                         rawTotalMissing += diff;
-                        if (!EXCLUDED_INGS.includes(ing)) {
+                        if (!isExcludedFromMainDisplay(ing, ingMap)) {
                             displayMissingTotal += diff;
                         }
-                        // 排除商店調料與肉類食材後，進行 1/2/3 分類計算
-                        if (!IGNORED_FOR_CALC_INGS.includes(ing)) {
+                        if (!isIgnoredForCalculation(ing, ingMap)) {
                             totalMissing += diff;
-                            const isType1 = GATHERABLE_INGS.includes(ing);
-                            const isType2 = Object.prototype.hasOwnProperty.call(REVERSE_UPGRADE_MAP, ing);
-                            if (isType1 || isType2) {
+                            const cat = getIngCategory(ing, ingMap);
+                            if (cat === "可拾取食材" || cat === "昇華食材") {
                                 missing12Total += diff;
                                 hasType12Missing = true;
                             } else {
@@ -2167,11 +2296,6 @@
         }
 
         // ==================== 主頁食譜排序規則 ====================
-        // 1. 優先顯示有缺計算食材的食譜 (totalMissing > 0)，再顯示僅缺肉類的食譜，接著是食材已充足(portions > 0)，最後為份數=0
-        // 2. 在有缺計算食材的食譜中：
-        //    - 優先顯示「含有可拾取食材(1)或昇華食材(2)缺口」的食譜；僅缺非可拾取/昇華食材(3)的食譜(如黃金散蛋只缺百花蜜)排在後面
-        //    - 若皆含有 1 或 2 缺口，依據「1 + 2 的加總缺少數量 (missing12Total)」由小到大排序 (如：身披金甲(1) -> 咖哩什錦燉菜(20) -> 解厄刺身(52))
-        //    - 若 1 + 2 數量相同，則沒有第 3 類缺口者優先，最後比較 1 + 2 + 3 總缺口數 (missingTotal)
         function sortRecipesByMissing(recipes, inv) {
             let scoredRecipes = recipes.map((recipe, index) => {
                 const shortage = calculateRecipeShortage(recipe, inv);
@@ -2192,7 +2316,6 @@
             });
 
             scoredRecipes.sort((a, b) => {
-                // 分組：0=有1/2/3類缺口, 1=僅缺肉類, 2=食材充足且目標份數>0, 3=目標份數0
                 const getGroup = (r) => {
                     if (r.missingTotal > 0) return 0;
                     if (r.displayMissingTotal > 0) return 1;
@@ -2204,21 +2327,17 @@
                 if (aGroup !== bGroup) return aGroup - bGroup;
 
                 if (aGroup === 0) {
-                    // 規則 A：含有可拾取(1)或昇華(2)缺口的食譜，優先於「僅有非可拾取/昇華食材(3)」的食譜
                     if (a.hasType12Missing !== b.hasType12Missing) {
                         return a.hasType12Missing ? -1 : 1;
                     }
-                    // 規則 B：若兩者皆含有可拾取(1)或昇華(2)缺口，先比較 1 + 2 加總數量哪個比較少
                     if (a.hasType12Missing && b.hasType12Missing) {
                         if (a.missing12Total !== b.missing12Total) {
                             return a.missing12Total - b.missing12Total;
                         }
-                        // 若 1 + 2 缺口數量相同，無第 3 類食材缺口者優先
                         if (a.hasType3Missing !== b.hasType3Missing) {
                             return a.hasType3Missing ? 1 : -1;
                         }
                     }
-                    // 規則 C：最後依據 1 + 2 + 3 的總缺口數量由小到大排序
                     if (a.missingTotal !== b.missingTotal) {
                         return a.missingTotal - b.missingTotal;
                     }
@@ -2252,7 +2371,7 @@
 
             let surplusList = [];
             for (let [item, invQty] of Object.entries(inv)) {
-                if (EXCLUDED_INGS.includes(item)) continue;
+                if (isExcludedFromMainDisplay(item, ingMap)) continue;
                 const demQty = totalDemand[item] || 0;
                 const rawSurplus = invQty - demQty;
                 if (rawSurplus > 0) {
@@ -2274,7 +2393,7 @@
             return surplusList;
         }
 
-        // ==================== 今日推薦食材判定演算法 ====================
+        // ==================== 今日推薦食材判定演算法 (支援動態分類設定) ====================
         function renderDailyGathering() {
             const container = document.getElementById('daily-gathering-container');
             if (!container) return;
@@ -2283,17 +2402,19 @@
             const recipes = getRecipes(currentKey);
             const inv = getInventory(currentKey);
             const ingMap = getIngredientsMap();
+            const gatherableList = getGatherableIngsList(ingMap);
 
             let candidates = {};
-            GATHERABLE_INGS.forEach(g => {
+            gatherableList.forEach((g, idx) => {
                 const tier = (ingMap[g] && ingMap[g].rank) ? ingMap[g].rank : "一般";
                 candidates[g] = {
                     name: g,
                     tier: tier,
-                    bestRecipeMissingCount: 999,
-                    minSingleDeficit: 999999,
-                    hasDirectDeficit: false,
-                    pureGatherableRecipe: false,
+                    orderIdx: idx,
+                    bestRecipe12Total: 999999,
+                    bestRecipeEpicMissing: 999999,
+                    bestIsDirect: false,
+                    bestItemDeficit: 999999,
                     hasAnyDeficit: false
                 };
             });
@@ -2302,53 +2423,62 @@
                 const portions = recipe.portions !== undefined ? Number(recipe.portions) : 1;
                 if (!recipe.ingredients || portions <= 0) return;
 
-                let recipeMissingItems = [];
-                let hasUnobtainableIng = false;
+                let recipe12Items = [];
+                let missing12Total = 0;
+                let epicGatherableMissing = 0;
 
                 for (let [ing, perPortion] of Object.entries(recipe.ingredients)) {
-                    // 商店食材與肉類食材均不列入推薦計算與降權判定
-                    if (IGNORED_FOR_CALC_INGS.includes(ing)) continue;
+                    const cat = getIngCategory(ing, ingMap);
+                    const isGatherable = (cat === "可拾取食材");
+                    const isUpgraded = (cat === "昇華食材");
+                    // 商店食材、地圖食材及其他食材不加入計算
+                    if (!isGatherable && !isUpgraded) continue;
 
                     const req = perPortion * portions;
                     const cur = inv[ing] || 0;
                     const diff = Math.max(0, req - cur);
                     if (diff > 0) {
-                        recipeMissingItems.push({ ing, diff });
-                    }
+                        const baseIng = isGatherable ? ing : getIngBaseGatherable(ing, ingMap);
+                        if (!baseIng) continue;
+                        const baseTier = (ingMap[baseIng] && ingMap[baseIng].rank) ? ingMap[baseIng].rank : "一般";
 
-                    const isGatherable = GATHERABLE_INGS.includes(ing);
-                    const isUpgraded = Object.prototype.hasOwnProperty.call(REVERSE_UPGRADE_MAP, ing);
-                    if (!isGatherable && !isUpgraded) {
-                        hasUnobtainableIng = true;
+                        missing12Total += diff;
+                        if (baseTier === "史詩") {
+                            epicGatherableMissing += diff;
+                        }
+
+                        recipe12Items.push({
+                            baseIng: baseIng,
+                            isDirect: isGatherable,
+                            diff: diff
+                        });
                     }
                 }
 
-                const missingCount = recipeMissingItems.length;
-                if (missingCount > 0) {
-                    recipeMissingItems.forEach(item => {
-                        let targetBase = null;
-                        let isDirect = false;
+                if (recipe12Items.length > 0) {
+                    recipe12Items.forEach(item => {
+                        const c = candidates[item.baseIng];
+                        if (!c) return;
 
-                        if (GATHERABLE_INGS.includes(item.ing)) {
-                            targetBase = item.ing;
-                            isDirect = true;
-                        } else if (REVERSE_UPGRADE_MAP[item.ing]) {
-                            targetBase = REVERSE_UPGRADE_MAP[item.ing];
-                            isDirect = false;
+                        let isBetter = false;
+                        if (!c.hasAnyDeficit) {
+                            isBetter = true;
+                        } else if (missing12Total !== c.bestRecipe12Total) {
+                            isBetter = missing12Total < c.bestRecipe12Total;
+                        } else if (epicGatherableMissing !== c.bestRecipeEpicMissing) {
+                            isBetter = epicGatherableMissing < c.bestRecipeEpicMissing;
+                        } else if (item.isDirect !== c.bestIsDirect) {
+                            isBetter = item.isDirect ? true : false;
+                        } else if (item.diff !== c.bestItemDeficit) {
+                            isBetter = item.diff < c.bestItemDeficit;
                         }
 
-                        if (targetBase && candidates[targetBase]) {
-                            const c = candidates[targetBase];
+                        if (isBetter) {
                             c.hasAnyDeficit = true;
-                            if (isDirect) c.hasDirectDeficit = true;
-                            if (!hasUnobtainableIng) c.pureGatherableRecipe = true;
-
-                            if (missingCount < c.bestRecipeMissingCount) {
-                                c.bestRecipeMissingCount = missingCount;
-                            }
-                            if (item.diff < c.minSingleDeficit) {
-                                c.minSingleDeficit = item.diff;
-                            }
+                            c.bestRecipe12Total = missing12Total;
+                            c.bestRecipeEpicMissing = epicGatherableMissing;
+                            c.bestIsDirect = item.isDirect;
+                            c.bestItemDeficit = item.diff;
                         }
                     });
                 }
@@ -2368,26 +2498,26 @@
                 let list = candidatesByTier[tier];
                 if (list && list.length > 0) {
                     list.sort((a, b) => {
-                        if (a.bestRecipeMissingCount !== b.bestRecipeMissingCount) {
-                            return a.bestRecipeMissingCount - b.bestRecipeMissingCount;
+                        if (a.bestRecipe12Total !== b.bestRecipe12Total) {
+                            return a.bestRecipe12Total - b.bestRecipe12Total;
                         }
-                        if (a.pureGatherableRecipe !== b.pureGatherableRecipe) {
-                            return a.pureGatherableRecipe ? -1 : 1;
+                        if (a.bestRecipeEpicMissing !== b.bestRecipeEpicMissing) {
+                            return a.bestRecipeEpicMissing - b.bestRecipeEpicMissing;
                         }
-                        if (a.hasDirectDeficit !== b.hasDirectDeficit) {
-                            return a.hasDirectDeficit ? -1 : 1;
+                        if (a.bestIsDirect !== b.bestIsDirect) {
+                            return a.bestIsDirect ? -1 : 1;
                         }
-                        if (a.minSingleDeficit !== b.minSingleDeficit) {
-                            return a.minSingleDeficit - b.minSingleDeficit;
+                        if (a.bestItemDeficit !== b.bestItemDeficit) {
+                            return a.bestItemDeficit - b.bestItemDeficit;
                         }
-                        return 0;
+                        return a.orderIdx - b.orderIdx;
                     });
 
                     const chosen = list[0];
                     const ingMeta = ingMap[chosen.name] || { icon: "" };
                     const safeName = chosen.name.replace(/'/g, "\\'");
                     container.innerHTML += `
-                        <div class="gathering-item" onclick="openQuickStockModal('${safeName}')" style="cursor: pointer;" title="點擊直接修改 ${chosen.name} 庫存">
+                        <div class="gathering-item" onclick="openQuickStockModal('${safeName}', event)" style="cursor: pointer;" title="點擊直接修改 ${chosen.name} 庫存">
                             <div class="ing-circle-icon">
                                 ${renderImgHtml(ingMeta.icon, "", defaultIngIconImg, chosen.name)}
                             </div>
@@ -2402,7 +2532,8 @@
             }
         }
 
-        function openQuickStockModal(ingName) {
+        function openQuickStockModal(ingName, evt) {
+            if (evt) evt.stopPropagation();
             const inv = getInventory(currentKey);
             const ingMap = getIngredientsMap();
             const currentStock = inv[ingName] || 0;
@@ -2435,20 +2566,20 @@
             renderUI();
         }
 
-        // 主頁食譜卡片的「缺少食材」區塊：圓形圖示 + 右下角紅色缺口數字 + 圖示下方食材名稱
         function buildMainPageMissingHtml(recipe, ingMap) {
             if (recipe.portions === 0) {
                 return `<div style="font-size:13px; color:#9ca3af; width:100%; text-align:center; text-shadow:1px 1px 0 #000;">無需求份數</div>`;
             }
-            const displayMissing = recipe.missingItems.filter(item => !EXCLUDED_INGS.includes(item.name));
+            const displayMissing = recipe.missingItems.filter(item => !isExcludedFromMainDisplay(item.name, ingMap));
             if (displayMissing.length === 0) {
                 return `<div style="font-size:14px; color:#2ecc71; font-weight:bold; width:100%; text-align:center; text-shadow: 1px 1px 0px #000;">主要食材充足 ✓</div>`;
             }
 
             const itemsHtml = displayMissing.map(item => {
                 const iconSrc = ingMap[item.name] ? ingMap[item.name].icon : "";
+                const safeItemName = item.name.replace(/'/g, "\\'");
                 return `
-                    <div class="missing-ing-item" title="${item.name}：缺 ${item.diff}">
+                    <div class="missing-ing-item clickable-ing" onclick="openQuickStockModal('${safeItemName}', event)" title="點擊直接修改 ${item.name} 庫存 (目前缺 ${item.diff})">
                         <div class="missing-ing-circle">
                             ${renderImgHtml(iconSrc, "", defaultIngIconImg, item.name)}
                             <span class="missing-qty-badge">${item.diff}</span>
@@ -2541,7 +2672,6 @@
             openRecipeDetailByIndex(recipeIndex, false);
         }
 
-        // 點進食譜詳情視窗：食材改為顯示「缺少數量」(右下角紅字徽章，若充足則顯示綠色勾勾)
         function openRecipeDetailByIndex(recipeIndex, fromAllRecipes = false) {
             openedFromAllRecipes = fromAllRecipes;
             const recipes = getRecipes(currentKey);
@@ -2782,7 +2912,7 @@
                                     ${renderImgHtml(recipe.icon, "recipe-showcase-img", defaultRecipeIconImg, recipe.name)}
                                 </div>
                                 <div class="recipe-card-footer">
-                                    <div class="recipe-missing-title">缺少食材</div>
+                                    <div class="recipe-missing-title">缺少食材 (點擊圖示可改庫存)</div>
                                     <div class="recipe-missing-well">
                                         ${ingListHtml}
                                     </div>
@@ -2993,6 +3123,7 @@
                 const ingMeta = ingMap[item] || { rank: "一般", icon: "" };
                 const safeItem = item.replace(/'/g, "\\'");
                 const rank = ingMeta.rank || "一般";
+                const cat = getIngCategory(item, ingMap);
 
                 listContainer.innerHTML += `
                     <div class="ing-grid-card card-rank-${rank}" data-name="${item.toLowerCase()}">
@@ -3003,7 +3134,7 @@
                             </div>
                         </div>
                         ${renderImgHtml(ingMeta.icon, "ing-card-pic", defaultIngIconImg, item)}
-                        <div class="ing-card-name editable-name" onclick="openEditSingleIngredientModal('${safeItem}')" title="點擊編輯食材屬性">${item}</div>
+                        <div class="ing-card-name editable-name" onclick="openEditSingleIngredientModal('${safeItem}')" title="分類：${cat} (點擊編輯食材屬性)">${item}</div>
                     </div>
                 `;
             });
@@ -3024,6 +3155,9 @@
             document.getElementById('editing-ing-original-name').value = "";
             document.getElementById('edit-ing-name').value = defaultName;
             setTagGroupValue('edit-ing-rank', 'edit-ing-rank-tags', '一般');
+            setTagGroupValue('edit-ing-category', 'edit-ing-category-tags', '其他食材');
+            populateBaseGatherableSelect('');
+            document.getElementById('edit-ing-base-wrap').style.display = 'none';
             document.getElementById('edit-ing-icon-base64').value = "";
             
             const preview = document.getElementById('edit-ing-icon-preview');
@@ -3053,11 +3187,18 @@
             addIngReturnTarget = 'inventory';
             const ingMap = getIngredientsMap();
             const meta = ingMap[ingName] || { rank: "一般", icon: "" };
+            const currentCat = getIngCategory(ingName, ingMap);
+            const currentBase = getIngBaseGatherable(ingName, ingMap);
 
             document.getElementById('ing-item-editor-title').innerText = `編輯食材：${ingName}`;
             document.getElementById('editing-ing-original-name').value = ingName;
             document.getElementById('edit-ing-name').value = ingName;
             setTagGroupValue('edit-ing-rank', 'edit-ing-rank-tags', meta.rank || "一般");
+            setTagGroupValue('edit-ing-category', 'edit-ing-category-tags', currentCat);
+
+            populateBaseGatherableSelect(currentBase);
+            document.getElementById('edit-ing-base-wrap').style.display = (currentCat === '昇華食材') ? 'block' : 'none';
+
             document.getElementById('edit-ing-icon-base64').value = meta.icon || "";
             
             const preview = document.getElementById('edit-ing-icon-preview');
@@ -3083,6 +3224,8 @@
             const origName = document.getElementById('editing-ing-original-name').value;
             const newName = document.getElementById('edit-ing-name').value.trim();
             const newRank = document.getElementById('edit-ing-rank').value;
+            const newCategory = document.getElementById('edit-ing-category').value;
+            const newBaseIng = (newCategory === '昇華食材') ? document.getElementById('edit-ing-base-select').value : "";
             const newIcon = document.getElementById('edit-ing-icon-base64').value;
 
             if (!newName) {
@@ -3099,6 +3242,10 @@
                 }
                 if (origName !== newName) {
                     delete ingMap[origName];
+                    // 若其他昇華食材原本綁定此食材作為來源，同步更新名稱
+                    for (let [k, v] of Object.entries(ingMap)) {
+                        if (v.baseIng === origName) v.baseIng = newName;
+                    }
                     ['rabbit', 'artemis'].forEach(key => {
                         let inv = getInventory(key);
                         if (inv[origName] !== undefined) {
@@ -3116,13 +3263,13 @@
                         localStorage.setItem(`recipes_${key}`, JSON.stringify(recipes));
                     });
                 }
-                ingMap[newName] = { rank: newRank, icon: newIcon };
+                ingMap[newName] = { rank: newRank, category: newCategory, baseIng: newBaseIng, icon: newIcon };
             } else {
                 if (ingMap[newName]) {
                     alert('已有該食材！');
                     return;
                 }
-                ingMap[newName] = { rank: newRank, icon: newIcon };
+                ingMap[newName] = { rank: newRank, category: newCategory, baseIng: newBaseIng, icon: newIcon };
             }
 
             saveIngredientsMap(ingMap);
