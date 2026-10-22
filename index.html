@@ -1234,6 +1234,59 @@
             margin-bottom: 6px;
             text-shadow: 1px 1px 0px #000;
         }
+
+        /* 快捷庫存視窗項目列樣式 */
+        .quick-stock-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1.5px solid #3a4e8c;
+            border-radius: 10px;
+            padding: 10px 14px;
+            margin-bottom: 10px;
+        }
+        .quick-stock-row:last-child {
+            margin-bottom: 0;
+        }
+        .quick-stock-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+        .quick-stock-item-name {
+            font-size: 16px;
+            color: #ffffff;
+            font-weight: bold;
+            text-shadow: 1px 1px 0 #000;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .quick-stock-item-sub {
+            font-size: 11px;
+            color: #b3c0e6;
+            text-shadow: 1px 1px 0 #000;
+        }
+        .quick-stock-row-input {
+            width: 105px;
+            height: 40px;
+            background-color: #1c284d;
+            color: #ffcb05;
+            border: 2px solid #ffffff;
+            border-radius: 6px;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            outline: none;
+            text-shadow: 1px 1px 0 #000;
+            flex-shrink: 0;
+        }
+        .quick-stock-row-input:focus {
+            border-color: #ffcb05;
+        }
     </style>
 </head>
 <body>
@@ -1544,22 +1597,15 @@
         </div>
     </div>
 
-    <!-- 6. 快捷修改單一食材庫存彈窗 (點擊今日推薦或主頁缺少食材時開啟) -->
+    <!-- 6. 快捷修改食材庫存彈窗 (支援單一食材、或今日採集同時修改原食材+昇華食材) -->
     <div id="quick-stock-modal" class="modal" style="z-index: 135;">
-        <div class="game-trade-modal" style="width: 360px;">
+        <div class="game-trade-modal" style="width: 390px;">
             <div class="game-trade-header">
                 <div class="game-trade-title-wrap">
                     <span id="quick-stock-title" class="game-trade-title">食材名稱</span>
                 </div>
             </div>
-            <div class="game-editor-body" style="padding: 20px;">
-                <input type="hidden" id="quick-stock-ing-name" value="">
-                <div style="display:flex; align-items:center; gap:12px; margin-bottom:15px; justify-content:center;">
-                    <div id="quick-stock-icon-box" class="ing-circle-icon"></div>
-                </div>
-                <label style="font-size:15px; text-align:center; margin-bottom:10px;">目前庫存數量：</label>
-                <input type="number" id="quick-stock-input" class="text-input" min="0" style="font-size:22px; font-weight:bold; text-align:center; height:46px;">
-            </div>
+            <div id="quick-stock-body" class="game-editor-body" style="padding: 18px 20px;"></div>
             <div class="game-trade-footer">
                 <button type="button" class="game-pill-btn game-pill-cancel" onclick="closeModal('quick-stock-modal')">取消</button>
                 <button type="button" class="game-pill-btn game-pill-confirm" onclick="saveQuickStock()">儲存</button>
@@ -1636,6 +1682,9 @@
 
         // 4. 地圖食材
         const MAP_INGS = ["青禾", "芥菜", "琥珀凝膠", "生肉", "嫩肉", "精肉", "絕品肉"];
+
+        // 肉類合成階層 (3個低階合成1個高階)
+        const MEAT_CHAIN = ["生肉", "嫩肉", "精肉", "絕品肉"];
 
         // 預設可拾取食材 -> 昇華食材 對應表
         const UPGRADE_MAP = {
@@ -1732,6 +1781,21 @@
                 return map[ingName].baseIng;
             }
             return REVERSE_UPGRADE_MAP[ingName] || "";
+        }
+
+        // 找出某個可拾取食材對應的所有「昇華食材」清單
+        function getUpgradedIngsForBase(baseName, ingMap) {
+            const map = ingMap || getIngredientsMap();
+            const list = [];
+            getAllIngredientsList().forEach(item => {
+                if (getIngCategory(item, map) === "昇華食材" && getIngBaseGatherable(item, map) === baseName) {
+                    list.push(item);
+                }
+            });
+            if (list.length === 0 && UPGRADE_MAP[baseName] && !list.includes(UPGRADE_MAP[baseName])) {
+                list.push(UPGRADE_MAP[baseName]);
+            }
+            return list;
         }
 
         function getGatherableIngsList(ingMap) {
@@ -2427,7 +2491,6 @@
                     const cat = getIngCategory(ing, ingMap);
                     const isGatherable = (cat === "可拾取食材");
                     const isUpgraded = (cat === "昇華食材");
-                    // 商店食材、地圖食材及其他食材不加入計算
                     if (!isGatherable && !isUpgraded) continue;
 
                     const req = perPortion * portions;
@@ -2512,8 +2575,9 @@
                     const chosen = list[0];
                     const ingMeta = ingMap[chosen.name] || { icon: "" };
                     const safeName = chosen.name.replace(/'/g, "\\'");
+                    // 今日採集點擊時，includeUpgraded 傳入 true，同時修改該食材與其昇華食材
                     container.innerHTML += `
-                        <div class="gathering-item" onclick="openQuickStockModal('${safeName}', event)" style="cursor: pointer;" title="點擊直接修改 ${chosen.name} 庫存">
+                        <div class="gathering-item" onclick="openQuickStockModal('${safeName}', event, true)" style="cursor: pointer;" title="點擊修改 ${chosen.name} 與其昇華食材庫存">
                             <div class="ing-circle-icon">
                                 ${renderImgHtml(ingMeta.icon, "", defaultIngIconImg, chosen.name)}
                             </div>
@@ -2528,33 +2592,84 @@
             }
         }
 
-        function openQuickStockModal(ingName, evt) {
+        // 開啟快捷庫存視窗：
+        // - 若 includeUpgraded = true (從今日採集點擊)，同時顯示該可拾取食材與其對應的昇華食材輸入框
+        // - 若 includeUpgraded = false (從主頁缺少食材點擊)，僅顯示該單一食材輸入框
+        function openQuickStockModal(ingName, evt, includeUpgraded = false) {
             if (evt) evt.stopPropagation();
             const inv = getInventory(currentKey);
             const ingMap = getIngredientsMap();
-            const currentStock = inv[ingName] || 0;
-            const ingMeta = ingMap[ingName] || { icon: "" };
 
-            document.getElementById('quick-stock-ing-name').value = ingName;
+            let targetItems = [ingName];
+            if (includeUpgraded) {
+                const upgradedList = getUpgradedIngsForBase(ingName, ingMap);
+                upgradedList.forEach(u => {
+                    if (!targetItems.includes(u)) targetItems.push(u);
+                });
+            }
+
             document.getElementById('quick-stock-title').innerText = ingName;
-            document.getElementById('quick-stock-icon-box').innerHTML = renderImgHtml(ingMeta.icon, "", defaultIngIconImg, ingName);
-            document.getElementById('quick-stock-input').value = currentStock;
+            const bodyEl = document.getElementById('quick-stock-body');
+            bodyEl.innerHTML = '';
+
+            if (targetItems.length === 1) {
+                const item = targetItems[0];
+                const currentStock = inv[item] || 0;
+                const ingMeta = ingMap[item] || { icon: "" };
+                bodyEl.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:15px; justify-content:center;">
+                        <div class="ing-circle-icon">
+                            ${renderImgHtml(ingMeta.icon, "", defaultIngIconImg, item)}
+                        </div>
+                    </div>
+                    <label style="font-size:15px; text-align:center; margin-bottom:10px;">目前庫存數量：</label>
+                    <input type="number" class="text-input quick-stock-input-item" data-item="${item}" value="${currentStock}" min="0" style="font-size:22px; font-weight:bold; text-align:center; height:46px; margin-bottom:0;">
+                `;
+            } else {
+                targetItems.forEach((item, idx) => {
+                    const currentStock = inv[item] || 0;
+                    const ingMeta = ingMap[item] || { icon: "" };
+                    const subLabel = idx === 0 ? '可拾取食材' : '昇華食材';
+                    bodyEl.innerHTML += `
+                        <div class="quick-stock-row">
+                            <div class="quick-stock-left">
+                                <div class="ing-circle-icon" style="width:44px; height:44px;">
+                                    ${renderImgHtml(ingMeta.icon, "", defaultIngIconImg, item)}
+                                </div>
+                                <div>
+                                    <div class="quick-stock-item-name">${item}</div>
+                                    <div class="quick-stock-item-sub">${subLabel}</div>
+                                </div>
+                            </div>
+                            <input type="number" class="quick-stock-row-input quick-stock-input-item" data-item="${item}" value="${currentStock}" min="0">
+                        </div>
+                    `;
+                });
+            }
 
             document.getElementById('quick-stock-modal').style.display = 'flex';
             setTimeout(() => {
-                const inp = document.getElementById('quick-stock-input');
-                inp.focus();
-                inp.select();
+                const firstInput = bodyEl.querySelector('.quick-stock-input-item');
+                if (firstInput) {
+                    firstInput.focus();
+                    firstInput.select();
+                }
             }, 50);
         }
 
         function saveQuickStock() {
-            const ingName = document.getElementById('quick-stock-ing-name').value;
-            const newQty = Math.max(0, parseInt(document.getElementById('quick-stock-input').value) || 0);
-            if (!ingName) return;
+            const inputs = document.querySelectorAll('#quick-stock-body .quick-stock-input-item');
+            if (!inputs || inputs.length === 0) return;
 
             const inv = getInventory(currentKey);
-            inv[ingName] = newQty;
+            inputs.forEach(inp => {
+                const itemName = inp.getAttribute('data-item');
+                const newQty = Math.max(0, parseInt(inp.value) || 0);
+                if (itemName) {
+                    inv[itemName] = newQty;
+                }
+            });
+
             localStorage.setItem(`inv_${currentKey}`, JSON.stringify(inv));
             pushToCloud();
 
@@ -2575,7 +2690,7 @@
                 const iconSrc = ingMap[item.name] ? ingMap[item.name].icon : "";
                 const safeItemName = item.name.replace(/'/g, "\\'");
                 return `
-                    <div class="missing-ing-item clickable-ing" onclick="openQuickStockModal('${safeItemName}', event)" title="點擊直接修改 ${item.name} 庫存 (目前缺 ${item.diff})">
+                    <div class="missing-ing-item clickable-ing" onclick="openQuickStockModal('${safeItemName}', event, false)" title="點擊直接修改 ${item.name} 庫存 (目前缺 ${item.diff})">
                         <div class="missing-ing-circle">
                             ${renderImgHtml(iconSrc, "", defaultIngIconImg, item.name)}
                             <span class="missing-qty-badge">${item.diff}</span>
@@ -2785,6 +2900,9 @@
             updateRecipeEatDisplay();
         }
 
+        // ==================== 食用料理：支援肉類合成倍率自動扣除生肉 ====================
+        // 合成規則：3個生肉 -> 1個嫩肉，3個嫩肉 -> 1個精肉 (9生肉)，3個精肉 -> 1個絕品肉 (27生肉)
+        // 優先扣除該階級肉類庫存，不足的部分逐級往下換算為下一階肉類直至生肉；若生肉庫存不足則跳出警告視窗「生肉庫存不足」
         function confirmEatFromRecipeModal() {
             const recipeIndex = parseInt(document.getElementById('modal-recipe-index').value);
             const count = currentRecipeEatQty;
@@ -2796,17 +2914,65 @@
             const recipe = recipes[recipeIndex];
             if (!recipe) return;
 
+            // 先複製一份庫存進行試算，確保生肉足夠才真正寫入
+            let tempInv = { ...inv };
+
             if (recipe.ingredients) {
+                // 1. 先檢查並扣除肉類食材 (支援從高階肉向下拆解至生肉)
+                let meatDemands = { "生肉": 0, "嫩肉": 0, "精肉": 0, "絕品肉": 0 };
+                let hasMeatRequirement = false;
+
                 for (let [ing, perPortionQty] of Object.entries(recipe.ingredients)) {
-                    const deduct = perPortionQty * count;
-                    inv[ing] = Math.max(0, (inv[ing] || 0) - deduct);
+                    if (MEAT_CHAIN.includes(ing)) {
+                        meatDemands[ing] += perPortionQty * count;
+                        hasMeatRequirement = true;
+                    }
+                }
+
+                if (hasMeatRequirement) {
+                    // 由高階肉 (絕品肉 -> 精肉 -> 嫩肉) 依序處理：先扣自身庫存，不足則乘以 3 轉嫁給下一階肉類
+                    for (let i = MEAT_CHAIN.length - 1; i >= 1; i--) {
+                        const meatName = MEAT_CHAIN[i];
+                        const lowerMeatName = MEAT_CHAIN[i - 1];
+                        const needed = meatDemands[meatName];
+
+                        if (needed > 0) {
+                            const available = tempInv[meatName] || 0;
+                            if (available >= needed) {
+                                tempInv[meatName] = available - needed;
+                                meatDemands[meatName] = 0;
+                            } else {
+                                const deficit = needed - available;
+                                tempInv[meatName] = 0;
+                                meatDemands[meatName] = 0;
+                                meatDemands[lowerMeatName] += deficit * 3;
+                            }
+                        }
+                    }
+
+                    // 最後檢查「生肉」總需求是否足夠
+                    const rawMeatNeeded = meatDemands["生肉"];
+                    const rawMeatAvailable = tempInv["生肉"] || 0;
+                    if (rawMeatNeeded > rawMeatAvailable) {
+                        alert("生肉庫存不足");
+                        return;
+                    }
+                    tempInv["生肉"] = rawMeatAvailable - rawMeatNeeded;
+                }
+
+                // 2. 扣除其他非肉類食材
+                for (let [ing, perPortionQty] of Object.entries(recipe.ingredients)) {
+                    if (!MEAT_CHAIN.includes(ing)) {
+                        const deduct = perPortionQty * count;
+                        tempInv[ing] = Math.max(0, (tempInv[ing] || 0) - deduct);
+                    }
                 }
             }
 
             const currentPortions = recipe.portions !== undefined ? Number(recipe.portions) : 0;
             recipe.portions = Math.max(0, currentPortions - count);
 
-            localStorage.setItem(`inv_${currentKey}`, JSON.stringify(inv));
+            localStorage.setItem(`inv_${currentKey}`, JSON.stringify(tempInv));
             localStorage.setItem(`recipes_${currentKey}`, JSON.stringify(recipes));
             pushToCloud();
 
