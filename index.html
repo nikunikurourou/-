@@ -352,6 +352,7 @@
             text-shadow: 1px 1px 0px #000000;
         }
 
+        /* 缺少食材容器：設定靠上對齊 (flex-start) */
         .recipe-missing-well {
             background-color: rgba(12, 18, 36, 0.65);
             border: 1px solid #3a4e8c;
@@ -359,7 +360,7 @@
             padding: 10px 8px;
             flex: 1;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             min-height: 82px;
         }
 
@@ -368,6 +369,7 @@
             gap: 10px 8px;
             flex-wrap: wrap;
             align-items: flex-start;
+            width: 100%;
         }
 
         .missing-ing-item {
@@ -1252,7 +1254,7 @@
 
         <!-- 今日採集推薦區塊 -->
         <div class="section-header" style="margin-top: 0;">
-            <span class="section-title">今日採集推薦 (點擊圖示可修改庫存)</span>
+            <span class="section-title">今日採集推薦</span>
         </div>
         <div id="daily-gathering-container"></div>
 
@@ -1320,7 +1322,7 @@
             </div>
 
             <div class="game-trade-recipe-section">
-                <div class="game-trade-section-bar">料理配方 (右下角為缺少數量)</div>
+                <div class="game-trade-section-bar">料理配方</div>
                 <div id="modal-recipe-ingredients-flex" class="game-trade-ings-box"></div>
             </div>
 
@@ -1547,7 +1549,7 @@
         <div class="game-trade-modal" style="width: 360px;">
             <div class="game-trade-header">
                 <div class="game-trade-title-wrap">
-                    <span id="quick-stock-title" class="game-trade-title">調整庫存</span>
+                    <span id="quick-stock-title" class="game-trade-title">食材名稱</span>
                 </div>
             </div>
             <div class="game-editor-body" style="padding: 20px;">
@@ -1660,7 +1662,6 @@
             REVERSE_UPGRADE_MAP[v] = k;
         }
 
-        // 根據食材名稱取得預設分類
         function getDefaultCategory(ingName) {
             if (GATHERABLE_INGS.includes(ingName)) return "可拾取食材";
             if (UPGRADED_INGS.includes(ingName)) return "昇華食材";
@@ -1703,7 +1704,6 @@
 
         const userProvidedIngredientsMap = {"水":{"rank":"一般","icon":""},"胡椒":{"rank":"一般","icon":""},"糖":{"rank":"一般","icon":""},"鹽":{"rank":"一般","icon":""},"蘑菇":{"rank":"一般","icon":""},"青禾":{"rank":"一般","icon":""},"芥菜":{"rank":"一般","icon":""},"琥珀凝膠":{"rank":"一般","icon":""},"生肉":{"rank":"一般","icon":""},"嫩肉":{"rank":"稀有","icon":""},"精肉":{"rank":"史詩","icon":""},"絕品肉":{"rank":"傳說","icon":""},"麵粉":{"rank":"一般","icon":""},"蜂蜜":{"rank":"稀有","icon":""},"百花蜜":{"rank":"史詩","icon":""},"蜂王漿":{"rank":"傳說","icon":""},"馬鈴薯":{"rank":"一般","icon":""},"甜馬鈴薯":{"rank":"稀有","icon":""},"嘟嘟莓":{"rank":"稀有","icon":""},"多汁嘟嘟莓":{"rank":"史詩","icon":""},"藍鳥蛋":{"rank":"史詩","icon":""},"鈷藍鳥蛋":{"rank":"傳說","icon":""},"潔白松露":{"rank":"傳說","icon":""},"奶油":{"rank":"稀有","icon":""},"咸奶油":{"rank":"史詩","icon":""},"脫脂奶油":{"rank":"傳說","icon":""},"咖哩":{"rank":"稀有","icon":""},"濃香咖哩":{"rank":"史詩","icon":""},"刺刺果":{"rank":"一般","icon":""},"尖刺刺果":{"rank":"稀有","icon":""},"甲殼栗":{"rank":"稀有","icon":""},"鐵甲殼栗":{"rank":"史詩","icon":""},"綠洲之星":{"rank":"史詩","icon":""},"綠洲新星":{"rank":"傳說","icon":""},"寶藏駝奶":{"rank":"史詩","icon":""},"味噌":{"rank":"稀有","icon":""},"辛味噌":{"rank":"史詩","icon":""},"水舞葉":{"rank":"一般","icon":""},"天舞青葉":{"rank":"稀有","icon":""},"花瓣魚":{"rank":"稀有","icon":""},"鮮花瓣魚":{"rank":"史詩","icon":""},"章魚":{"rank":"史詩","icon":""},"潮汐八爪魚":{"rank":"傳說","icon":""},"紺青龍蝦":{"rank":"傳說","icon":""},"辣椒":{"rank":"稀有","icon":""},"妖魔辣椒":{"rank":"史詩","icon":""},"豆子":{"rank":"一般","icon":""},"乾脆豆子":{"rank":"稀有","icon":""},"竹筍":{"rank":"稀有","icon":""},"山珍竹筍":{"rank":"史詩","icon":""},"大螯蟹":{"rank":"史詩","icon":""},"大螯蟹王":{"rank":"傳說","icon":""},"金盞靈芝":{"rank":"傳說","icon":""},"雷電香油":{"rank":"稀有","icon":""},"純淨雷電香油":{"rank":"史詩","icon":""},"蘭香茸":{"rank":"一般","icon":""},"星夜蘭香茸":{"rank":"稀有","icon":""},"雲海螺肉":{"rank":"稀有","icon":""},"風飄雲海螺肉":{"rank":"史詩","icon":""},"陽光果":{"rank":"史詩","icon":""},"黃金陽光果":{"rank":"傳說","icon":""},"女神之淚":{"rank":"傳說","icon":""}};
 
-        // 為預設地圖補齊分類與昇華來源
         for (let [k, v] of Object.entries(userProvidedIngredientsMap)) {
             v.category = getDefaultCategory(k);
             v.baseIng = REVERSE_UPGRADE_MAP[k] || "";
@@ -1734,7 +1734,6 @@
             return REVERSE_UPGRADE_MAP[ingName] || "";
         }
 
-        // 取得所有目前分類為「可拾取食材」的清單
         function getGatherableIngsList(ingMap) {
             const map = ingMap || getIngredientsMap();
             const list = [];
@@ -1746,7 +1745,6 @@
             return list;
         }
 
-        // 判斷是否不顯示於主頁缺少清單 / 可出售清單 (商店食材 + 蘑菇/青禾/芥菜/琥珀凝膠)
         function isExcludedFromMainDisplay(ingName, ingMap) {
             const cat = getIngCategory(ingName, ingMap);
             if (cat === "商店食材") return true;
@@ -1754,7 +1752,6 @@
             return false;
         }
 
-        // 判斷是否不列入食譜排序與每日推薦計算 (商店食材 + 地圖食材 + 蘑菇)
         function isIgnoredForCalculation(ingName, ingMap) {
             const cat = getIngCategory(ingName, ingMap);
             if (cat === "商店食材" || cat === "地圖食材") return true;
@@ -1906,7 +1903,6 @@
             element.classList.add('active');
         }
 
-        // 點選食材分類標籤時，若為「昇華食材」則顯示對應的可拾取食材下拉選單
         function selectIngCategoryTag(value, element) {
             selectFormTag('edit-ing-category', value, element);
             const baseWrap = document.getElementById('edit-ing-base-wrap');
@@ -2540,7 +2536,7 @@
             const ingMeta = ingMap[ingName] || { icon: "" };
 
             document.getElementById('quick-stock-ing-name').value = ingName;
-            document.getElementById('quick-stock-title').innerText = `調整：${ingName}`;
+            document.getElementById('quick-stock-title').innerText = ingName;
             document.getElementById('quick-stock-icon-box').innerHTML = renderImgHtml(ingMeta.icon, "", defaultIngIconImg, ingName);
             document.getElementById('quick-stock-input').value = currentStock;
 
@@ -2912,7 +2908,7 @@
                                     ${renderImgHtml(recipe.icon, "recipe-showcase-img", defaultRecipeIconImg, recipe.name)}
                                 </div>
                                 <div class="recipe-card-footer">
-                                    <div class="recipe-missing-title">缺少食材 (點擊圖示可改庫存)</div>
+                                    <div class="recipe-missing-title">缺少食材</div>
                                     <div class="recipe-missing-well">
                                         ${ingListHtml}
                                     </div>
@@ -3242,7 +3238,6 @@
                 }
                 if (origName !== newName) {
                     delete ingMap[origName];
-                    // 若其他昇華食材原本綁定此食材作為來源，同步更新名稱
                     for (let [k, v] of Object.entries(ingMap)) {
                         if (v.baseIng === origName) v.baseIng = newName;
                     }
